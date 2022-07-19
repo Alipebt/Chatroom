@@ -65,27 +65,6 @@ void Client::sign_in_up(int clie_fd)
             s = w.write(info);
 
             Write(clie_fd, s.c_str(), s.length());
-            while (true)
-            {
-                if ((read(clie_fd, r, sizeof(r))) > 0)
-                {
-                    cout << " 收到服务器消息\n>" << r << endl;
-
-                    if (strcmp(r, "success") == 0)
-                    {
-                        cout << " [登录成功]" << endl;
-                    }
-                    else if (strcmp(r, "fail") == 0)
-                    {
-                        cout << " [ID或密码错误]" << endl;
-                    }
-                    else
-                    {
-                        cout << " [登录失败]" << endl;
-                    }
-                    break;
-                }
-            }
         }
         else if (in == SIGN_UP)
         {

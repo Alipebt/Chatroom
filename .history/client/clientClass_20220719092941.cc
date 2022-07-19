@@ -21,7 +21,9 @@ void Client::sign_in_up(int clie_fd)
     string in;
     string s;
     char r[BUFSIZ];
-    string ID, pass1, pass2;
+    string name, pass1, pass2;
+
+    Value info;
 
     while (true)
     {
@@ -41,11 +43,9 @@ void Client::sign_in_up(int clie_fd)
 
         if (in == SIGN_IN)
         {
-            Value info;
-
             cout << " 请输入你的ID\n>";
-            cin >> ID;
-            if (ID.length() > 20 || ID.length() < 3)
+            cin >> name;
+            if (name.length() > 20 || name.length() < 3)
             {
                 cout << "\nID长度应在3~20" << endl;
                 Write(clie_fd, "fail", 4); //结束服务器调用sign_in函数
@@ -58,40 +58,13 @@ void Client::sign_in_up(int clie_fd)
                 Write(clie_fd, "fail", 4); //结束服务器调用sign_in函数
                 continue;
             }
-
-            info["ID"] = ID;
-            info["pass"] = pass1;
-            FastWriter w;
-            s = w.write(info);
-
-            Write(clie_fd, s.c_str(), s.length());
-            while (true)
-            {
-                if ((read(clie_fd, r, sizeof(r))) > 0)
-                {
-                    cout << " 收到服务器消息\n>" << r << endl;
-
-                    if (strcmp(r, "success") == 0)
-                    {
-                        cout << " [登录成功]" << endl;
-                    }
-                    else if (strcmp(r, "fail") == 0)
-                    {
-                        cout << " [ID或密码错误]" << endl;
-                    }
-                    else
-                    {
-                        cout << " [登录失败]" << endl;
-                    }
-                    break;
-                }
-            }
+            info["ID"] = name;
         }
         else if (in == SIGN_UP)
         {
             cout << " 请输入你的ID\n>";
-            cin >> ID;
-            if (ID.length() > 20 || ID.length() < 3)
+            cin >> name;
+            if (name.length() > 20 || name.length() < 3)
             {
                 cout << "\nID长度应在3~20" << endl;
                 Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
@@ -109,7 +82,7 @@ void Client::sign_in_up(int clie_fd)
             if (pass1 == pass2)
             {
                 Value info;
-                info["ID"] = ID;
+                info["ID"] = name;
                 info["pass"] = pass1;
 
                 //有格式序列化

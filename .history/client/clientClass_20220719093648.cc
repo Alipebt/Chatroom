@@ -70,21 +70,26 @@ void Client::sign_in_up(int clie_fd)
                 if ((read(clie_fd, r, sizeof(r))) > 0)
                 {
                     cout << " 收到服务器消息\n>" << r << endl;
-
-                    if (strcmp(r, "success") == 0)
+                    if (strcmp(r, "fail") == 0)
                     {
-                        cout << " [登录成功]" << endl;
+                        cout << ">ID已被占用" << endl;
                     }
-                    else if (strcmp(r, "fail") == 0)
+                    else if (strcmp(r, "success") == 0)
                     {
-                        cout << " [ID或密码错误]" << endl;
-                    }
-                    else
-                    {
-                        cout << " [登录失败]" << endl;
+                        cout << ">注册成功" << endl;
                     }
                     break;
                 }
+            }
+            cout << " 收到服务器消息\n>" << r << endl;
+
+            if (strcmp(r, "success"))
+            {
+                cout << " [登录成功]" << endl;
+            }
+            else
+            {
+                cout << "[登陆失败]" << endl;
             }
         }
         else if (in == SIGN_UP)
