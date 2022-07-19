@@ -21,6 +21,7 @@ public:
     ~Client();
     void run();                           //启动客户端服务
     void sign_in_up(int clie_fd);         //登录注册界面
+    void main_menu(int clie_fd);          //主菜单
     static void thread_send(int clie_fd); //发送线程
     static void thread_recv(int clie_fd); //接收线程
 };

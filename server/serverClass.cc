@@ -44,9 +44,65 @@ Server::~Server()
     Close(link_fd);
 }
 
-bool Server::sign_up(int clie_fd)
+bool Server::sign_in(int clie_fd)
 {
     bool is_success = false;
+
+    string ID, pass;
+    Reader rd;
+    Value Jsinfo, JsinfoDB;
+
+    char info[BUFSIZ];
+
+    while (true)
+    {
+        if ((read(clie_fd, info, sizeof(info))) > 0)
+        {
+            cout << "[客户端] " << clie_fd << " : " << info << endl;
+            break;
+        }
+    }
+
+    if (rd.parse(info, Jsinfo))
+    {
+        ID = Jsinfo["ID"].asString();
+        pass = Jsinfo["pass"].asString();
+
+        //遍历ID
+        leveldb::Iterator *it = db->NewIterator(leveldb::ReadOptions());
+        for (it->SeekToFirst(); it->Valid(); it->Next())
+        {
+            if (ID == it->key().ToString() && rd.parse(it->value().ToString(), JsinfoDB))
+            {
+                if (rd.parse(it->value().ToString(), JsinfoDB))
+                {
+                    if (pass == JsinfoDB["pass"].asString())
+                    {
+                        Write(clie_fd, "success", 7);
+                        is_success = true;
+                    }
+                }
+                //(测试用)
+                string outpass;
+                leveldb::Status status = db->Get(leveldb::ReadOptions(), ID, &outpass);
+                check_status(status);
+                cout << "[数据库] " << ID << " : " << outpass << endl;
+            }
+        }
+
+        // ID密码不匹配
+        if (!is_success)
+        {
+            Write(clie_fd, "fail", 4);
+
+            is_success = false;
+        }
+    }
+    return is_success;
+}
+
+void Server::sign_up(int clie_fd)
+{
 
     string ID;
     Reader rd;
@@ -59,6 +115,7 @@ bool Server::sign_up(int clie_fd)
     {
         if ((read(clie_fd, info, sizeof(info))) > 0)
         {
+            cout << " 收到客户端" << clie_fd << ":" << info << endl;
             break;
         }
     }
@@ -86,28 +143,28 @@ bool Server::sign_up(int clie_fd)
             leveldb::Status status = db->Put(leveldb::WriteOptions(), ID, info);
             check_status(status);
 
+            //(测试用)
             string outpass;
             status = db->Get(leveldb::ReadOptions(), ID, &outpass);
             check_status(status);
             cout << "[数据库]" << ID << " : " << outpass << endl;
-
-            is_success = true;
         }
     }
-    return is_success;
+    return;
 }
 
+/*
+    执行读写(EPOLL ET非阻塞,轮询)
+*/
 void Server::thread_work(int clie_fd)
 {
-    // bool is_success = false;
-
     int ret;
     char r[BUFSIZ];
 
-    /*
-    执行读写(非阻塞,轮询)
-    */
-    while ((ret = read(clie_fd, r, sizeof(r))) > 0)
+    bool sign_in = false;
+
+    //登录
+    while (sign_in == false && (ret = read(clie_fd, r, sizeof(r))) > 0)
     {
         cout << clie_fd << " : " << r << endl;
 
@@ -124,7 +181,16 @@ void Server::thread_work(int clie_fd)
         {
             Server::sign_up(clie_fd);
         }
+        else if (strcmp(r, SIGN_IN) == 0)
+        {
+            sign_in = Server::sign_in(clie_fd);
+        }
         bzero(r, sizeof(r));
+    }
+
+    //主页面
+    while (sign_in == true && (ret = read(clie_fd, r, sizeof(r))) > 0)
+    {
     }
     return;
 }
@@ -139,7 +205,7 @@ void Server::run()
         cerr << status.ToString() << endl;
     }
 
-    //正向遍历
+    //正向遍历        (测试用)
     leveldb::Iterator *it = db->NewIterator(leveldb::ReadOptions());
 
     cout << "开始正向遍历:" << endl;

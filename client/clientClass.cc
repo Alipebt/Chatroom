@@ -74,6 +74,7 @@ void Client::sign_in_up(int clie_fd)
                     if (strcmp(r, "success") == 0)
                     {
                         cout << " [登录成功]" << endl;
+                        main_menu(clie_fd);
                     }
                     else if (strcmp(r, "fail") == 0)
                     {
@@ -148,6 +149,28 @@ void Client::sign_in_up(int clie_fd)
         }
         bzero(r, sizeof(r));
     }
+}
+
+void Client::main_menu(int clie_fd)
+{
+    string in;
+    char r[BUFSIZ];
+    while (true)
+    {
+        cout << "+------------------+" << endl;
+        cout << "|     ChatRoom     |" << endl;
+        cout << "+------------------+" << endl;
+        cout << "|                  |" << endl;
+        cout << "|      1:私聊      |" << endl;
+        cout << "|      2:群聊      |" << endl;
+        cout << "|      0:注销      |" << endl;
+        cout << "|                  |" << endl;
+        cout << "+------------------+" << endl;
+
+        cin >> in;
+    }
+
+    return;
 }
 
 void Client::run()

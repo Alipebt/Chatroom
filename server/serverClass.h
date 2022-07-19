@@ -22,7 +22,8 @@ public:
     ~Server();
 
     void run();
-    static bool sign_up(int clie_fd);
-    static void thread_work(int clie_fd);
+    static bool sign_in(int clie_fd);     //登录判断
+    static void sign_up(int clie_fd);     //注册判断
+    static void thread_work(int clie_fd); //服务器线程工作
 };
 #endif
