@@ -8,6 +8,10 @@
 #define SIGN_UP "2"
 #define EXIT "0"
 
+#define PRIVATE "1"
+#define PUBLIC "2"
+#define SIGN_OUT "0"
+
 using namespace std;
 
 class Server
@@ -24,6 +28,7 @@ public:
     void run();
     static bool sign_in(int clie_fd);     //登录判断
     static void sign_up(int clie_fd);     //注册判断
+    static void match_with(int clie_fd);  //连接判断
     static void thread_work(int clie_fd); //服务器线程工作
 };
 #endif

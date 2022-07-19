@@ -115,7 +115,7 @@ void Server::sign_up(int clie_fd)
     {
         if ((read(clie_fd, info, sizeof(info))) > 0)
         {
-            cout << " 收到客户端" << clie_fd << ":" << info << endl;
+            cout << " [客户端]" << clie_fd << ":" << info << endl;
             break;
         }
     }
@@ -153,18 +153,65 @@ void Server::sign_up(int clie_fd)
     return;
 }
 
+void Server::match_with(int clie_fd)
+{
+    Reader rd;
+    Value match;
+    string recverID;
+
+    char r[BUFSIZ];
+
+    bool is_match = false;
+
+    while (true)
+    {
+        if ((read(clie_fd, r, sizeof(r))) > 0)
+        {
+            cout << " [客户端]" << clie_fd << ":" << r << endl;
+            break;
+        }
+    }
+
+    if (rd.parse(r, match))
+    {
+        recverID = match["recver"].asString();
+        //查找所连接的ID是否存在
+        leveldb::Iterator *it = db->NewIterator(leveldb::ReadOptions());
+        for (it->SeekToFirst(); it->Valid(); it->Next())
+        {
+            cout << "查找中" << endl;
+            if (recverID == it->key().ToString())
+            {
+                Write(clie_fd, "success", 7);
+                cout << clie_fd << "与" << recverID << "匹配成功" << endl;
+                is_match = true;
+                //进入函数\/
+
+                break;
+            }
+        }
+    }
+    else
+    {
+        cout << "解析失败" << endl;
+    }
+    if (!is_match)
+    {
+        Write(clie_fd, "fail", 4);
+        cout << clie_fd << "与" << recverID << "匹配失败" << endl;
+    }
+}
+
 /*
     执行读写(EPOLL ET非阻塞,轮询)
 */
 void Server::thread_work(int clie_fd)
 {
-    int ret;
     char r[BUFSIZ];
 
-    bool sign_in = false;
-
+    static bool sign_in = false;
     //登录
-    while (sign_in == false && (ret = read(clie_fd, r, sizeof(r))) > 0)
+    while (sign_in == false && read(clie_fd, r, sizeof(r)) > 0)
     {
         cout << clie_fd << " : " << r << endl;
 
@@ -184,13 +231,26 @@ void Server::thread_work(int clie_fd)
         else if (strcmp(r, SIGN_IN) == 0)
         {
             sign_in = Server::sign_in(clie_fd);
+            break;
         }
         bzero(r, sizeof(r));
     }
 
+    bzero(r, sizeof(r));
     //主页面
-    while (sign_in == true && (ret = read(clie_fd, r, sizeof(r))) > 0)
+    while (sign_in == true && read(clie_fd, r, sizeof(r)) > 0)
     {
+        if (strcmp(r, PRIVATE) == 0)
+        {
+            match_with(clie_fd);
+        }
+        else if (strcmp(r, PUBLIC) == 0)
+        {
+        }
+        else if (strcmp(r, SIGN_OUT) == 0)
+        {
+        }
+        bzero(r, sizeof(r));
     }
     return;
 }

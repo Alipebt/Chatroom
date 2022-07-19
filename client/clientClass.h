@@ -5,6 +5,10 @@
 #define SIGN_UP "2"
 #define EXIT "0"
 
+#define PRIVATE "1"
+#define PUBLIC "2"
+#define SIGN_OUT "0"
+
 #include <iostream>
 
 using namespace std;
@@ -19,11 +23,11 @@ private:
 public:
     Client(int port, string ip);
     ~Client();
-    void run();                           //启动客户端服务
-    void sign_in_up(int clie_fd);         //登录注册界面
-    void main_menu(int clie_fd);          //主菜单
-    static void thread_send(int clie_fd); //发送线程
-    static void thread_recv(int clie_fd); //接收线程
+    void run();                             //启动客户端服务
+    void sign_in_up(int clie_fd);           //登录注册界面
+    void main_menu(int clie_fd, string ID); //主菜单
+    static void thread_send(int clie_fd);   //发送线程
+    static void thread_recv(int clie_fd);   //接收线程
 };
 
 #endif

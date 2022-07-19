@@ -21,7 +21,7 @@ void Client::sign_in_up(int clie_fd)
     string in;
     string s;
     char r[BUFSIZ];
-    string ID, pass1, pass2;
+    string ID, pass1, pass2, name;
 
     while (true)
     {
@@ -74,7 +74,7 @@ void Client::sign_in_up(int clie_fd)
                     if (strcmp(r, "success") == 0)
                     {
                         cout << " [登录成功]" << endl;
-                        main_menu(clie_fd);
+                        main_menu(clie_fd, ID);
                     }
                     else if (strcmp(r, "fail") == 0)
                     {
@@ -107,11 +107,21 @@ void Client::sign_in_up(int clie_fd)
             }
             pass2 = getpass(" 请再次输入你的密码\n>");
 
+            cout << " 请输入你的用户名\n>";
+            cin >> name;
+            if (name.length() > 20 || name.length() < 3)
+            {
+                cout << "name长度应在3~20" << endl;
+                Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
+                continue;
+            }
+
             if (pass1 == pass2)
             {
                 Value info;
                 info["ID"] = ID;
                 info["pass"] = pass1;
+                info["name"] = name;
 
                 //有格式序列化
                 FastWriter w;
@@ -151,12 +161,17 @@ void Client::sign_in_up(int clie_fd)
     }
 }
 
-void Client::main_menu(int clie_fd)
+void Client::main_menu(int clie_fd, string ID)
 {
-    string in;
+    string in, s;
     char r[BUFSIZ];
+    Value match;
+    match["sender"] = ID;
+
     while (true)
     {
+        bzero(r, sizeof(r));
+
         cout << "+------------------+" << endl;
         cout << "|     ChatRoom     |" << endl;
         cout << "+------------------+" << endl;
@@ -168,6 +183,52 @@ void Client::main_menu(int clie_fd)
         cout << "+------------------+" << endl;
 
         cin >> in;
+        if (in == PRIVATE)
+        {
+            //给服务器发送请求
+            Write(clie_fd, in.c_str(), in.length());
+
+            cout << " 请输入对方ID\n>";
+            cin >> in;
+            match["recver"] = in;
+
+            FastWriter w;
+            s = w.write(match);
+
+            Write(clie_fd, s.c_str(), s.length());
+            while (true)
+            {
+                bzero(r, sizeof(r));
+                if (read(clie_fd, r, sizeof(r)) > 0)
+                {
+                    if (strcmp(r, "success") == 0)
+                    {
+                        cout << "已与" << in << "连接:" << endl;
+                        thread send(thread_send, clie_fd), recv(thread_recv, clie_fd);
+
+                        send.join();
+                        cout << "发送线程已关闭" << endl;
+                        recv.join();
+                        cout << "接收线程已关闭" << endl;
+                    }
+                    else if (strcmp(r, "fail") == 0)
+                    {
+                        cout << "无用户" << in << endl;
+                    }
+                    else
+                    {
+                        cout << "连接失败" << endl;
+                    }
+                    break;
+                }
+            }
+        }
+        else if (in == PUBLIC)
+        {
+        }
+        else if (in == SIGN_OUT)
+        {
+        }
     }
 
     return;
@@ -186,12 +247,14 @@ void Client::run()
 
     sign_in_up(clie_fd);
 
+    /*
     thread send_t(thread_send, clie_fd), recv_t(thread_recv, clie_fd);
 
     send_t.join();
     cout << "发送线程已关闭" << endl;
     recv_t.join();
     cout << "接收线程已关闭" << endl;
+    */
 
     return;
 }
