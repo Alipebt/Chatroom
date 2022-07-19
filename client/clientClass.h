@@ -7,6 +7,7 @@
 
 #define PRIVATE "1"
 #define PUBLIC "2"
+#define ADD_FRIEND "3"
 #define SIGN_OUT "0"
 
 #include <iostream>

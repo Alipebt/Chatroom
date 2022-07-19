@@ -7,8 +7,11 @@
 
  ***************************************************************/
 
-leveldb::DB *db;
-leveldb::Options options;
+leveldb::DB *IPdb;
+leveldb::Options IPopt;
+
+leveldb::DB *Mdb;
+leveldb::Options Mopt;
 
 void check_status(leveldb::Status status)
 {
@@ -17,6 +20,13 @@ void check_status(leveldb::Status status)
         cerr << status.ToString() << endl;
     }
 }
+
+/****************************************************************
+
+ *                      MUTEX
+
+ ***************************************************************/
+pthread_mutex_t mutex;
 /******************************************************************
  *
                             SERVER
@@ -24,6 +34,8 @@ void check_status(leveldb::Status status)
 ******************************************************************/
 
 vector<bool> Server::fd_arr(1000, false); //初始化vector
+vector<bool> Server::fd_in(1000, false);
+vector<string> Server::fd_ID(1000, "0");
 
 //构造函数传入接口与ip
 Server::Server(int port, string ip) : server_port(port), server_ip(ip){};
@@ -43,7 +55,13 @@ Server::~Server()
 
     Close(link_fd);
 }
-
+/**
+ *
+ *
+ *   登录，注册操作
+ *
+ *
+ */
 bool Server::sign_in(int clie_fd)
 {
     bool is_success = false;
@@ -69,7 +87,7 @@ bool Server::sign_in(int clie_fd)
         pass = Jsinfo["pass"].asString();
 
         //遍历ID
-        leveldb::Iterator *it = db->NewIterator(leveldb::ReadOptions());
+        leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
         for (it->SeekToFirst(); it->Valid(); it->Next())
         {
             if (ID == it->key().ToString() && rd.parse(it->value().ToString(), JsinfoDB))
@@ -78,13 +96,16 @@ bool Server::sign_in(int clie_fd)
                 {
                     if (pass == JsinfoDB["pass"].asString())
                     {
+                        //登录成功
+
                         Write(clie_fd, "success", 7);
+                        fd_ID[clie_fd] = ID;
                         is_success = true;
                     }
                 }
                 //(测试用)
                 string outpass;
-                leveldb::Status status = db->Get(leveldb::ReadOptions(), ID, &outpass);
+                leveldb::Status status = IPdb->Get(leveldb::ReadOptions(), ID, &outpass);
                 check_status(status);
                 cout << "[数据库] " << ID << " : " << outpass << endl;
             }
@@ -125,7 +146,7 @@ void Server::sign_up(int clie_fd)
         ID = Jsinfo["ID"].asString();
 
         //遍历ID
-        leveldb::Iterator *it = db->NewIterator(leveldb::ReadOptions());
+        leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
         for (it->SeekToFirst(); it->Valid(); it->Next())
         {
             if (ID == it->key().ToString())
@@ -140,19 +161,23 @@ void Server::sign_up(int clie_fd)
         if (!id_is_used)
         {
             Write(clie_fd, "success", 7);
-            leveldb::Status status = db->Put(leveldb::WriteOptions(), ID, info);
+            leveldb::Status status = IPdb->Put(leveldb::WriteOptions(), ID, info);
             check_status(status);
 
             //(测试用)
             string outpass;
-            status = db->Get(leveldb::ReadOptions(), ID, &outpass);
+            status = IPdb->Get(leveldb::ReadOptions(), ID, &outpass);
             check_status(status);
             cout << "[数据库]" << ID << " : " << outpass << endl;
         }
     }
     return;
 }
-
+/**
+ *
+ *  登录后操作
+ *
+ */
 void Server::match_with(int clie_fd)
 {
     Reader rd;
@@ -176,17 +201,21 @@ void Server::match_with(int clie_fd)
     {
         recverID = match["recver"].asString();
         //查找所连接的ID是否存在
-        leveldb::Iterator *it = db->NewIterator(leveldb::ReadOptions());
+        leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
         for (it->SeekToFirst(); it->Valid(); it->Next())
         {
-            cout << "查找中" << endl;
             if (recverID == it->key().ToString())
             {
                 Write(clie_fd, "success", 7);
                 cout << clie_fd << "与" << recverID << "匹配成功" << endl;
                 is_match = true;
-                //进入函数\/
 
+                thread send(thread_send, clie_fd, recverID);
+                thread recv(thread_recv, clie_fd, recverID);
+
+                send.join();
+                recv.join();
+                cout << "已退出连接" << endl;
                 break;
             }
         }
@@ -202,25 +231,118 @@ void Server::match_with(int clie_fd)
     }
 }
 
+void Server::thread_recv(int clie_fd, string recverID)
+{
+    Value all_massage;
+    Value match_massage;
+    match_massage["sender"] = fd_ID[clie_fd];
+
+    Reader rd;
+    FastWriter w;
+
+    string send_to_db;
+    string oldmassage;
+
+    cout << "sender:" << fd_ID[clie_fd] << endl;
+    cout << "recver:" << recverID << endl;
+
+    char r[BUFSIZ];
+    while (true)
+    {
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            pthread_mutex_lock(&mutex); //加锁
+
+            //取到之前的记录
+            Mdb->Get(leveldb::ReadOptions(), recverID, &oldmassage);
+            rd.parse(oldmassage, all_massage);
+
+            cout << "massage:" << r << endl;
+            match_massage["massage"] = r;
+            //加入新记录
+            all_massage.append(match_massage);
+
+            send_to_db = w.write(all_massage);
+            //发送到数据库
+            Mdb->Put(leveldb::WriteOptions(), recverID, send_to_db);
+
+            pthread_mutex_unlock(&mutex); //解锁
+
+            //(测试用)
+            string outpass;
+            Mdb->Get(leveldb::ReadOptions(), recverID, &outpass);
+            cout << "////[数据库]" << recverID << " : " << outpass << endl;
+        }
+        bzero(r, sizeof(r));
+    }
+}
+
+void Server::thread_send(int clie_fd, string senderID) //注意：此时sender与recver应交换
+{
+    /*leveldb::Iterator *it = Mdb->NewIterator(leveldb::ReadOptions());
+
+    for (it->SeekToFirst(); it->Valid(); it->Next())
+    {
+        cout << "key: " << it->key().ToString() << " value: " << it->value().ToString() << endl;
+
+    }*/
+    Reader rd;
+    FastWriter w;
+    Value recv_from_db;
+    Value deleteValue;
+
+    string recverID = fd_ID[clie_fd];
+    string send_to_db;
+
+    leveldb::Iterator *it = Mdb->NewIterator(leveldb::ReadOptions());
+    while (true)
+    {
+        for (it->SeekToFirst(); it->Valid(); it->Next())
+        {
+            if (recverID == it->key().ToString())
+            {
+                rd.parse(it->value().ToString(), recv_from_db);
+                break;
+            }
+        }
+
+        for (int i = 0; i < recv_from_db.size(); i++)
+        {
+            Value number = recv_from_db[i];
+            if (number["sender"].asString() == senderID)
+            {
+                string send = w.write(number);
+                Write(clie_fd, send.c_str(), send.length());
+
+                recv_from_db.removeIndex(i, &deleteValue);
+                send_to_db = w.write(recv_from_db);
+
+                pthread_mutex_lock(&mutex); //加锁
+                Mdb->Put(leveldb::WriteOptions(), recverID, send_to_db);
+                pthread_mutex_unlock(&mutex);
+            }
+        }
+    }
+}
+
 /*
+
     执行读写(EPOLL ET非阻塞,轮询)
+
 */
 void Server::thread_work(int clie_fd)
 {
     char r[BUFSIZ];
-
-    static bool sign_in = false;
     //登录
-    while (sign_in == false && read(clie_fd, r, sizeof(r)) > 0)
+    while (fd_in[clie_fd] == false && read(clie_fd, r, sizeof(r)) > 0)
     {
-        cout << clie_fd << " : " << r << endl;
 
         if (strcmp(r, EXIT) == 0)
         {
             cout << "----" << clie_fd << "已退出----" << endl;
             Close(clie_fd);
 
-            fd_arr[clie_fd] == false;
+            fd_in[clie_fd] == false;
 
             break;
         }
@@ -230,7 +352,7 @@ void Server::thread_work(int clie_fd)
         }
         else if (strcmp(r, SIGN_IN) == 0)
         {
-            sign_in = Server::sign_in(clie_fd);
+            fd_in[clie_fd] = Server::sign_in(clie_fd);
             break;
         }
         bzero(r, sizeof(r));
@@ -238,7 +360,7 @@ void Server::thread_work(int clie_fd)
 
     bzero(r, sizeof(r));
     //主页面
-    while (sign_in == true && read(clie_fd, r, sizeof(r)) > 0)
+    while (fd_in[clie_fd] == true && read(clie_fd, r, sizeof(r)) > 0)
     {
         if (strcmp(r, PRIVATE) == 0)
         {
@@ -249,6 +371,9 @@ void Server::thread_work(int clie_fd)
         }
         else if (strcmp(r, SIGN_OUT) == 0)
         {
+            fd_in[clie_fd] = false;
+            fd_ID.erase(fd_ID.begin() + clie_fd - 1); //删除第clie_fd的元素
+            break;
         }
         bzero(r, sizeof(r));
     }
@@ -257,27 +382,34 @@ void Server::thread_work(int clie_fd)
 
 void Server::run()
 {
+    //互斥锁
+    pthread_mutex_init(&mutex, NULL);
     //数据库
-    options.create_if_missing = true;
-    leveldb::Status status = leveldb::DB::Open(options, "/tmp/serverdata/infoDB", &db);
+    IPopt.create_if_missing = true;
+    leveldb::Status status = leveldb::DB::Open(IPopt, "/tmp/serverdata/infoDB", &IPdb);
+    if (!status.ok())
+    {
+        cerr << status.ToString() << endl;
+    }
+
+    Mopt.create_if_missing = true;
+    leveldb::Status s = leveldb::DB::Open(Mopt, "/tmp/serverdata/massage", &Mdb);
     if (!status.ok())
     {
         cerr << status.ToString() << endl;
     }
 
     //正向遍历        (测试用)
-    leveldb::Iterator *it = db->NewIterator(leveldb::ReadOptions());
+    leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
 
     cout << "开始正向遍历:" << endl;
     for (it->SeekToFirst(); it->Valid(); it->Next())
     {
         cout << "key: " << it->key().ToString() << " value: " << it->value().ToString() << endl;
     }
-    cout << "________________" << endl;
+    cout << "-------------------" << endl;
 
     //网络连接
-
-    Server::fd_arr.resize(1000, false);
 
     int link_fd, clie_fd;
     link_fd = Socket(AF_INET, SOCK_STREAM, 0);

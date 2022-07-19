@@ -178,6 +178,7 @@ void Client::main_menu(int clie_fd, string ID)
         cout << "|                  |" << endl;
         cout << "|      1:私聊      |" << endl;
         cout << "|      2:群聊      |" << endl;
+        cout << "|     3:添加好友    |" << endl;
         cout << "|      0:注销      |" << endl;
         cout << "|                  |" << endl;
         cout << "+------------------+" << endl;
@@ -204,7 +205,8 @@ void Client::main_menu(int clie_fd, string ID)
                     if (strcmp(r, "success") == 0)
                     {
                         cout << "已与" << in << "连接:" << endl;
-                        thread send(thread_send, clie_fd), recv(thread_recv, clie_fd);
+                        thread send(thread_send, clie_fd);
+                        thread recv(thread_recv, clie_fd);
 
                         send.join();
                         cout << "发送线程已关闭" << endl;
@@ -226,8 +228,13 @@ void Client::main_menu(int clie_fd, string ID)
         else if (in == PUBLIC)
         {
         }
+        else if (in == ADD_FRIEND)
+        {
+        }
         else if (in == SIGN_OUT)
         {
+            Write(clie_fd, in.c_str(), in.length());
+            break;
         }
     }
 
@@ -247,15 +254,6 @@ void Client::run()
 
     sign_in_up(clie_fd);
 
-    /*
-    thread send_t(thread_send, clie_fd), recv_t(thread_recv, clie_fd);
-
-    send_t.join();
-    cout << "发送线程已关闭" << endl;
-    recv_t.join();
-    cout << "接收线程已关闭" << endl;
-    */
-
     return;
 }
 
@@ -266,7 +264,6 @@ void Client::thread_send(int clie_fd)
     while (true)
     {
         cin >> s;
-
         // write返回顺利写入字节，若==0或<0则可能对端关闭
         //不用Write以防客户端报错退出
         int ret = write(clie_fd, s, strlen(s));
@@ -280,6 +277,9 @@ void Client::thread_send(int clie_fd)
 }
 void Client::thread_recv(int clie_fd)
 {
+    Reader rd;
+    Value recv;
+
     char r[BUFSIZ];
     while (true)
     {
@@ -289,6 +289,8 @@ void Client::thread_recv(int clie_fd)
         {
             break;
         }
+        rd.parse(r, recv);
+        cout << recv["sender"].asString() << ":" << recv["massage"].asString() << endl;
         bzero(r, sizeof(r));
         // cout << "收到服务器发来的信息：" << recv << endl;
     }
