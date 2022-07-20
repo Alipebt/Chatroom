@@ -329,9 +329,9 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
                 check_status(sta);
                 cout << "[数据库] " << recverID << " : " << outpass << endl;
             }
-            sleep(1);
+            sleep(0.05);
         }
-        sleep(1);
+        sleep(0.05);
     }
 }
 /*

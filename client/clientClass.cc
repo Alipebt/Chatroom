@@ -292,7 +292,6 @@ void Client::thread_recv(int clie_fd)
         rd.parse(r, recv);
         cout << recv["sender"].asString() << ":" << recv["massage"].asString() << endl;
 
-        // Write(clie_fd, "accept", 6);
         bzero(r, sizeof(r));
         // cout << "收到服务器发来的信息：" << recv << endl;
     }
