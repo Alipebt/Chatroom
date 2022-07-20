@@ -254,8 +254,11 @@ void Server::thread_recv(int clie_fd, string recverID)
             pthread_mutex_lock(&mutex); //加锁
 
             //取到之前的记录
-            Mdb->Get(leveldb::ReadOptions(), recverID, &oldmassage);
-            rd.parse(oldmassage, all_massage);
+            leveldb::Status status = Mdb->Get(leveldb::ReadOptions(), recverID, &oldmassage);
+            if (status.ok())
+            {
+                rd.parse(oldmassage, all_massage);
+            }
 
             cout << "massage:" << r << endl;
             match_massage["massage"] = r;
@@ -279,13 +282,6 @@ void Server::thread_recv(int clie_fd, string recverID)
 
 void Server::thread_send(int clie_fd, string senderID) //注意：此时sender与recver应交换
 {
-    /*leveldb::Iterator *it = Mdb->NewIterator(leveldb::ReadOptions());
-
-    for (it->SeekToFirst(); it->Valid(); it->Next())
-    {
-        cout << "key: " << it->key().ToString() << " value: " << it->value().ToString() << endl;
-
-    }*/
     Reader rd;
     FastWriter w;
     Value recv_from_db;
@@ -294,11 +290,15 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
     string recverID = fd_ID[clie_fd];
     string send_to_db;
 
-    leveldb::Iterator *it = Mdb->NewIterator(leveldb::ReadOptions());
+    char r[BUFSIZ];
+
     while (true)
     {
+        leveldb::Iterator *it = Mdb->NewIterator(leveldb::ReadOptions());
+
         for (it->SeekToFirst(); it->Valid(); it->Next())
         {
+
             if (recverID == it->key().ToString())
             {
                 rd.parse(it->value().ToString(), recv_from_db);
@@ -309,6 +309,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
         for (int i = 0; i < recv_from_db.size(); i++)
         {
             Value number = recv_from_db[i];
+
             if (number["sender"].asString() == senderID)
             {
                 string send = w.write(number);
@@ -320,16 +321,24 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
                 pthread_mutex_lock(&mutex); //加锁
                 Mdb->Put(leveldb::WriteOptions(), recverID, send_to_db);
                 pthread_mutex_unlock(&mutex);
+
+                i--;
+
+                string outpass;
+                leveldb::Status sta = Mdb->Get(leveldb::ReadOptions(), recverID, &outpass);
+                check_status(sta);
+                cout << "[数据库] " << recverID << " : " << outpass << endl;
             }
+            sleep(1);
         }
+        sleep(1);
     }
 }
-
 /*
 
-    执行读写(EPOLL ET非阻塞,轮询)
+     执行读写(EPOLL ET非阻塞,轮询)
 
-*/
+ */
 void Server::thread_work(int clie_fd)
 {
     char r[BUFSIZ];
