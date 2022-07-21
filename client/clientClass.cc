@@ -13,7 +13,7 @@ Client::Client(int port, string ip) : server_port(port), server_ip(ip) {}
 //客户端关闭前关闭其与服务器连接的套接字
 Client::~Client()
 {
-    Close(clie_fd);
+    Net::Close(clie_fd);
 }
 
 void Client::sign_in_up(int clie_fd)
@@ -37,7 +37,7 @@ void Client::sign_in_up(int clie_fd)
 
         cin >> in;
 
-        Write(clie_fd, in.c_str(), in.length());
+        Net::Write(clie_fd, in.c_str(), in.length());
 
         if (in == SIGN_IN)
         {
@@ -48,14 +48,14 @@ void Client::sign_in_up(int clie_fd)
             if (ID.length() > 20 || ID.length() < 3)
             {
                 cout << "\nID长度应在3~20" << endl;
-                Write(clie_fd, "fail", 4); //结束服务器调用sign_in函数
+                Net::Write(clie_fd, "fail", 4); //结束服务器调用sign_in函数
                 continue;
             }
             pass1 = getpass(" 请输入你的密码\n>");
             if (pass1.length() > 20 || pass1.length() < 3)
             {
                 cout << "\n密码长度应在3~20" << endl;
-                Write(clie_fd, "fail", 4); //结束服务器调用sign_in函数
+                Net::Write(clie_fd, "fail", 4); //结束服务器调用sign_in函数
                 continue;
             }
 
@@ -64,7 +64,7 @@ void Client::sign_in_up(int clie_fd)
             FastWriter w;
             s = w.write(info);
 
-            Write(clie_fd, s.c_str(), s.length());
+            Net::Write(clie_fd, s.c_str(), s.length());
             while (true)
             {
                 if ((read(clie_fd, r, sizeof(r))) > 0)
@@ -95,14 +95,14 @@ void Client::sign_in_up(int clie_fd)
             if (ID.length() > 20 || ID.length() < 3)
             {
                 cout << "\nID长度应在3~20" << endl;
-                Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
+                Net::Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
                 continue;
             }
             pass1 = getpass(" 请输入你的密码\n>");
             if (pass1.length() > 20 || pass1.length() < 3)
             {
                 cout << "\n密码长度应在3~20" << endl;
-                Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
+                Net::Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
                 continue;
             }
             pass2 = getpass(" 请再次输入你的密码\n>");
@@ -112,7 +112,7 @@ void Client::sign_in_up(int clie_fd)
             if (name.length() > 20 || name.length() < 3)
             {
                 cout << "name长度应在3~20" << endl;
-                Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
+                Net::Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
                 continue;
             }
 
@@ -127,7 +127,7 @@ void Client::sign_in_up(int clie_fd)
                 FastWriter w;
                 s = w.write(info);
 
-                Write(clie_fd, s.c_str(), s.length());
+                Net::Write(clie_fd, s.c_str(), s.length());
 
                 while (true)
                 {
@@ -148,7 +148,7 @@ void Client::sign_in_up(int clie_fd)
             }
             else
             {
-                Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
+                Net::Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
                 cout << "两次密码不一致" << endl;
             }
         }
@@ -187,7 +187,7 @@ void Client::main_menu(int clie_fd, string ID)
         if (in == PRIVATE)
         {
             //给服务器发送请求
-            Write(clie_fd, in.c_str(), in.length());
+            Net::Write(clie_fd, in.c_str(), in.length());
 
             cout << " 请输入对方ID\n>";
             cin >> in;
@@ -196,7 +196,7 @@ void Client::main_menu(int clie_fd, string ID)
             FastWriter w;
             s = w.write(match);
 
-            Write(clie_fd, s.c_str(), s.length());
+            Net::Write(clie_fd, s.c_str(), s.length());
             while (true)
             {
                 bzero(r, sizeof(r));
@@ -209,9 +209,7 @@ void Client::main_menu(int clie_fd, string ID)
                         thread recv(thread_recv, clie_fd);
 
                         send.join();
-                        cout << "发送线程已关闭" << endl;
                         recv.join();
-                        cout << "接收线程已关闭" << endl;
                     }
                     else if (strcmp(r, "fail") == 0)
                     {
@@ -233,7 +231,7 @@ void Client::main_menu(int clie_fd, string ID)
         }
         else if (in == SIGN_OUT)
         {
-            Write(clie_fd, in.c_str(), in.length());
+            Net::Write(clie_fd, in.c_str(), in.length());
             break;
         }
     }
@@ -248,9 +246,9 @@ void Client::run()
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(server_port);
 
-    clie_fd = Socket(AF_INET, SOCK_STREAM, 0);
+    clie_fd = Net::Socket(AF_INET, SOCK_STREAM, 0);
 
-    Connect(clie_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+    Net::Connect(clie_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 
     sign_in_up(clie_fd);
 
@@ -259,7 +257,7 @@ void Client::run()
 
 void Client::thread_send(int clie_fd)
 {
-
+    cout << "客户端发送线程开启" << endl;
     char s[BUFSIZ];
     while (true)
     {
@@ -267,16 +265,18 @@ void Client::thread_send(int clie_fd)
         // write返回顺利写入字节，若==0或<0则可能对端关闭
         //不用Write以防客户端报错退出
         int ret = write(clie_fd, s, strlen(s));
-        if (strcmp(s, EXIT) == 0 || ret <= 0)
+        if (strcmp(s, ROOM_EXIT) == 0 || ret <= 0)
         {
             break;
         }
         bzero(s, sizeof(s));
     }
+    cout << "客户端发送线程关闭" << endl;
     return;
 }
 void Client::thread_recv(int clie_fd)
 {
+    cout << "客户端接收线程开启" << endl;
     Reader rd;
     Value recv;
 
@@ -287,12 +287,27 @@ void Client::thread_recv(int clie_fd)
         int ret = read(clie_fd, r, sizeof(r));
         if (ret <= 0)
         {
+            Net::Write(clie_fd, ACCEPT, ACCEPT_LEN);
+            cout << "客户端接收异常" << endl;
             break;
         }
-        rd.parse(r, recv);
-        cout << recv["sender"].asString() << ":" << recv["massage"].asString() << endl;
 
+        rd.parse(r, recv);
+
+        if (recv["massage"].asString() == ROOM_EXIT)
+        {
+            Net::Write(clie_fd, ACCEPT, ACCEPT_LEN);
+            cout << "客户端已收到关闭请求" << endl;
+            break;
+        }
+
+        if (recv["massage"].asString() != ACCEPT)
+        {
+            cout << LIGHT_BLUE << "[" << recv["sender"].asString() << "]:" << recv["massage"].asString() << NONE << endl;
+        }
+        Net::Write(clie_fd, ACCEPT, ACCEPT_LEN);
         bzero(r, sizeof(r));
-        // cout << "收到服务器发来的信息：" << recv << endl;
     }
+    cout << "客户端接收线程关闭" << endl;
+    return;
 }

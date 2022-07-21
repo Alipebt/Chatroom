@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include "leveldb/db.h"
 
 #define SIGN_IN "1"
 #define SIGN_UP "2"
@@ -11,6 +12,11 @@
 #define PRIVATE "1"
 #define PUBLIC "2"
 #define SIGN_OUT "0"
+
+#define ACCEPT "_ACCEPT_"
+#define ACCEPT_LEN 8
+
+#define ROOM_EXIT "_exit"
 
 using namespace std;
 
@@ -23,6 +29,14 @@ private:
     static vector<bool> fd_arr;  //保存所有套接字描述符
     static vector<string> fd_ID; //保存套接字对应的ID
     static vector<bool> fd_in;   //保存套接字描述符登录状态
+
+    static vector<pthread_mutex_t> fd_mutex; //锁
+    static pthread_mutex_t mutex;
+
+    static leveldb::DB *IPdb;      // ID与pass
+    static leveldb::Options IPopt; // IPdb
+    static leveldb::DB *Mdb;       // massage
+    static leveldb::Options Mopt;  // Mdb
 
 public:
     Server(int port, string ip);
@@ -37,5 +51,8 @@ public:
     static void thread_work(int clie_fd);                  //服务器线程工作
     static void thread_recv(int clie_fd, string recverID); //接收消息至数据库
     static void thread_send(int clie_fd, string recverID); //发送数据库消息
+
+    static void check_status(leveldb::Status status);
 };
+
 #endif

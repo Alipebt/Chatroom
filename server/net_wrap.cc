@@ -6,13 +6,13 @@
 
 ************************************************************************/
 
-void perr_exit(const char *str)
+void Net::perr_exit(const char *str)
 {
     perror(str);
     exit(1);
 }
 
-int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
+int Net::Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
 {
     int n;
     n = accept(sockfd, addr, addrlen);
@@ -23,7 +23,7 @@ int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
     return n;
 }
 
-int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+int Net::Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 {
     int n;
     n = bind(sockfd, addr, addrlen);
@@ -34,7 +34,7 @@ int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
     return n;
 }
 
-int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+int Net::Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 {
     int n;
     n = connect(sockfd, addr, addrlen);
@@ -45,7 +45,7 @@ int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
     return n;
 }
 
-int Listen(int sockfd, int backlog)
+int Net::Listen(int sockfd, int backlog)
 {
     int n;
     n = listen(sockfd, backlog);
@@ -56,7 +56,7 @@ int Listen(int sockfd, int backlog)
     return n;
 }
 
-int Socket(int domain, int type, int protocol)
+int Net::Socket(int domain, int type, int protocol)
 {
     int n;
     n = socket(domain, type, protocol);
@@ -67,7 +67,7 @@ int Socket(int domain, int type, int protocol)
     return n;
 }
 
-ssize_t Read(int fd, void *buf, size_t count)
+ssize_t Net::Read(int fd, void *buf, size_t count)
 {
     int n;
     n = read(fd, buf, count);
@@ -78,7 +78,7 @@ ssize_t Read(int fd, void *buf, size_t count)
     return n;
 }
 
-ssize_t Write(int fd, const void *buf, size_t count)
+ssize_t Net::Write(int fd, const void *buf, size_t count)
 {
     int n;
     n = write(fd, buf, count);
@@ -89,7 +89,7 @@ ssize_t Write(int fd, const void *buf, size_t count)
     return n;
 }
 
-int Close(int fd)
+int Net::Close(int fd)
 {
     int n;
     n = close(fd);
@@ -102,7 +102,7 @@ int Close(int fd)
 /*
 EPOLL
 */
-int Epoll_create(int size)
+int Net::Epoll_create(int size)
 {
     int n;
     n = epoll_create(size);
@@ -112,7 +112,7 @@ int Epoll_create(int size)
     }
     return n;
 }
-int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
+int Net::Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 {
     int n;
     n = epoll_wait(epfd, events, maxevents, timeout);
@@ -122,7 +122,7 @@ int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
     }
     return n;
 }
-int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)
+int Net::Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)
 {
     int n;
     n = epoll_ctl(epfd, op, fd, event);
@@ -132,4 +132,3 @@ int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)
     }
     return n;
 }
-
