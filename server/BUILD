@@ -16,7 +16,10 @@ cc_library(
 
 cc_binary(
     name = "server",
-    srcs = ["server.cc","privateRoom.cc"],
+    srcs = ["privateRoom.cc",
+        "main_menu.cc",
+        "sign.cc",
+        "server.cc",],
     deps = ["net_wrap","serverClass"],
     linkopts =["-lleveldb"],
 )

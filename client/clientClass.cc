@@ -38,6 +38,7 @@ void Client::sign_in_up(int clie_fd)
         cin >> in;
 
         Net::Write(clie_fd, in.c_str(), in.length());
+        cout << "发送" << in << endl;
 
         if (in == SIGN_IN)
         {
@@ -65,8 +66,10 @@ void Client::sign_in_up(int clie_fd)
             s = w.write(info);
 
             Net::Write(clie_fd, s.c_str(), s.length());
+            cout << "发送" << s << endl;
             while (true)
             {
+
                 if ((read(clie_fd, r, sizeof(r))) > 0)
                 {
                     cout << " 收到服务器消息\n>" << r << endl;
@@ -128,9 +131,11 @@ void Client::sign_in_up(int clie_fd)
                 s = w.write(info);
 
                 Net::Write(clie_fd, s.c_str(), s.length());
+                cout << s << endl;
 
                 while (true)
                 {
+
                     if ((read(clie_fd, r, sizeof(r))) > 0)
                     {
                         cout << " 收到服务器消息\n>" << r << endl;
@@ -176,10 +181,10 @@ void Client::main_menu(int clie_fd, string ID)
         cout << "|     ChatRoom     |" << endl;
         cout << "+------------------+" << endl;
         cout << "|                  |" << endl;
-        cout << "|      1:私聊      |" << endl;
-        cout << "|      2:群聊      |" << endl;
-        cout << "|     3:添加好友    |" << endl;
-        cout << "|      0:注销      |" << endl;
+        cout << "|     1:私聊       |" << endl;
+        cout << "|     2:群聊       |" << endl;
+        cout << "|    3:好友管理    |" << endl;
+        cout << "|     0:注销       |" << endl;
         cout << "|                  |" << endl;
         cout << "+------------------+" << endl;
 
@@ -226,7 +231,7 @@ void Client::main_menu(int clie_fd, string ID)
         else if (in == PUBLIC)
         {
         }
-        else if (in == ADD_FRIEND)
+        else if (in == FRIENDS_MENU)
         {
         }
         else if (in == SIGN_OUT)
@@ -237,6 +242,26 @@ void Client::main_menu(int clie_fd, string ID)
     }
 
     return;
+}
+
+void Client::friends_menu(int clie_fd)
+{
+    string in;
+    while (true)
+    {
+        cout << "+------------------+" << endl;
+        cout << "|     ChatRoom     |" << endl;
+        cout << "+------------------+" << endl;
+        cout << "|                  |" << endl;
+        cout << "|    1:查看好友    |" << endl;
+        cout << "|    2:添加好友    |" << endl;
+        cout << "|    3:删除好友    |" << endl;
+        cout << "|    0:退出界面    |" << endl;
+        cout << "|                  |" << endl;
+        cout << "+------------------+" << endl;
+
+        cin >> in;
+    }
 }
 
 void Client::run()
@@ -265,6 +290,7 @@ void Client::thread_send(int clie_fd)
         // write返回顺利写入字节，若==0或<0则可能对端关闭
         //不用Write以防客户端报错退出
         int ret = write(clie_fd, s, strlen(s));
+
         if (strcmp(s, ROOM_EXIT) == 0 || ret <= 0)
         {
             break;
@@ -287,7 +313,7 @@ void Client::thread_recv(int clie_fd)
         int ret = read(clie_fd, r, sizeof(r));
         if (ret <= 0)
         {
-            Net::Write(clie_fd, ACCEPT, ACCEPT_LEN);
+            Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
             cout << "客户端接收异常" << endl;
             break;
         }
@@ -296,7 +322,7 @@ void Client::thread_recv(int clie_fd)
 
         if (recv["massage"].asString() == ROOM_EXIT)
         {
-            Net::Write(clie_fd, ACCEPT, ACCEPT_LEN);
+            // Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
             cout << "客户端已收到关闭请求" << endl;
             break;
         }
@@ -305,7 +331,7 @@ void Client::thread_recv(int clie_fd)
         {
             cout << LIGHT_BLUE << "[" << recv["sender"].asString() << "]:" << recv["massage"].asString() << NONE << endl;
         }
-        Net::Write(clie_fd, ACCEPT, ACCEPT_LEN);
+        Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
         bzero(r, sizeof(r));
     }
     cout << "客户端接收线程关闭" << endl;

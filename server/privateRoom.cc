@@ -5,58 +5,6 @@
  *  登录后操作
  *
  */
-void Server::match_with(int clie_fd)
-{
-    Reader rd;
-    Value match;
-    string recverID;
-
-    char r[BUFSIZ];
-
-    bool is_match = false;
-
-    while (true)
-    {
-        if ((read(clie_fd, r, sizeof(r))) > 0)
-        {
-            cout << " [客户端]" << clie_fd << ":" << r << endl;
-            break;
-        }
-    }
-
-    if (rd.parse(r, match))
-    {
-        recverID = match["recver"].asString();
-        //查找所连接的ID是否存在
-        leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
-        for (it->SeekToFirst(); it->Valid(); it->Next())
-        {
-            if (recverID == it->key().ToString())
-            {
-                Net::Write(clie_fd, "success", 7);
-                cout << clie_fd << "与" << recverID << "匹配成功" << endl;
-                is_match = true;
-
-                thread send(thread_send, clie_fd, recverID);
-                thread recv(thread_recv, clie_fd, recverID);
-
-                send.join();
-                recv.join();
-                cout << "已退出连接" << endl;
-                break;
-            }
-        }
-    }
-    else
-    {
-        cout << "解析失败" << endl;
-    }
-    if (!is_match)
-    {
-        Net::Write(clie_fd, "fail", 4);
-        cout << clie_fd << "与" << recverID << "匹配失败" << endl;
-    }
-}
 
 void Server::thread_recv(int clie_fd, string recverID)
 {
@@ -137,6 +85,7 @@ void Server::thread_recv(int clie_fd, string recverID)
         bzero(r, sizeof(r));
     }
     cout << "服务器接收线程关闭" << endl;
+    return;
 }
 
 void Server::thread_send(int clie_fd, string senderID) //注意：此时sender与recver应交换
@@ -188,6 +137,8 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
             if (number["sender"].asString() == senderID || number["sender"].asString() == fd_ID[clie_fd])
             {
 
+                // cout << "1------------------" << endl;
+
                 if (number["massage"].asString() != ROOM_EXIT)
                 {
                     if (!is_first_open && number["sender"].asString() == fd_ID[clie_fd])
@@ -202,6 +153,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
                 while (true)
                 {
                     read(clie_fd, r, sizeof(r));
+                    // cout << "2------------------" << endl;
                     if (strcmp(r, ACCEPT) == 0)
                     {
 
@@ -213,6 +165,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
 
                 if (number["massage"].asString() == ROOM_EXIT && number["sender"].asString() == fd_ID[clie_fd])
                 {
+                    // cout << "3------------------" << endl;
                     /**/
                     status = Mdb->Get(leveldb::ReadOptions(), fd_ID[clie_fd], &oldmassage);
                     if (status.ok())
@@ -254,5 +207,61 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
         sleep(0.1);
     }
     cout << "服务器发送线程关闭" << endl;
+    return;
+}
+
+void Server::match_with(int clie_fd)
+{
+    cout << "进入match_with" << endl;
+    Reader rd;
+    Value match;
+    string recverID;
+
+    char r[BUFSIZ];
+
+    bool is_match = false;
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if ((read(clie_fd, r, sizeof(r))) > 0)
+        {
+            cout << " [客户端]" << clie_fd << ":" << r << endl;
+            break;
+        }
+    }
+
+    if (rd.parse(r, match))
+    {
+        recverID = match["recver"].asString();
+        //查找所连接的ID是否存在
+        leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
+        for (it->SeekToFirst(); it->Valid(); it->Next())
+        {
+            if (recverID == it->key().ToString())
+            {
+                Net::Write(clie_fd, "success", 7);
+                cout << clie_fd << "与" << recverID << "匹配成功" << endl;
+                is_match = true;
+
+                thread send(thread_send, clie_fd, recverID);
+                thread recv(thread_recv, clie_fd, recverID);
+
+                send.join();
+                recv.join();
+                cout << "已退出连接" << endl;
+                break;
+            }
+        }
+    }
+    else
+    {
+        cout << "解析失败" << endl;
+    }
+    if (!is_match)
+    {
+        Net::Write(clie_fd, "fail", 4);
+        cout << clie_fd << "与" << recverID << "匹配失败" << endl;
+    }
     return;
 }

@@ -7,11 +7,10 @@
 
 #define PRIVATE "1"
 #define PUBLIC "2"
-#define ADD_FRIEND "3"
+#define FRIENDS_MENU "3"
 #define SIGN_OUT "0"
 
 #define ACCEPT "_ACCEPT_"
-#define ACCEPT_LEN 8
 
 #define ROOM_EXIT "_exit"
 
@@ -55,6 +54,7 @@ public:
     void run();                             //启动客户端服务
     void sign_in_up(int clie_fd);           //登录注册界面
     void main_menu(int clie_fd, string ID); //主菜单
+    void friends_menu(int clie_fd);         //好友管理
     static void thread_send(int clie_fd);   //发送线程
     static void thread_recv(int clie_fd);   //接收线程
 };

@@ -8,6 +8,7 @@
 ******************************************************************/
 
 vector<bool> Server::fd_arr(1000, false); //初始化vector
+vector<bool> Server::fd_pthread(1000, false);
 vector<bool> Server::fd_in(1000, false);
 vector<string> Server::fd_ID(1000, "0");
 
@@ -45,185 +46,36 @@ void Server::check_status(leveldb::Status status)
         cerr << status.ToString() << endl;
     }
 }
-/**
- *
- *
- *   登录，注册操作
- *
- *
- */
-bool Server::sign_in(int clie_fd)
-{
-    bool is_success = false;
-
-    string ID, pass;
-    Reader rd;
-    Value Jsinfo, JsinfoDB;
-
-    char info[BUFSIZ];
-
-    while (true)
-    {
-        if ((read(clie_fd, info, sizeof(info))) > 0)
-        {
-            cout << "[客户端] " << clie_fd << " : " << info << endl;
-            break;
-        }
-    }
-
-    if (rd.parse(info, Jsinfo))
-    {
-        ID = Jsinfo["ID"].asString();
-        pass = Jsinfo["pass"].asString();
-
-        //遍历ID
-        leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
-        for (it->SeekToFirst(); it->Valid(); it->Next())
-        {
-            if (ID == it->key().ToString() && rd.parse(it->value().ToString(), JsinfoDB))
-            {
-                if (rd.parse(it->value().ToString(), JsinfoDB))
-                {
-                    if (pass == JsinfoDB["pass"].asString())
-                    {
-                        //登录成功
-
-                        Net::Write(clie_fd, "success", 7);
-                        fd_ID[clie_fd] = ID;
-                        is_success = true;
-                    }
-                }
-                //(测试用)
-                string outpass;
-                leveldb::Status status = IPdb->Get(leveldb::ReadOptions(), ID, &outpass);
-                check_status(status);
-                cout << "[数据库] " << ID << " : " << outpass << endl;
-            }
-        }
-
-        // ID密码不匹配
-        if (!is_success)
-        {
-            Net::Write(clie_fd, "fail", 4);
-
-            is_success = false;
-        }
-    }
-    return is_success;
-}
-
-void Server::sign_up(int clie_fd)
-{
-
-    string ID;
-    Reader rd;
-    Value Jsinfo;
-
-    char info[BUFSIZ];
-    bool id_is_used = false;
-
-    while (true)
-    {
-        if ((read(clie_fd, info, sizeof(info))) > 0)
-        {
-            cout << " [客户端]" << clie_fd << ":" << info << endl;
-            break;
-        }
-    }
-
-    if (rd.parse(info, Jsinfo))
-    {
-        ID = Jsinfo["ID"].asString();
-
-        //遍历ID
-        leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
-        for (it->SeekToFirst(); it->Valid(); it->Next())
-        {
-            if (ID == it->key().ToString())
-            {
-                Net::Write(clie_fd, "fail", 4);
-                id_is_used = true;
-                break;
-            }
-        }
-
-        // ID未被使用
-        if (!id_is_used)
-        {
-            Net::Write(clie_fd, "success", 7);
-            leveldb::Status status = IPdb->Put(leveldb::WriteOptions(), ID, info);
-            check_status(status);
-
-            //(测试用)
-            string outpass;
-            status = IPdb->Get(leveldb::ReadOptions(), ID, &outpass);
-            check_status(status);
-            cout << "[数据库]" << ID << " : " << outpass << endl;
-        }
-    }
-    return;
-}
 
 /*
 
      执行读写(EPOLL ET非阻塞,轮询)
 
  */
+
 void Server::thread_work(int clie_fd)
 {
-    char r[BUFSIZ];
-    //登录
-    while (fd_in[clie_fd] == false && read(clie_fd, r, sizeof(r)) > 0)
+    bool exit = false;
+    bool main_menu_in = false;
+    //菜单
+    while (true)
     {
+        exit = sign_menu(clie_fd);
 
-        if (strcmp(r, EXIT) == 0)
+        if (exit)
         {
-            cout << "----" << clie_fd << "已退出----" << endl;
-            Net::Close(clie_fd);
-
-            fd_in[clie_fd] == false;
-
-            break;
+            fd_pthread[clie_fd] == false;
+            pthread_exit((void *)"客户端关闭");
         }
-        else if (strcmp(r, SIGN_UP) == 0)
-        {
-            Server::sign_up(clie_fd);
-        }
-        else if (strcmp(r, SIGN_IN) == 0)
-        {
-            fd_in[clie_fd] = Server::sign_in(clie_fd);
-            break;
-        }
-        bzero(r, sizeof(r));
+        //主页面
     }
 
-    bzero(r, sizeof(r));
-    //主页面
-    while (fd_in[clie_fd] == true && read(clie_fd, r, sizeof(r)) > 0)
-    {
-        if (strcmp(r, PRIVATE) == 0)
-        {
-            match_with(clie_fd);
-        }
-        else if (strcmp(r, PUBLIC) == 0)
-        {
-        }
-        else if (strcmp(r, SIGN_OUT) == 0)
-        {
-            fd_in[clie_fd] = false;
-            fd_ID.erase(fd_ID.begin() + clie_fd - 1); //删除第clie_fd的元素
-            break;
-        }
-        bzero(r, sizeof(r));
-    }
     return;
 }
 
 void Server::run()
 {
-    //互斥锁
 
-    pthread_mutex_init(&mutex, NULL);
     //数据库
     IPopt.create_if_missing = true;
     leveldb::Status status = leveldb::DB::Open(IPopt, "/tmp/serverdata/infoDB", &IPdb);
@@ -303,12 +155,14 @@ void Server::run()
                 cout << "----" << clie_fd << "已连接----" << endl;
                 fd_arr[clie_fd] = true;
             }
-            else
+            else if (!fd_pthread[ep[i].data.fd] && fd_arr[clie_fd])
             {
 
                 int sockfd = ep[i].data.fd;
 
                 thread chile_t(Server::thread_work, sockfd);
+                fd_pthread[sockfd] = true;
+
                 chile_t.detach();
             }
         }

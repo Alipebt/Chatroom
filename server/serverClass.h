@@ -11,10 +11,10 @@
 
 #define PRIVATE "1"
 #define PUBLIC "2"
+#define FRIENDS_MENU "3"
 #define SIGN_OUT "0"
 
 #define ACCEPT "_ACCEPT_"
-#define ACCEPT_LEN 8
 
 #define ROOM_EXIT "_exit"
 
@@ -23,12 +23,13 @@ using namespace std;
 class Server
 {
 private:
-    int server_port;             //服务器端口号
-    int link_fd;                 //与客户端建立连接的套接字描述符
-    string server_ip;            //服务器ip
-    static vector<bool> fd_arr;  //保存所有套接字描述符
-    static vector<string> fd_ID; //保存套接字对应的ID
-    static vector<bool> fd_in;   //保存套接字描述符登录状态
+    int server_port;                //服务器端口号
+    int link_fd;                    //与客户端建立连接的套接字描述符
+    string server_ip;               //服务器ip
+    static vector<bool> fd_arr;     //保存所有套接字描述符的连接状态
+    static vector<bool> fd_pthread; //套接字描述符的线程
+    static vector<string> fd_ID;    //保存套接字对应的ID
+    static vector<bool> fd_in;      //保存套接字描述符登录状态
 
     static vector<pthread_mutex_t> fd_mutex; //锁
     static pthread_mutex_t mutex;
@@ -43,6 +44,8 @@ public:
     ~Server();
 
     void run();
+    static bool sign_menu(int clie_fd);
+    static void main_menu(int clie_fd);
 
     static bool sign_in(int clie_fd);    //登录判断
     static void sign_up(int clie_fd);    //注册判断
