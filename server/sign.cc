@@ -87,7 +87,6 @@ void Server::sign_up(int clie_fd)
             cout << " [客户端]" << clie_fd << ":" << info << endl;
             break;
         }
-        cout << info;
     }
 
     if (rd.parse(info, Jsinfo))
@@ -138,7 +137,6 @@ bool Server::sign_menu(int clie_fd)
             {
                 cout << "----" << clie_fd << "已退出----" << endl;
                 Net::Close(clie_fd);
-
                 break;
             }
             else if (strcmp(r, SIGN_UP) == 0)

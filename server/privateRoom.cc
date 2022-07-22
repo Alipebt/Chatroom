@@ -31,7 +31,7 @@ void Server::thread_recv(int clie_fd, string recverID)
     char r[BUFSIZ];
     while (true)
     {
-        pthread_mutex_lock(&fd_mutex[clie_fd]); //加锁
+        // pthread_mutex_lock(&fd_mutex[clie_fd]); //加锁
 
         if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) != 0)
         {
@@ -52,15 +52,14 @@ void Server::thread_recv(int clie_fd, string recverID)
             //发送到数据库
             Mdb->Put(leveldb::WriteOptions(), fd_ID[clie_fd], send_to_db);
 
-            /*//(测试用)
+            //(测试用)
 
             Mdb->Get(leveldb::ReadOptions(), fd_ID[clie_fd], &outpass);
-            cout << "////[数据库]" << fd_ID[clie_fd] << " : " << outpass << endl;
-            */
+            cout << "////[数据库]" << clie_fd << " : " << fd_ID[clie_fd] << " : " << outpass << endl;
 
             if (strcmp(r, ROOM_EXIT) == 0)
             {
-                pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
+                // pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
                 break;
             }
 
@@ -80,7 +79,7 @@ void Server::thread_recv(int clie_fd, string recverID)
             Mdb->Put(leveldb::WriteOptions(), recverID, send_to_db);
         }
 
-        pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
+        // pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
 
         bzero(r, sizeof(r));
     }
@@ -112,7 +111,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
 
     while (true)
     {
-
+        sleep(1);
         leveldb::Iterator *it = Mdb->NewIterator(leveldb::ReadOptions());
 
         for (it->SeekToFirst(); it->Valid(); it->Next())
@@ -120,24 +119,27 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
 
             if (recverID == it->key().ToString())
             {
+                cout << it->key().ToString() << "-------->" << recverID << endl;
                 rd.parse(it->value().ToString(), recv_from_db);
+                cout << "循环即搜索不到" << endl;
                 break;
             }
         }
 
-        if (is_first_open && i >= recv_from_db.size() - 1)
+        if (is_first_open && i >= recv_from_db.size())
         {
+            cout << "1===============" << endl;
             is_first_open = false;
         }
 
         for (; i < recv_from_db.size(); i++)
         {
+            sleep(0.05);
+
             number = recv_from_db[i];
 
             if (number["sender"].asString() == senderID || number["sender"].asString() == fd_ID[clie_fd])
             {
-
-                // cout << "1------------------" << endl;
 
                 if (number["massage"].asString() != ROOM_EXIT)
                 {
@@ -147,25 +149,12 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
                     }
                 }
                 send = w.write(number);
-                pthread_mutex_lock(&fd_mutex[clie_fd]); //加锁
+
                 Net::Write(clie_fd, send.c_str(), send.length());
-
-                while (true)
-                {
-                    read(clie_fd, r, sizeof(r));
-                    // cout << "2------------------" << endl;
-                    if (strcmp(r, ACCEPT) == 0)
-                    {
-
-                        pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
-                        break;
-                    }
-                    bzero(r, sizeof(r));
-                }
 
                 if (number["massage"].asString() == ROOM_EXIT && number["sender"].asString() == fd_ID[clie_fd])
                 {
-                    // cout << "3------------------" << endl;
+
                     /**/
                     status = Mdb->Get(leveldb::ReadOptions(), fd_ID[clie_fd], &oldmassage);
                     if (status.ok())
@@ -186,6 +175,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
                     cout << "[Exit]" << fd_ID[clie_fd] << " : " << outpass << endl;
 
                     cout << "服务器发送线程关闭" << endl;
+                    is_first_open = true;
                     return;
                 }
             }
@@ -195,9 +185,9 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
                 recv_from_db.removeIndex(0, &deleteValue);
                 send_to_db = w.write(recv_from_db);
 
-                pthread_mutex_lock(&fd_mutex[clie_fd]); //加锁
+                // pthread_mutex_lock(&fd_mutex[clie_fd]); //加锁
                 Mdb->Put(leveldb::WriteOptions(), recverID, send_to_db);
-                pthread_mutex_unlock(&fd_mutex[clie_fd]);
+                // pthread_mutex_unlock(&fd_mutex[clie_fd]);
 
                 i--;
             }
@@ -207,6 +197,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
         sleep(0.1);
     }
     cout << "服务器发送线程关闭" << endl;
+    is_first_open = true;
     return;
 }
 
@@ -249,6 +240,7 @@ void Server::match_with(int clie_fd)
 
                 send.join();
                 recv.join();
+
                 cout << "已退出连接" << endl;
                 break;
             }

@@ -320,9 +320,9 @@ void Client::thread_recv(int clie_fd)
 
         rd.parse(r, recv);
 
-        if (recv["massage"].asString() == ROOM_EXIT)
+        if (recv["massage"].asString() == ROOM_EXIT /*|| recv["massage"].asString() == EXIT*/)
         {
-            // Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
+            Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
             cout << "客户端已收到关闭请求" << endl;
             break;
         }
@@ -330,8 +330,8 @@ void Client::thread_recv(int clie_fd)
         if (recv["massage"].asString() != ACCEPT)
         {
             cout << LIGHT_BLUE << "[" << recv["sender"].asString() << "]:" << recv["massage"].asString() << NONE << endl;
+            Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
         }
-        Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
         bzero(r, sizeof(r));
     }
     cout << "客户端接收线程关闭" << endl;

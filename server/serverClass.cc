@@ -64,7 +64,8 @@ void Server::thread_work(int clie_fd)
 
         if (exit)
         {
-            fd_pthread[clie_fd] == false;
+            fd_pthread[clie_fd] = false;
+
             pthread_exit((void *)"客户端关闭");
         }
         //主页面
@@ -157,10 +158,10 @@ void Server::run()
             }
             else if (!fd_pthread[ep[i].data.fd] && fd_arr[clie_fd])
             {
-
                 int sockfd = ep[i].data.fd;
 
                 thread chile_t(Server::thread_work, sockfd);
+                cout << "为" << sockfd << "创建线程" << endl;
                 fd_pthread[sockfd] = true;
 
                 chile_t.detach();

@@ -27,9 +27,11 @@ void Server::main_menu(int clie_fd)
             }
             else if (strcmp(r, SIGN_OUT) == 0)
             {
-                cout << "执行0exit" << endl;
+                cout << "执行exit" << endl;
+
                 fd_in[clie_fd] = false;
-                fd_ID.erase(fd_ID.begin() + clie_fd - 1); //删除第clie_fd的元素
+                fd_ID[clie_fd] = "0";
+
                 break;
             }
             else
