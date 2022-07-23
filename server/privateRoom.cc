@@ -119,7 +119,6 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
 
             if (recverID == it->key().ToString())
             {
-                cout << it->key().ToString() << "-------->" << recverID << endl;
                 rd.parse(it->value().ToString(), recv_from_db);
                 cout << "循环即搜索不到" << endl;
                 break;

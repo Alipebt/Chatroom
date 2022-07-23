@@ -17,6 +17,7 @@ cc_library(
 cc_binary(
     name = "server",
     srcs = ["privateRoom.cc",
+        "friends_menu.cc",
         "main_menu.cc",
         "sign.cc",
         "server.cc",],

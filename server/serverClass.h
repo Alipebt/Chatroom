@@ -14,6 +14,13 @@
 #define FRIENDS_MENU "3"
 #define SIGN_OUT "0"
 
+#define ADD_FRIEND "1"
+#define DEL_FRIEND "2"
+#define VIEW_FRIENDS "3"
+#define MAS_FRIEND "4"
+#define IGN_FRIEND "5"
+#define BE_FRIENDS "0"
+
 #define ACCEPT "_ACCEPT_"
 
 #define ROOM_EXIT "_exit"
@@ -34,10 +41,10 @@ private:
     static vector<pthread_mutex_t> fd_mutex; //锁
     static pthread_mutex_t mutex;
 
-    static leveldb::DB *IPdb;      // ID与pass
-    static leveldb::Options IPopt; // IPdb
-    static leveldb::DB *Mdb;       // massage
-    static leveldb::Options Mopt;  // Mdb
+    static leveldb::Options opt; // opt
+    static leveldb::DB *IPdb;    // ID与pass
+    static leveldb::DB *Mdb;     // massage
+    static leveldb::DB *Fdb;     // 好友请求
 
 public:
     Server(int port, string ip);
@@ -46,10 +53,14 @@ public:
     void run();
     static bool sign_menu(int clie_fd);
     static void main_menu(int clie_fd);
+    static void friends_menu(int clie_fd);
 
-    static bool sign_in(int clie_fd);    //登录判断
-    static void sign_up(int clie_fd);    //注册判断
-    static void match_with(int clie_fd); //连接判断
+    static bool sign_in(int clie_fd);                    //登录判断
+    static void sign_up(int clie_fd);                    //注册判断
+    static void match_with(int clie_fd);                 //连接判断
+    static void add_friend(int clie_fd, char r[BUFSIZ]); //加好友
+    static void mas_friend(int clie_fd);                 //管理好友请求
+    static void cout_friend(int clie_fd, string opt);    //输出
 
     static void thread_work(int clie_fd);                  //服务器线程工作
     static void thread_recv(int clie_fd, string recverID); //接收消息至数据库

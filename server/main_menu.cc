@@ -4,26 +4,41 @@
 void Server::main_menu(int clie_fd)
 {
 
+    //正向遍历        (测试用)
+    leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
+    cout << "ID_PASS:" << endl;
+    for (it->SeekToFirst(); it->Valid(); it->Next())
+    {
+        cout << "key: " << it->key().ToString() << " value: " << it->value().ToString() << endl;
+    }
+    cout << "-------------------" << endl;
+
+    it = Fdb->NewIterator(leveldb::ReadOptions());
+    cout << "FRIENDS:" << endl;
+    for (it->SeekToFirst(); it->Valid(); it->Next())
+    {
+        cout << "key: " << it->key().ToString() << " value: " << it->value().ToString() << endl;
+    }
+    cout << "-------------------" << endl;
+
     char r[BUFSIZ];
 
     while (fd_in[clie_fd])
     {
+
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
-            cout << "进入main_menu的选项判断" << r << endl;
 
             if (strcmp(r, PRIVATE) == 0)
             {
                 match_with(clie_fd);
-                cout << "已返回主菜单" << endl;
             }
             else if (strcmp(r, PUBLIC) == 0)
             {
-                cout << "错误2" << endl;
             }
             else if (strcmp(r, FRIENDS_MENU) == 0)
             {
-                cout << "错误3" << endl;
+                friends_menu(clie_fd);
             }
             else if (strcmp(r, SIGN_OUT) == 0)
             {
@@ -38,6 +53,8 @@ void Server::main_menu(int clie_fd)
             {
                 cout << "错误else" << endl;
             }
+
+            cout << "已返回主菜单" << endl;
         }
         bzero(r, sizeof(r));
     }

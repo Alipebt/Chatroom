@@ -10,6 +10,13 @@
 #define FRIENDS_MENU "3"
 #define SIGN_OUT "0"
 
+#define ADD_FRIEND "1"
+#define DEL_FRIEND "2"
+#define VIEW_FRIENDS "3"
+#define MAS_FRIEND "4"
+#define IGN_FRIEND "5"
+#define BE_FRIENDS "0"
+
 #define ACCEPT "_ACCEPT_"
 
 #define ROOM_EXIT "_exit"
@@ -51,12 +58,14 @@ private:
 public:
     Client(int port, string ip);
     ~Client();
-    void run();                             //启动客户端服务
-    void sign_in_up(int clie_fd);           //登录注册界面
-    void main_menu(int clie_fd, string ID); //主菜单
-    void friends_menu(int clie_fd);         //好友管理
-    static void thread_send(int clie_fd);   //发送线程
-    static void thread_recv(int clie_fd);   //接收线程
+    void run();                                //启动客户端服务
+    void sign_in_up(int clie_fd);              //登录注册界面
+    void main_menu(int clie_fd, string ID);    //主菜单
+    void friends_menu(int clie_fd, string ID); //好友管理
+
+    static void thread_send(int clie_fd);                //发送线程
+    static void thread_recv(int clie_fd);                //接收线程
+    static void thread_friends(int clie_fd, string opt); //好友管理线程
 };
 
 #endif

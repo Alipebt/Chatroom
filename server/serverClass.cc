@@ -15,10 +15,10 @@ vector<string> Server::fd_ID(1000, "0");
 pthread_mutex_t Server::mutex;
 vector<pthread_mutex_t> Server::fd_mutex(1000, mutex);
 
+leveldb::Options Server::opt;
 leveldb::DB *Server::IPdb;
-leveldb::Options Server::IPopt;
 leveldb::DB *Server::Mdb;
-leveldb::Options Server::Mopt;
+leveldb::DB *Server::Fdb;
 
 //构造函数传入接口与ip
 Server::Server(int port, string ip) : server_port(port), server_ip(ip){};
@@ -78,29 +78,25 @@ void Server::run()
 {
 
     //数据库
-    IPopt.create_if_missing = true;
-    leveldb::Status status = leveldb::DB::Open(IPopt, "/tmp/serverdata/infoDB", &IPdb);
-    if (!status.ok())
+    opt.create_if_missing = true;
+
+    leveldb::Status s1 = leveldb::DB::Open(opt, "/tmp/serverdata/infoDB", &IPdb);
+    if (!s1.ok())
     {
-        cerr << status.ToString() << endl;
+        cerr << s1.ToString() << endl;
     }
 
-    Mopt.create_if_missing = true;
-    leveldb::Status s = leveldb::DB::Open(Mopt, "/tmp/serverdata/massage", &Mdb);
-    if (!status.ok())
+    leveldb::Status s2 = leveldb::DB::Open(opt, "/tmp/serverdata/massage", &Mdb);
+    if (!s2.ok())
     {
-        cerr << status.ToString() << endl;
+        cerr << s2.ToString() << endl;
     }
 
-    //正向遍历        (测试用)
-    leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
-
-    cout << "开始正向遍历:" << endl;
-    for (it->SeekToFirst(); it->Valid(); it->Next())
+    leveldb::Status s3 = leveldb::DB::Open(opt, "/tmp/serverdata/friends", &Fdb);
+    if (!s3.ok())
     {
-        cout << "key: " << it->key().ToString() << " value: " << it->value().ToString() << endl;
+        cerr << s3.ToString() << endl;
     }
-    cout << "-------------------" << endl;
 
     //网络连接
 
