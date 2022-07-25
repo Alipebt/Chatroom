@@ -205,9 +205,10 @@ void Client::main_menu(int clie_fd, string ID)
             Net::Write(clie_fd, s.c_str(), s.length());
             while (true)
             {
-                bzero(r, sizeof(r));
+
                 if (read(clie_fd, r, sizeof(r)) > 0)
                 {
+                    cout << "RRR" << r << endl;
                     if (strcmp(r, "success") == 0)
                     {
                         cout << "已与" << in << "连接:" << endl;
@@ -217,9 +218,13 @@ void Client::main_menu(int clie_fd, string ID)
                         send.join();
                         recv.join();
                     }
-                    else if (strcmp(r, "fail") == 0)
+                    else if (strcmp(r, "NULL") == 0)
                     {
                         cout << "无用户" << in << endl;
+                    }
+                    else if (strcmp(r, "refuse") == 0)
+                    {
+                        cout << "用户" << in << "不是你的好友" << endl;
                     }
                     else
                     {
@@ -227,6 +232,7 @@ void Client::main_menu(int clie_fd, string ID)
                     }
                     break;
                 }
+                bzero(r, sizeof(r));
             }
         }
         else if (in == PUBLIC)
@@ -285,7 +291,6 @@ void Client::friends_menu(int clie_fd, string ID)
             s = w.write(friends);
 
             Net::Write(clie_fd, s.c_str(), s.length());
-            cout << "发送好友请求" << s << endl;
             while (true)
             {
                 bzero(r, sizeof(r));
