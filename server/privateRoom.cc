@@ -111,7 +111,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
 
     while (true)
     {
-        sleep(1);
+        sleep(0.05);
         leveldb::Iterator *it = Mdb->NewIterator(leveldb::ReadOptions());
 
         for (it->SeekToFirst(); it->Valid(); it->Next())
@@ -120,14 +120,12 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
             if (recverID == it->key().ToString())
             {
                 rd.parse(it->value().ToString(), recv_from_db);
-                cout << "循环即搜索不到" << endl;
                 break;
             }
         }
 
         if (is_first_open && i >= recv_from_db.size())
         {
-            cout << "1===============" << endl;
             is_first_open = false;
         }
 
@@ -235,21 +233,20 @@ void Server::match_with(int clie_fd)
         leveldb::Status status1 = IPdb->Get(leveldb::ReadOptions(), recverID, &buf);
         if (status1.ok())
         {
-            cout << "=========1" << endl;
+
             leveldb::Status status2 = Fdb->Get(leveldb::ReadOptions(), senderID, &buf);
 
             if (status2.ok())
             {
                 rd.parse(buf, recv_from_db);
 
-                cout << "=========2" << recv_from_db.size() << endl;
                 for (int i = 0; i < recv_from_db.size(); i++)
                 {
                     number = recv_from_db[i];
                     cout << "###" << number["sender"] << number["recver"] << number["opt"] << endl;
                     if (number["sender"] == recverID && number["recver"] == senderID && number["opt"] == BE_FRIENDS)
                     {
-                        cout << "=========3" << endl;
+
                         is_friend = true;
                         break;
                     }
@@ -258,7 +255,6 @@ void Server::match_with(int clie_fd)
                 {
                     Net::Write(clie_fd, "success", 7);
                     cout << clie_fd << "与" << recverID << "匹配成功" << endl;
-                    cout << "=========4" << endl;
 
                     thread send(thread_send, clie_fd, recverID);
                     thread recv(thread_recv, clie_fd, recverID);

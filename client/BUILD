@@ -17,6 +17,8 @@ cc_library(
 # https://docs.bazel.build/versions/master/be/c-cpp.html#cc_binary
 cc_binary(
     name = "client",
-    srcs = ["client.cc"],
+    srcs = ["client.cc",
+        "friends_menu.cc",
+        "privateChat.cc"],
     deps = ["net_wrap","clientClass"],
 )

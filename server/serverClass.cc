@@ -101,6 +101,7 @@ void Server::run()
     //网络连接
 
     int link_fd, clie_fd;
+    cout << "linkfd" << link_fd << endl;
     string send_fd;
     link_fd = Net::Socket(AF_INET, SOCK_STREAM, 0);
 

@@ -61,6 +61,7 @@ public:
     void run();                                //启动客户端服务
     void sign_in_up(int clie_fd);              //登录注册界面
     void main_menu(int clie_fd, string ID);    //主菜单
+    void privateChat(int clie_fd, string ID);  //私聊
     void friends_menu(int clie_fd, string ID); //好友管理
 
     static void thread_send(int clie_fd);                //发送线程
