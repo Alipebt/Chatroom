@@ -1,25 +1,39 @@
 #ifndef _CLIENT_CLASS_H_
 #define _CLIENT_CLASS_H_
 
-#define SIGN_IN "1"
-#define SIGN_UP "2"
-#define EXIT "0"
+#define SIGN_IN "1" //登入
+#define SIGN_UP "2" //注册
+#define EXIT "0"    //退出
 
-#define PRIVATE "1"
-#define PUBLIC "2"
-#define FRIENDS_MENU "3"
-#define SIGN_OUT "0"
+#define PRIVATE "1"      //私聊
+#define GROUP "2"        //群菜单
+#define FRIENDS_MENU "3" //好友管理
+#define SIGN_OUT "0"     //登出
 
-#define ADD_FRIEND "1"
-#define DEL_FRIEND "2"
-#define VIEW_FRIENDS "3"
-#define MAS_FRIEND "4"
-#define IGN_FRIEND "5"
-#define BE_FRIENDS "0"
+#define ADD_FRIEND "1"   //加好友
+#define DEL_FRIEND "2"   //删好友
+#define VIEW_FRIENDS "3" //查看好友
+#define MAS_FRIEND "4"   //好友请求
+#define IGN_FRIEND "5"   //屏蔽好友
+#define BE_FRIENDS "0"   //成为好友
 
-#define ACCEPT "_ACCEPT_"
+#define JOIN_GROUP "1"   //群聊
+#define ADD_GROUP "2"    //加入群聊
+#define QUIT_GROUP "3"   //退出群聊
+#define CREATE_GROUP "4" //创建群聊
+#define VIEW_GROUP "5"   //查看群
+#define MAN_GROUP "6"    //管理群
 
-#define ROOM_EXIT "_exit"
+#define MAN_ADDGROUP "1"    //加群申请
+#define MAN_VIEW "2"        //查看群信息
+#define MAN_ADDMANAGER "3"  //添加管理
+#define MAN_QUITMANAGER "4" //取消管理
+#define MAN_QUITMEMBER "5"  //踢出成员
+#define MAN_DELGROUP "6"    //解散该群
+
+#define ACCEPT "_ACCEPT_" //收到
+
+#define ROOM_EXIT "_exit" //退出
 
 #define NONE "\033[m"
 #define RED "\033[0;32;31m"
@@ -58,11 +72,18 @@ private:
 public:
     Client(int port, string ip);
     ~Client();
-    void run();                                //启动客户端服务
-    void sign_in_up(int clie_fd);              //登录注册界面
-    void main_menu(int clie_fd, string ID);    //主菜单
+    void run();                               //启动客户端服务
+    void sign_in_up(int clie_fd);             //登录注册界面
+    void main_menu(int clie_fd, string ID);   //主菜单
+    void group_menu(int clie_fd, string ID);  //群聊菜单
+    void manage_menu(int clie_fd, string ID); //管理群
+
     void privateChat(int clie_fd, string ID);  //私聊
     void friends_menu(int clie_fd, string ID); //好友管理
+    void create_group(int clie_fd, string ID); //创建群聊
+    void add_group(int clie_fd);               //申请入群
+    void quit_group(int clie_fd);              //退出群
+    void view_group(int clie_fd);              //查看群
 
     static void thread_send(int clie_fd);                //发送线程
     static void thread_recv(int clie_fd);                //接收线程

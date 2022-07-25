@@ -19,6 +19,8 @@ leveldb::Options Server::opt;
 leveldb::DB *Server::IPdb;
 leveldb::DB *Server::Mdb;
 leveldb::DB *Server::Fdb;
+leveldb::DB *Server::Gdb;
+leveldb::DB *Server::GMdb;
 
 //构造函数传入接口与ip
 Server::Server(int port, string ip) : server_port(port), server_ip(ip){};
@@ -98,12 +100,27 @@ void Server::run()
         cerr << s3.ToString() << endl;
     }
 
+    leveldb::Status s4 = leveldb::DB::Open(opt, "/tmp/serverdata/group", &Gdb);
+    if (!s4.ok())
+    {
+        cerr << s4.ToString() << endl;
+    }
+
+    leveldb::Status s5 = leveldb::DB::Open(opt, "/tmp/serverdata/groupmassage", &GMdb);
+    if (!s5.ok())
+    {
+        cerr << s5.ToString() << endl;
+    }
+
     //网络连接
 
     int link_fd, clie_fd;
     cout << "linkfd" << link_fd << endl;
     string send_fd;
+
     link_fd = Net::Socket(AF_INET, SOCK_STREAM, 0);
+
+    cout << "linkfd" << link_fd << endl;
 
     struct sockaddr_in serv_addr, clie_addr;
     bzero(&serv_addr, sizeof(serv_addr));

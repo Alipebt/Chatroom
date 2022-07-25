@@ -10,9 +10,9 @@ void Server::add_friend(int clie_fd, char *re)
     Value allv;
     string recv_s;
 
-    Value number;
-    Value number2;
-    Value number3;
+    Value member;
+    Value member2;
+    Value member3;
     Value deleteValue;
 
     FastWriter w;
@@ -70,24 +70,24 @@ void Server::add_friend(int clie_fd, char *re)
 
                 //发送者
                 leveldb::Status status3 = Fdb->Get(leveldb::ReadOptions(), sender, &recv_s);
-                cout << "进入判断" << recv_s << endl;
+
                 rd.parse(recv_s, recv_from_db);
-                cout << "------------------1 " << (int)recv_from_db.size() << endl;
+
                 for (int i = 0; i < (int)recv_from_db.size(); i++)
                 {
-                    cout << "------------------2" << endl;
-                    number = recv_from_db[i];
-                    if (number["sender"] == recver)
+
+                    member = recv_from_db[i];
+                    if (member["sender"] == recver)
                     {
-                        cout << "------------------3" << endl;
-                        if (number["opt"] == ADD_FRIEND)
+
+                        if (member["opt"] == ADD_FRIEND)
                         {
-                            cout << "------------------4" << endl;
+
                             //对方也发了请求
-                            number["opt"] = BE_FRIENDS;
+                            member["opt"] = BE_FRIENDS;
                             recv_from_db.removeIndex(i, &deleteValue);
 
-                            recv_from_db.append(number);
+                            recv_from_db.append(member);
                             s = w.write(recv_from_db);
                             cout << "S1: " << s << endl;
 
@@ -99,14 +99,14 @@ void Server::add_friend(int clie_fd, char *re)
                             cout << "sr: " << sr << "#" << (int)recv_from_db2.size() << endl;
                             for (int j = 0; j < (int)recv_from_db2.size(); j++)
                             {
-                                number2 = recv_from_db2[j];
-                                if (number2["sender"] == sender && number2["recver"] == recver)
+                                member2 = recv_from_db2[j];
+                                if (member2["sender"] == sender && member2["recver"] == recver)
                                 {
                                     //修改对方的好友列表
-                                    number2["opt"] = BE_FRIENDS;
+                                    member2["opt"] = BE_FRIENDS;
                                     recv_from_db2.removeIndex(j, &deleteValue);
 
-                                    recv_from_db2.append(number2);
+                                    recv_from_db2.append(member2);
                                     s = w.write(recv_from_db2);
                                     cout << "S2: " << s << endl;
 
@@ -115,22 +115,21 @@ void Server::add_friend(int clie_fd, char *re)
                             }
                             if (!(int)recv_from_db2.size())
                             {
-                                number2["opt"] = BE_FRIENDS;
-                                number2["sender"] = sender;
-                                number2["recver"] = recver;
+                                member2["opt"] = BE_FRIENDS;
+                                member2["sender"] = sender;
+                                member2["recver"] = recver;
 
-                                recv_from_db2.append(number2);
+                                recv_from_db2.append(member2);
                                 s = w.write(recv_from_db2);
                                 cout << "S3 :" << s << endl;
 
                                 leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
                             }
                             Net::Write(clie_fd, "befriends", 9);
-                            cout << "------------------6" << endl;
                         }
-                        else if (number["opt"] == BE_FRIENDS)
+                        else if (member["opt"] == BE_FRIENDS)
                         {
-                            cout << "------------------5" << endl;
+
                             //已经是好友
                             Net::Write(clie_fd, "befriends", 9);
                         }
@@ -138,12 +137,12 @@ void Server::add_friend(int clie_fd, char *re)
                     else if (!mas)
                     {
                         //不是好友
-                        cout << "------------------7" << endl;
+
                         leveldb::Status status2 = Fdb->Get(leveldb::ReadOptions(), recver, &sr);
                         rd.parse(sr, recv_from_db2);
-                        rd.parse(r, number3);
+                        rd.parse(r, member3);
 
-                        recv_from_db2.append(number3);
+                        recv_from_db2.append(member3);
                         s = w.write(recv_from_db2);
                         leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
                         check_status(status);
@@ -152,17 +151,17 @@ void Server::add_friend(int clie_fd, char *re)
                     }
                     else
                     {
-                        cout << "------------------8" << endl;
+
                         Net::Write(clie_fd, "fail", 7);
                     }
                 }
 
                 if (!(int)recv_from_db.size())
                 {
-                    cout << "------------------9" << endl;
+
                     Net::Write(clie_fd, "success", 7);
-                    rd.parse(r, number3);
-                    allv.append(number3);
+                    rd.parse(r, member3);
+                    allv.append(member3);
                     s = w.write(allv);
                     leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
                     check_status(status);
@@ -170,21 +169,18 @@ void Server::add_friend(int clie_fd, char *re)
             }
             else
             {
-                cout << "------------------10" << endl;
                 //无此用户
                 Net::Write(clie_fd, "fail", 4);
             }
-            cout << "------------------11" << endl;
         }
     }
-    cout << "------------------12" << endl;
     return;
 }
 
 void Server::cout_friend(int clie_fd, string opt)
 {
     Value recv_from_db;
-    Value number;
+    Value member;
     string recv;
     string s;
 
@@ -194,21 +190,18 @@ void Server::cout_friend(int clie_fd, string opt)
     char r[BUFSIZ];
 
     leveldb::Status status = Fdb->Get(leveldb::ReadOptions(), fd_ID[clie_fd], &recv);
-    cout << "ID" << fd_ID[clie_fd] << "##" << recv << endl;
     rd.parse(recv, recv_from_db);
-
-    cout << "进入输出列表" << recv_from_db.size() << endl;
 
     for (int i = 0; i < (int)recv_from_db.size(); i++)
     {
-        cout << "--------------a" << endl;
-        number = recv_from_db[i];
-        s = w.write(number);
-        cout << "--------------b" << endl;
-        if (number["recver"] == fd_ID[clie_fd])
+
+        member = recv_from_db[i];
+        s = w.write(member);
+
+        if (member["recver"] == fd_ID[clie_fd])
         {
-            cout << "--------------c" << endl;
-            if (number["opt"] == ADD_FRIEND && opt == MAS_FRIEND)
+
+            if (member["opt"] == ADD_FRIEND && opt == MAS_FRIEND)
             {
                 Net::Write(clie_fd, s.c_str(), s.length());
                 while (true)
@@ -220,9 +213,9 @@ void Server::cout_friend(int clie_fd, string opt)
                     }
                 }
             }
-            else if (number["opt"] == BE_FRIENDS && opt == BE_FRIENDS)
+            else if (member["opt"] == BE_FRIENDS && opt == BE_FRIENDS)
             {
-                cout << "--------------d" << endl;
+
                 Net::Write(clie_fd, s.c_str(), s.length());
                 while (true)
                 {
@@ -236,7 +229,7 @@ void Server::cout_friend(int clie_fd, string opt)
         }
         else
         {
-            cout << "--------------e" << endl;
+
             Net::Write(clie_fd, "NULL", 4);
             while (true)
             {
@@ -249,7 +242,7 @@ void Server::cout_friend(int clie_fd, string opt)
     }
     if (!(int)recv_from_db.size())
     {
-        cout << "--------------f" << endl;
+
         Net::Write(clie_fd, "NULL", 4);
         while (true)
         {
@@ -259,7 +252,7 @@ void Server::cout_friend(int clie_fd, string opt)
             }
         }
     }
-    cout << "--------------g" << endl;
+
     Net::Write(clie_fd, "END", 3);
 
     return;

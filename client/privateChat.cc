@@ -1,6 +1,64 @@
 #include "clientClass.h"
 #include "net_wrap.h"
 
+void Client::thread_send(int clie_fd)
+{
+    cout << "客户端发送线程开启" << endl;
+    char s[BUFSIZ];
+    while (true)
+    {
+        cin >> s;
+        // write返回顺利写入字节，若==0或<0则可能对端关闭
+        //不用Write以防客户端报错退出
+        int ret = write(clie_fd, s, strlen(s));
+
+        if (strcmp(s, ROOM_EXIT) == 0 || ret <= 0)
+        {
+            break;
+        }
+        bzero(s, sizeof(s));
+    }
+    cout << "客户端发送线程关闭" << endl;
+    return;
+}
+void Client::thread_recv(int clie_fd)
+{
+    cout << "客户端接收线程开启" << endl;
+    Reader rd;
+    Value recv;
+
+    char r[BUFSIZ];
+    while (true)
+    {
+        //同write
+        int ret = read(clie_fd, r, sizeof(r));
+        if (ret <= 0)
+        {
+            Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
+            cout << "客户端接收异常" << endl;
+            break;
+        }
+
+        rd.parse(r, recv);
+
+        if (recv["massage"].asString() == ROOM_EXIT /*|| recv["massage"].asString() == EXIT*/)
+        {
+            Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
+            cout << "客户端已收到关闭请求" << endl;
+            break;
+        }
+
+        if (recv["massage"].asString() != ACCEPT)
+        {
+            cout << LIGHT_BLUE << "[" << recv["sender"].asString() << "]:" << recv["massage"].asString() << NONE << endl;
+            Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
+        }
+        bzero(r, sizeof(r));
+    }
+    cout << "客户端接收线程关闭" << endl;
+    return;
+}
+
 void Client::privateChat(int clie_fd, string ID)
 {
     string in, s;

@@ -3,9 +3,11 @@
 
 void Server::main_menu(int clie_fd)
 {
-
+    /////////////////////////////////////////////////
     //正向遍历        (测试用)
     leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
+
+    cout << "-------------------" << endl;
     cout << "ID_PASS:" << endl;
     for (it->SeekToFirst(); it->Valid(); it->Next())
     {
@@ -21,6 +23,15 @@ void Server::main_menu(int clie_fd)
     }
     cout << "-------------------" << endl;
 
+    it = Gdb->NewIterator(leveldb::ReadOptions());
+    cout << "GROUP:" << endl;
+    for (it->SeekToFirst(); it->Valid(); it->Next())
+    {
+        cout << "key: " << it->key().ToString() << " value: " << it->value().ToString() << endl;
+    }
+    cout << "-------------------" << endl;
+
+    ///////////////////////////////////////////////
     char r[BUFSIZ];
 
     while (fd_in[clie_fd])
@@ -33,8 +44,9 @@ void Server::main_menu(int clie_fd)
             {
                 match_with(clie_fd);
             }
-            else if (strcmp(r, PUBLIC) == 0)
+            else if (strcmp(r, GROUP) == 0)
             {
+                group_menu(clie_fd);
             }
             else if (strcmp(r, FRIENDS_MENU) == 0)
             {

@@ -8,7 +8,7 @@ void Client::thread_friends(int clie_fd, string opt)
 
     char r[BUFSIZ];
     Value recv;
-    Value number;
+    Value member;
     Reader rd;
 
     if (opt == MAS_FRIEND)

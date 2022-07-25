@@ -95,7 +95,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
     Value recv_from_db;
     Value deleteValue;
 
-    Value number;
+    Value member;
 
     string recverID = fd_ID[clie_fd];
     string send_to_db;
@@ -133,23 +133,23 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
         {
             sleep(0.05);
 
-            number = recv_from_db[i];
+            member = recv_from_db[i];
 
-            if (number["sender"].asString() == senderID || number["sender"].asString() == fd_ID[clie_fd])
+            if (member["sender"].asString() == senderID || member["sender"].asString() == fd_ID[clie_fd])
             {
 
-                if (number["massage"].asString() != ROOM_EXIT)
+                if (member["massage"].asString() != ROOM_EXIT)
                 {
-                    if (!is_first_open && number["sender"].asString() == fd_ID[clie_fd])
+                    if (!is_first_open && member["sender"].asString() == fd_ID[clie_fd])
                     {
                         continue;
                     }
                 }
-                send = w.write(number);
+                send = w.write(member);
 
                 Net::Write(clie_fd, send.c_str(), send.length());
 
-                if (number["massage"].asString() == ROOM_EXIT && number["sender"].asString() == fd_ID[clie_fd])
+                if (member["massage"].asString() == ROOM_EXIT && member["sender"].asString() == fd_ID[clie_fd])
                 {
 
                     /**/
@@ -204,7 +204,7 @@ void Server::match_with(int clie_fd)
     Reader rd;
     Value match;
     Value recv_from_db;
-    Value number;
+    Value member;
 
     bool is_friend = false;
 
@@ -242,9 +242,9 @@ void Server::match_with(int clie_fd)
 
                 for (int i = 0; i < recv_from_db.size(); i++)
                 {
-                    number = recv_from_db[i];
-                    cout << "###" << number["sender"] << number["recver"] << number["opt"] << endl;
-                    if (number["sender"] == recverID && number["recver"] == senderID && number["opt"] == BE_FRIENDS)
+                    member = recv_from_db[i];
+                    cout << "###" << member["sender"] << member["recver"] << member["opt"] << endl;
+                    if (member["sender"] == recverID && member["recver"] == senderID && member["opt"] == BE_FRIENDS)
                     {
 
                         is_friend = true;

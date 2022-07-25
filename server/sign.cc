@@ -73,7 +73,7 @@ bool Server::sign_in(int clie_fd)
 void Server::sign_up(int clie_fd)
 {
 
-    string ID;
+    string ID, get;
     Reader rd;
     Value Jsinfo;
 
@@ -94,16 +94,11 @@ void Server::sign_up(int clie_fd)
     {
         ID = Jsinfo["ID"].asString();
 
-        //遍历ID
-        leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
-        for (it->SeekToFirst(); it->Valid(); it->Next())
+        leveldb::Status s = IPdb->Get(leveldb::ReadOptions(), ID, &get);
+        if (s.ok()) //该ID不存在为0
         {
-            if (ID == it->key().ToString())
-            {
-                Net::Write(clie_fd, "fail", 4);
-                id_is_used = true;
-                break;
-            }
+            Net::Write(clie_fd, "fail", 4);
+            id_is_used = true;
         }
 
         // ID未被使用
@@ -112,12 +107,6 @@ void Server::sign_up(int clie_fd)
             Net::Write(clie_fd, "success", 7);
             leveldb::Status status = IPdb->Put(leveldb::WriteOptions(), ID, info);
             check_status(status);
-
-            //(测试用)
-            string outpass;
-            status = IPdb->Get(leveldb::ReadOptions(), ID, &outpass);
-            check_status(status);
-            cout << "[数据库]" << ID << " : " << outpass << endl;
         }
     }
     return;
