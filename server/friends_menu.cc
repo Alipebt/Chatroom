@@ -295,6 +295,190 @@ void Server::mas_friend(int clie_fd)
     }
 }
 
+void Server::del_friend(int clie_fd)
+{
+    char r[BUFSIZ];
+    string dID, ID;
+    string gets, gets2, member1, member2, send;
+    Value getv, delv, getv2;
+    Reader rd;
+    FastWriter w;
+
+    bool is_friend = false;
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+    ID = fd_ID[clie_fd];
+    dID = r;
+    leveldb::Status s = Fdb->Get(leveldb::ReadOptions(), ID, &gets);
+    rd.parse(gets, getv);
+
+    for (int i = 0; i < (int)getv.size(); i++)
+    {
+
+        member1 = getv[i]["sender"].asString();
+        member2 = getv[i]["opt"].asString();
+        if (member1 == dID && member2 == BE_FRIENDS)
+        {
+
+            is_friend = true;
+
+            Net::Write(clie_fd, "success", 7);
+            getv.removeIndex(i, &delv);
+            send = w.write(getv);
+            leveldb::Status s2 = Fdb->Put(leveldb::WriteOptions(), ID, send);
+        }
+    }
+    if (is_friend)
+    {
+        leveldb::Status s = Fdb->Get(leveldb::ReadOptions(), dID, &gets2);
+        rd.parse(gets2, getv2);
+
+        for (int i = 0; i < (int)getv2.size(); i++)
+        {
+            member1 = getv2[i]["sender"].asString();
+            member2 = getv2[i]["opt"].asString();
+            if (member1 == ID && member2 == BE_FRIENDS)
+            {
+
+                getv2.removeIndex(i, &delv);
+                send = w.write(getv2);
+                leveldb::Status s3 = Fdb->Put(leveldb::WriteOptions(), dID, send);
+            }
+        }
+    }
+    else
+    {
+        Net::Write(clie_fd, "fail", 4);
+    }
+
+    return;
+}
+
+void Server::ignore_friend(int clie_fd)
+{
+    char r[BUFSIZ];
+    string iID;
+    string ID;
+    string gets, gets2;
+    string send;
+    string member, members, membero;
+    string opt;
+    Value getv, getv2, delv;
+
+    Reader rd;
+    FastWriter w;
+
+    bool success = false;
+    bool is_friend = false;
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+    iID = r;
+    ID = fd_ID[clie_fd];
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+    opt = r;
+
+    leveldb::Status s2 = Fdb->Get(leveldb::ReadOptions(), ID, &gets2);
+    rd.parse(gets2, getv2);
+
+    for (int n = 0; n < (int)getv2.size(); n++)
+    {
+        members = getv2[n]["sender"].asString();
+        membero = getv2[n]["opt"].asString();
+        if (members == iID && membero == BE_FRIENDS)
+        {
+            is_friend = true;
+        }
+
+        break;
+    }
+
+    leveldb::Status s = IPdb->Get(leveldb::ReadOptions(), ID, &gets);
+    rd.parse(gets, getv);
+
+    if (is_friend)
+    {
+        if (opt == "y")
+        {
+
+            for (int i = 0; i < (int)getv["ignore"].size(); i++)
+            {
+                member = getv["ignore"][i].asString();
+                if (member == iID)
+                {
+                    Net::Write(clie_fd, "ignore", 7);
+                    success = true;
+                }
+            }
+            if (!success)
+            {
+                getv["ignore"].append(iID);
+
+                send = w.write(getv);
+                leveldb::Status s2 = IPdb->Put(leveldb::WriteOptions(), ID, send);
+
+                Net::Write(clie_fd, "success", 7);
+            }
+        }
+        else if (opt == "n")
+        {
+            for (int i = 0; i < (int)getv["ignore"].size(); i++)
+            {
+                member = getv["ignore"][i].asString();
+                if (member == iID)
+                {
+
+                    getv["ignore"].removeIndex(i, &delv);
+                    send = w.write(getv);
+                    leveldb::Status s2 = IPdb->Put(leveldb::WriteOptions(), ID, send);
+
+                    Net::Write(clie_fd, "cancel", 7);
+                    success = true;
+                }
+            }
+
+            if (!success)
+            {
+                Net::Write(clie_fd, "notignore", 9);
+            }
+        }
+        else if (opt == "q")
+        {
+            Net::Write(clie_fd, "quit", 4);
+        }
+        else
+        {
+            Net::Write(clie_fd, "opt", 3);
+        }
+    }
+    else
+    {
+        Net::Write(clie_fd, "fail", 4);
+    }
+
+    return;
+}
+
 void Server::friends_menu(int clie_fd)
 {
     cout << "进入好友管理页面" << endl;
@@ -313,6 +497,7 @@ void Server::friends_menu(int clie_fd)
             }
             else if (strcmp(r, DEL_FRIEND) == 0)
             {
+                del_friend(clie_fd);
             }
             else if (strcmp(r, VIEW_FRIENDS) == 0)
             {
@@ -327,6 +512,7 @@ void Server::friends_menu(int clie_fd)
             }
             else if (strcmp(r, IGN_FRIEND) == 0)
             {
+                ignore_friend(clie_fd);
             }
             else if (strcmp(r, EXIT) == 0)
             {

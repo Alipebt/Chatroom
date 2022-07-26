@@ -67,6 +67,91 @@ void Client::thread_friends(int clie_fd, string opt)
     return;
 }
 
+void Client::ignore_friend(int clie_fd)
+{
+    string in;
+    char r[BUFSIZ];
+
+    cout << " 请输入你要操作的好友\n>";
+    cin >> in;
+
+    Net::Write(clie_fd, in.c_str(), in.length());
+
+    cout << " (屏蔽y,解除屏蔽n,取消操作q)" << endl;
+    cin >> in;
+
+    Net::Write(clie_fd, in.c_str(), in.length());
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+
+    if (strcmp(r, "success") == 0)
+    {
+        cout << "成功屏蔽" << endl;
+    }
+    else if (strcmp(r, "fail") == 0)
+    {
+        cout << "对方不是你的好友" << endl;
+    }
+    else if (strcmp(r, "ignore") == 0)
+    {
+        cout << "已屏蔽，无需再次操作" << endl;
+    }
+    else if (strcmp(r, "cancel") == 0)
+    {
+        cout << "成功取消屏蔽" << endl;
+    }
+    else if (strcmp(r, "quit") == 0)
+    {
+        cout << "取消操作" << endl;
+    }
+    else if (strcmp(r, "opt") == 0)
+    {
+        cout << "无此操作" << endl;
+    }
+    else if (strcmp(r, "notignore") == 0)
+    {
+        cout << "你没有屏蔽此好友" << endl;
+    }
+
+    return;
+}
+
+void Client::del_friend(int clie_fd)
+{
+    string in;
+    char r[BUFSIZ];
+    cout << " 请输入要删除的好友\n>";
+    cin >> in;
+    Net::Write(clie_fd, in.c_str(), in.length());
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+
+    if (strcmp(r, "success") == 0)
+    {
+        cout << "你已删除该好友" << endl;
+    }
+    else if (strcmp(r, "fail") == 0)
+    {
+        cout << "对方不是你的好友" << endl;
+    }
+
+    return;
+}
+
 void Client::friends_menu(int clie_fd, string ID)
 {
     string in, s;
@@ -128,6 +213,10 @@ void Client::friends_menu(int clie_fd, string ID)
                 }
             }
         }
+        else if (in == DEL_FRIEND)
+        {
+            del_friend(clie_fd);
+        }
         else if (in == VIEW_FRIENDS)
         {
             thread_friends(clie_fd, BE_FRIENDS);
@@ -182,6 +271,10 @@ void Client::friends_menu(int clie_fd, string ID)
                     }
                 }
             }
+        }
+        else if (in == IGN_FRIEND)
+        {
+            ignore_friend(clie_fd);
         }
         else if (in == EXIT)
         {

@@ -89,6 +89,10 @@ void Client::privateChat(int clie_fd, string ID)
                 send.join();
                 recv.join();
             }
+            else if (strcmp(r, "ignore") == 0)
+            {
+                cout << "你已屏蔽该好友" << endl;
+            }
             else if (strcmp(r, "NULL") == 0)
             {
                 cout << "无用户" << in << endl;

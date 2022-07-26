@@ -80,6 +80,9 @@ public:
 
     void privateChat(int clie_fd, string ID);  //私聊
     void friends_menu(int clie_fd, string ID); //好友管理
+    void ignore_friend(int clie_fd);           //屏蔽
+    void del_friend(int clie_fd);              //删除好友
+
     void create_group(int clie_fd, string ID); //创建群聊
     void add_group(int clie_fd);               //申请入群
     void quit_group(int clie_fd);              //退出群

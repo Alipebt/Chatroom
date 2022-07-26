@@ -78,6 +78,9 @@ public:
     static void add_friend(int clie_fd, char r[BUFSIZ]); //加好友
     static void mas_friend(int clie_fd);                 //管理好友请求
     static void cout_friend(int clie_fd, string opt);    //输出
+    static void ignore_friend(int clie_fd);              //屏蔽好友
+    static void del_friend(int clie_fd);                 //删除好友
+
     static void create_group(int clie_fd);               //创建群聊
     static void add_group(int clie_fd);                  //加入群聊
     static void quit_group(int clie_fd);                 //退出群

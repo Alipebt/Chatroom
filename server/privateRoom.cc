@@ -207,11 +207,16 @@ void Server::match_with(int clie_fd)
     Value member;
 
     bool is_friend = false;
+    bool ignore = false;
 
     string recverID;
     string senderID;
 
     string buf;
+
+    string gets;
+    string members;
+    Value getv;
 
     char r[BUFSIZ];
 
@@ -229,6 +234,18 @@ void Server::match_with(int clie_fd)
     {
         recverID = match["recver"].asString();
         senderID = match["sender"].asString();
+
+        leveldb::Status statuc3 = IPdb->Get(leveldb::ReadOptions(), senderID, &gets);
+        rd.parse(gets, getv);
+        for (int i = 0; i < (int)getv["ignore"].size(); i++)
+        {
+            members = getv["ignore"][i].asString();
+            if (members == recverID)
+            {
+                ignore = true;
+                break;
+            }
+        }
 
         leveldb::Status status1 = IPdb->Get(leveldb::ReadOptions(), recverID, &buf);
         if (status1.ok())
@@ -253,14 +270,21 @@ void Server::match_with(int clie_fd)
                 }
                 if (is_friend)
                 {
-                    Net::Write(clie_fd, "success", 7);
+
                     cout << clie_fd << "与" << recverID << "匹配成功" << endl;
+                    if (ignore)
+                    {
+                        Net::Write(clie_fd, "ignore", 7);
+                    }
+                    else
+                    {
+                        Net::Write(clie_fd, "success", 7);
+                        thread send(thread_send, clie_fd, recverID);
+                        thread recv(thread_recv, clie_fd, recverID);
 
-                    thread send(thread_send, clie_fd, recverID);
-                    thread recv(thread_recv, clie_fd, recverID);
-
-                    send.join();
-                    recv.join();
+                        send.join();
+                        recv.join();
+                    }
 
                     cout << "已退出连接" << endl;
                 }
