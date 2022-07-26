@@ -101,7 +101,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
     string send_to_db;
     string send;
 
-    char r[BUFSIZ];
+    // char r[BUFSIZ];
     int i = 0;
     bool is_first_open = true;
 
@@ -124,12 +124,12 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
             }
         }
 
-        if (is_first_open && i >= recv_from_db.size())
+        if (is_first_open && i >= (int)recv_from_db.size())
         {
             is_first_open = false;
         }
 
-        for (; i < recv_from_db.size(); i++)
+        for (; i < (int)recv_from_db.size(); i++)
         {
             sleep(0.05);
 
@@ -240,7 +240,7 @@ void Server::match_with(int clie_fd)
             {
                 rd.parse(buf, recv_from_db);
 
-                for (int i = 0; i < recv_from_db.size(); i++)
+                for (int i = 0; i < (int)recv_from_db.size(); i++)
                 {
                     member = recv_from_db[i];
                     cout << "###" << member["sender"] << member["recver"] << member["opt"] << endl;

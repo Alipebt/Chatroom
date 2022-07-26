@@ -38,7 +38,6 @@ bool Server::sign_in(int clie_fd)
         leveldb::Status s = IPdb->Get(leveldb::ReadOptions(), ID, &gets);
         if (s.ok())
         {
-            cout << "gets: " << gets << endl;
             rd.parse(gets, getv);
             if (pass == getv["pass"].asString())
             {
@@ -46,6 +45,10 @@ bool Server::sign_in(int clie_fd)
                 Net::Write(clie_fd, "success", 7);
                 fd_ID[clie_fd] = ID;
                 is_success = true;
+            }
+            else
+            {
+                Net::Write(clie_fd, "fail", 4);
             }
         }
         else

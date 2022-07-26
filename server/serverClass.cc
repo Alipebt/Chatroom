@@ -58,7 +58,7 @@ void Server::check_status(leveldb::Status status)
 void Server::thread_work(int clie_fd)
 {
     bool exit = false;
-    bool main_menu_in = false;
+    // bool main_menu_in = false;
     //菜单
     while (true)
     {
@@ -115,12 +115,9 @@ void Server::run()
     //网络连接
 
     int link_fd, clie_fd;
-    cout << "linkfd" << link_fd << endl;
     string send_fd;
 
     link_fd = Net::Socket(AF_INET, SOCK_STREAM, 0);
-
-    cout << "linkfd" << link_fd << endl;
 
     struct sockaddr_in serv_addr, clie_addr;
     bzero(&serv_addr, sizeof(serv_addr));

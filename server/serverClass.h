@@ -84,6 +84,11 @@ public:
     static void view_group(int clie_fd);                 //查看群
     static void manage_menu(int clie_fd);                //管理群
     static void man_addgroup(int clie_fd, string gID);   //入群申请管理
+    static void man_view(int clie_fd, string gID);       //查看群成员
+    static void man_addmanager(int clie_fd, string gID); //设置管理员
+    static void man_delmanager(int clie_fd, string gID); //取消管理员
+    static void man_delmember(int clie_fd, string gID);  //踢出成员
+    static void man_delgroup(int clie_fd, string gID);   //解散群
 
     static void thread_work(int clie_fd);                  //服务器线程工作
     static void thread_recv(int clie_fd, string recverID); //接收消息至数据库

@@ -307,7 +307,8 @@ void Server::friends_menu(int clie_fd)
         {
             if (strcmp(r, ADD_FRIEND) == 0)
             {
-                add_friend(clie_fd, "NULL");
+                char s[] = "NULL";
+                add_friend(clie_fd, s);
                 cout << "结束添加好友" << endl;
             }
             else if (strcmp(r, DEL_FRIEND) == 0)

@@ -99,7 +99,7 @@ void Client::privateChat(int clie_fd, string ID)
             }
             else
             {
-                cout << "连接失败" << endl;
+                cout << "无用户" << in << endl;
             }
             break;
         }

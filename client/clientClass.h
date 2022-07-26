@@ -85,6 +85,11 @@ public:
     void quit_group(int clie_fd);              //退出群
     void view_group(int clie_fd);              //查看群
     void man_addgroup(int clie_fd);            //入群请求
+    void man_view(int clie_fd);                //查看群成员
+    void man_addmanager(int clie_fd);          //添加管理员
+    void man_delmanager(int clie_fd);          //取消管理员
+    void man_delmember(int clie_fd);           //踢出成员
+    void man_delgroup(int clie_fd);            //解散群
 
     static void thread_send(int clie_fd);                //发送线程
     static void thread_recv(int clie_fd);                //接收线程

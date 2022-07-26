@@ -144,7 +144,7 @@ void Client::view_group(int clie_fd)
                 Net::Write(clie_fd, ACCEPT, sizeof(ACCEPT));
             }
         }
-        }
+    }
 }
 
 void Client::man_addgroup(int clie_fd)
@@ -247,6 +247,180 @@ void Client::man_addgroup(int clie_fd)
     return;
 }
 
+void Client::man_view(int clie_fd)
+{
+    char r[BUFSIZ];
+
+    cout << "群成员:" << endl;
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            if (strcmp(r, "END") == 0)
+            {
+                break;
+            }
+            else
+            {
+                cout << r << endl;
+                Net::Write(clie_fd, ACCEPT, sizeof(ACCEPT));
+            }
+        }
+    }
+
+    return;
+}
+
+void Client::man_addmanager(int clie_fd)
+{
+    string in;
+    char r[BUFSIZ];
+
+    cout << " 请输入要设为管理员用户的ID\n>";
+    cin >> in;
+
+    Net::Write(clie_fd, in.c_str(), in.length());
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+
+    if (strcmp(r, "success") == 0)
+    {
+        cout << "成功设为管理员" << endl;
+    }
+    else if (strcmp(r, "NULL") == 0)
+    {
+        cout << "该用户不是群成员" << endl;
+    }
+    else if (strcmp(r, "manager") == 0)
+    {
+        cout << "该用户已是管理员" << endl;
+    }
+    else if (strcmp(r, "master") == 0)
+    {
+        cout << "不能将自己设为管理员" << endl;
+    }
+    else
+    {
+        cout << "错误" << endl;
+    }
+
+    return;
+}
+
+void Client::man_delmanager(int clie_fd)
+{
+    string in;
+    char r[BUFSIZ];
+
+    cout << " 请输入要取消管理员用户的ID\n>";
+    cin >> in;
+
+    Net::Write(clie_fd, in.c_str(), in.length());
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+
+    if (strcmp(r, "success") == 0)
+    {
+        cout << "成功取消管理员" << endl;
+    }
+    else if (strcmp(r, "NULL") == 0)
+    {
+        cout << "该用户不是管理员" << endl;
+    }
+    else if (strcmp(r, "master") == 0)
+    {
+        cout << "不能取消自己的管理员" << endl;
+    }
+    else
+    {
+        cout << "错误" << endl;
+    }
+
+    return;
+}
+
+void Client::man_delmember(int clie_fd)
+{
+    string in;
+    char r[BUFSIZ];
+    cout << " 请输入你要踢的成员\n>";
+    cin >> in;
+
+    Net::Write(clie_fd, in.c_str(), in.length());
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+
+    if (strcmp(r, "success") == 0)
+    {
+        cout << "成功踢出" << endl;
+    }
+    else if (strcmp(r, "NULL") == 0)
+    {
+        cout << "无此成员" << endl;
+    }
+    else if (strcmp(r, "master") == 0)
+    {
+        cout << "你不能将自己踢出群" << endl;
+    }
+
+    return;
+}
+
+void Client::man_delgroup(int clie_fd)
+{
+    string in;
+    char r[BUFSIZ];
+    cout << " 确认要解散该群？(y/n)\n>";
+    cin >> in;
+    Net::Write(clie_fd, in.c_str(), in.length());
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+
+    if (strcmp(r, "success") == 0)
+    {
+        cout << "该群已解散" << endl;
+    }
+    else if (strcmp(r, "fail") == 0)
+    {
+        cout << "无此操作" << endl;
+    }
+    else if (strcmp(r, "cancel") == 0)
+    {
+        cout << "已取消操作" << endl;
+    }
+
+    return;
+}
+
 void Client::manage_menu(int clie_fd, string ID)
 {
     string in;
@@ -275,13 +449,13 @@ void Client::manage_menu(int clie_fd, string ID)
             cout << "|     ChatRoom     |" << endl;
             cout << "+------------------+" << endl;
             cout << "|                  |" << endl;
-            cout << "|    1:入群请求   |" << endl;
-            cout << "|    2:查看成员   |" << endl;
-            cout << "|    3:添加管理   |" << endl;
-            cout << "|    4:取消管理   |" << endl;
-            cout << "|    5:踢出成员   |" << endl;
-            cout << "|    6:解散该群   |" << endl;
-            cout << "|    0:退出界面   |" << endl;
+            cout << "|    1:入群请求    |" << endl;
+            cout << "|    2:查看成员    |" << endl;
+            cout << "|    3:添加管理    |" << endl;
+            cout << "|    4:取消管理    |" << endl;
+            cout << "|    5:踢出成员    |" << endl;
+            cout << "|    6:解散该群    |" << endl;
+            cout << "|    0:退出界面    |" << endl;
             cout << "|                  |" << endl;
             cout << "+------------------+" << endl;
 
@@ -294,18 +468,23 @@ void Client::manage_menu(int clie_fd, string ID)
             }
             else if (in == MAN_VIEW)
             {
+                man_view(clie_fd);
             }
             else if (in == MAN_ADDMANAGER)
             {
+                man_addmanager(clie_fd);
             }
             else if (in == MAN_QUITMANAGER)
             {
+                man_delmanager(clie_fd);
             }
             else if (in == MAN_QUITMEMBER)
             {
+                man_delmember(clie_fd);
             }
             else if (in == MAN_DELGROUP)
             {
+                man_delgroup(clie_fd);
             }
             else if (in == EXIT)
             {
@@ -316,10 +495,66 @@ void Client::manage_menu(int clie_fd, string ID)
     else if (strcmp(r, "manager") == 0)
     {
         cout << "群：" << in << "\t" << r << endl;
+        while (true)
+        {
+            cout << "+------------------+" << endl;
+            cout << "|     ChatRoom     |" << endl;
+            cout << "+------------------+" << endl;
+            cout << "|                  |" << endl;
+            cout << "|    1:入群请求    |" << endl;
+            cout << "|    2:查看成员    |" << endl;
+            cout << "|    5:踢出成员    |" << endl;
+            cout << "|    0:退出界面    |" << endl;
+            cout << "|                  |" << endl;
+            cout << "+------------------+" << endl;
+
+            cin >> in;
+            Net::Write(clie_fd, in.c_str(), in.length());
+
+            if (in == MAN_ADDGROUP)
+            {
+                man_addgroup(clie_fd);
+            }
+            else if (in == MAN_VIEW)
+            {
+                man_view(clie_fd);
+            }
+            else if (in == MAN_QUITMEMBER)
+            {
+                man_delmember(clie_fd);
+            }
+            else if (in == EXIT)
+            {
+                break;
+            }
+        }
     }
     else if (strcmp(r, "member") == 0)
     {
         cout << "群：" << in << "\t" << r << endl;
+        while (true)
+        {
+            cout << "+------------------+" << endl;
+            cout << "|     ChatRoom     |" << endl;
+            cout << "+------------------+" << endl;
+            cout << "|                  |" << endl;
+            cout << "|    2:查看成员    |" << endl;
+            cout << "|    0:退出界面    |" << endl;
+            cout << "|                  |" << endl;
+            cout << "+------------------+" << endl;
+
+            cin >> in;
+            Net::Write(clie_fd, in.c_str(), in.length());
+
+            if (in == MAN_VIEW)
+            {
+                man_view(clie_fd);
+            }
+            else if (in == EXIT)
+            {
+                break;
+            }
+        }
     }
     else
     {

@@ -126,7 +126,7 @@ void Server::quit_group(int clie_fd)
     cout << "进入退出群" << endl;
     char r[BUFSIZ];
 
-    Value member;
+    string member;
     Value getv;
     Reader rd;
     FastWriter w;
@@ -152,13 +152,14 @@ void Server::quit_group(int clie_fd)
     {
 
         rd.parse(get, getv);
-        member = getv["member"];
+
         for (int i = 0; i < (int)getv.size(); i++)
         {
+            member = getv["member"][i].asString();
 
-            if (member[i] == fd_ID[clie_fd])
+            if (member == fd_ID[clie_fd])
             {
-                if (getv["master"] != fd_ID[clie_fd])
+                if (getv["master"].asString() != fd_ID[clie_fd])
                 {
                     Net::Write(clie_fd, "success", 7);
                     getv["member"].removeIndex(i, &deletes);
@@ -172,10 +173,25 @@ void Server::quit_group(int clie_fd)
                 {
                     Net::Write(clie_fd, "refuse", 6);
                 }
+                break;
             }
         }
 
-        if (!success)
+        if (success)
+        {
+
+            for (int i = 0; i < (int)getv.size(); i++)
+            {
+                member = getv["manager"][i].asString();
+                if (member == fd_ID[clie_fd])
+                {
+                    getv["manager"].removeIndex(i, &deletes);
+                    send = w.write(getv);
+                    leveldb::Status s1 = Gdb->Put(leveldb::WriteOptions(), r, send);
+                }
+            }
+        }
+        else
         {
             Net::Write(clie_fd, "fail", 4);
         }
@@ -393,6 +409,259 @@ void Server::man_addgroup(int clie_fd, string gID)
     return;
 }
 
+void Server::man_view(int clie_fd, string gID)
+{
+    string gets, send;
+    Value getv;
+    Reader rd;
+    char r[BUFSIZ];
+
+    leveldb::Status s = Gdb->Get(leveldb::ReadOptions(), gID, &gets);
+    rd.parse(gets, getv);
+    for (int i = 0; i < (int)getv["member"].size(); i++)
+    {
+        send = getv["member"][i].asString();
+        Net::Write(clie_fd, send.c_str(), send.length());
+
+        while (true)
+        {
+            bzero(r, sizeof(r));
+            if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
+            {
+                break;
+            }
+        }
+    }
+    Net::Write(clie_fd, "END", strlen("END"));
+
+    return;
+}
+
+void Server::man_addmanager(int clie_fd, string gID)
+{
+    char r[BUFSIZ];
+    string gets;
+    string send;
+    string member;
+    Value getv;
+    Reader rd;
+    FastWriter w;
+    string ID = fd_ID[clie_fd];
+
+    bool is_manager = false;
+    bool is_member = false;
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+
+    leveldb::Status s = Gdb->Get(leveldb::ReadOptions(), gID, &gets);
+    rd.parse(gets, getv);
+
+    if (strcmp(r, getv["master"].asString().c_str()) == 0)
+    {
+        Net::Write(clie_fd, "master", 6);
+    }
+    else
+    {
+        for (int i = 0; i < (int)getv["manager"].size(); i++)
+        {
+            member = getv["manager"][i].asString();
+            if (strcmp(r, member.c_str()) == 0)
+            {
+                Net::Write(clie_fd, "manager", 7);
+                is_manager = true;
+                break;
+            }
+        }
+
+        if (!is_manager)
+        {
+            for (int i = 0; i < (int)getv["member"].size(); i++)
+            {
+                member = getv["member"][i].asString();
+                if (strcmp(r, member.c_str()) == 0)
+                {
+                    Net::Write(clie_fd, "success", 7);
+                    is_member = true;
+                    break;
+                }
+            }
+        }
+
+        if (is_member)
+        {
+            getv["manager"].append(r);
+            send = w.write(getv);
+            leveldb::Status s2 = Gdb->Put(leveldb::WriteOptions(), gID, send);
+        }
+        else
+        {
+            Net::Write(clie_fd, "NULL", 4);
+        }
+    }
+
+    return;
+}
+
+void Server::man_delmanager(int clie_fd, string gID)
+{
+    char r[BUFSIZ];
+    string gets;
+    string send;
+    string member;
+    Value getv;
+    Value delv;
+    Reader rd;
+    FastWriter w;
+    string ID = fd_ID[clie_fd];
+
+    bool success = false;
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+
+    leveldb::Status s = Gdb->Get(leveldb::ReadOptions(), gID, &gets);
+    rd.parse(gets, getv);
+
+    if (strcmp(r, getv["master"].asString().c_str()) == 0)
+    {
+        Net::Write(clie_fd, "master", 6);
+    }
+    else
+    {
+        for (int i = 0; i < (int)getv["manager"].size(); i++)
+        {
+            member = getv["manager"][i].asString();
+            if (strcmp(r, member.c_str()) == 0)
+            {
+                Net::Write(clie_fd, "success", 7);
+                success = true;
+
+                getv["manager"].removeIndex(i, &delv);
+                send = w.write(getv);
+                leveldb::Status s2 = Gdb->Put(leveldb::WriteOptions(), gID, send);
+
+                break;
+            }
+        }
+
+        if (!success)
+        {
+            Net::Write(clie_fd, "NULL", 4);
+        }
+    }
+
+    return;
+}
+
+void Server::man_delmember(int clie_fd, string gID)
+{
+    char r[BUFSIZ];
+    string ID;
+    string gets;
+    string member;
+    string send;
+    Value delv;
+    Value getv;
+    Reader rd;
+    FastWriter w;
+
+    bool success = false;
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+    ID = r;
+    leveldb::Status s = Gdb->Get(leveldb::ReadOptions(), gID, &gets);
+    rd.parse(gets, getv);
+
+    if (ID != getv["master"].asString())
+    {
+        for (int i = 0; i < (int)getv["member"].size(); i++)
+        {
+            member = getv["member"][i].asString();
+            if (member == ID)
+            {
+                Net::Write(clie_fd, "success", 7);
+                getv["member"].removeIndex(i, &delv);
+
+                send = w.write(getv);
+                leveldb::Status s2 = Gdb->Put(leveldb::WriteOptions(), gID, send);
+            }
+        }
+
+        if (success)
+        {
+            for (int i = 0; i < (int)getv["manager"].size(); i++)
+            {
+                member = getv["manager"][i].asString();
+                if (member == ID)
+                {
+                    getv["manager"].removeIndex(i, &delv);
+
+                    send = w.write(getv);
+                    leveldb::Status s3 = Gdb->Put(leveldb::WriteOptions(), gID, send);
+                }
+            }
+        }
+        else
+        {
+            Net::Write(clie_fd, "NULL", 4);
+        }
+    }
+    else
+    {
+        Net::Write(clie_fd, "master", 6);
+    }
+
+    return;
+}
+
+void Server::man_delgroup(int clie_fd, string gID)
+{
+    char r[BUFSIZ];
+
+    while (true)
+    {
+        bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            break;
+        }
+    }
+
+    if (strcmp(r, "y") == 0)
+    {
+        leveldb::Status s = Gdb->Delete(leveldb::WriteOptions(), gID);
+        Net::Write(clie_fd, "success", 7);
+    }
+    else if (strcmp(r, "n") == 0)
+    {
+        Net::Write(clie_fd, "cancel", 6);
+    }
+    else
+    {
+        Net::Write(clie_fd, "fail", 4);
+    }
+}
+
 void Server::manage_menu(int clie_fd)
 {
     cout << "进入判断职位" << endl;
@@ -402,7 +671,7 @@ void Server::manage_menu(int clie_fd)
     Reader rd;
 
     string judge = "fail";
-    string ID;
+    string gID;
 
     char r[BUFSIZ];
     while (true)
@@ -414,7 +683,7 @@ void Server::manage_menu(int clie_fd)
             break;
         }
     }
-    ID = r;
+    gID = r;
 
     leveldb::Status s = Gdb->Get(leveldb::ReadOptions(), r, &gets);
     if (s.ok())
@@ -491,22 +760,27 @@ void Server::manage_menu(int clie_fd)
 
             if (strcmp(r, MAN_ADDGROUP) == 0)
             {
-                man_addgroup(clie_fd, ID);
+                man_addgroup(clie_fd, gID);
             }
             else if (strcmp(r, MAN_VIEW) == 0)
             {
+                man_view(clie_fd, gID);
             }
             else if (strcmp(r, MAN_ADDMANAGER) == 0)
             {
+                man_addmanager(clie_fd, gID);
             }
             else if (strcmp(r, MAN_QUITMANAGER) == 0)
             {
+                man_delmanager(clie_fd, gID);
             }
             else if (strcmp(r, MAN_QUITMEMBER) == 0)
             {
+                man_delmember(clie_fd, gID);
             }
             else if (strcmp(r, MAN_DELGROUP) == 0)
             {
+                man_delgroup(clie_fd, gID);
             }
             else if (strcmp(r, EXIT) == 0)
             {
@@ -516,9 +790,57 @@ void Server::manage_menu(int clie_fd)
     }
     else if (judge == "manager")
     {
+        while (true)
+        {
+            while (true)
+            {
+                bzero(r, sizeof(r));
+                if (read(clie_fd, r, sizeof(r)) > 0)
+                {
+                    break;
+                }
+            }
+
+            if (strcmp(r, MAN_ADDGROUP) == 0)
+            {
+                man_addgroup(clie_fd, gID);
+            }
+            else if (strcmp(r, MAN_VIEW) == 0)
+            {
+                man_view(clie_fd, gID);
+            }
+            else if (strcmp(r, MAN_QUITMEMBER) == 0)
+            {
+                man_delmember(clie_fd, gID);
+            }
+            else if (strcmp(r, EXIT) == 0)
+            {
+                break;
+            }
+        }
     }
     else if (judge == "member")
     {
+        while (true)
+        {
+            while (true)
+            {
+                bzero(r, sizeof(r));
+                if (read(clie_fd, r, sizeof(r)) > 0)
+                {
+                    break;
+                }
+            }
+
+            if (strcmp(r, MAN_VIEW) == 0)
+            {
+                man_view(clie_fd, gID);
+            }
+            else if (strcmp(r, EXIT) == 0)
+            {
+                break;
+            }
+        }
     }
 
     cout << "退出管理" << endl;
