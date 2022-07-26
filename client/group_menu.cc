@@ -40,9 +40,9 @@ void Client::create_group(int clie_fd, string ID)
     {
         cout << "该群ID已被占用" << endl;
     }
-    else if (strcmp(r, "refuse") == 0)
+    else
     {
-        cout << "群主不可退群,可选择解散该群" << endl;
+        cout << "错误" << endl;
     }
 
     return;
@@ -59,8 +59,10 @@ void Client::add_group(int clie_fd)
 
     while (true)
     {
+        bzero(r, sizeof(r));
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
+            cout << "R: " << r << endl;
             break;
         }
     }
@@ -73,6 +75,15 @@ void Client::add_group(int clie_fd)
     {
         cout << "该群不存在" << endl;
     }
+    else if (strcmp(r, "member") == 0)
+    {
+        cout << "你已是该群成员" << endl;
+    }
+    else if (strcmp(r, "application") == 0)
+    {
+        cout << "不可重复发送申请" << endl;
+    }
+
     return;
 }
 
@@ -102,9 +113,9 @@ void Client::quit_group(int clie_fd)
     {
         cout << "你不是该群成员" << endl;
     }
-    else
+    else if (strcmp(r, "refuse") == 0)
     {
-        cout << "错误" << endl;
+        cout << "群主不可退群,可选择解散该群" << endl;
     }
 }
 
@@ -115,15 +126,16 @@ void Client::view_group(int clie_fd)
     cout << "你加入的群:" << endl;
     while (true)
     {
+        bzero(r, sizeof(r));
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
-            if (strcmp(r, "END") == 0)
-            {
-                break;
-            }
-            else if (strcmp(r, "NULL") == 0)
+            if (strcmp(r, "NULL") == 0)
             {
                 cout << "未加入任何群" << endl;
+                break;
+            }
+            else if (strcmp(r, "END") == 0)
+            {
                 break;
             }
             else
@@ -132,8 +144,107 @@ void Client::view_group(int clie_fd)
                 Net::Write(clie_fd, ACCEPT, sizeof(ACCEPT));
             }
         }
+        }
+}
+
+void Client::man_addgroup(int clie_fd)
+{
+    char r[BUFSIZ];
+    string in;
+    bool id_in = true;
+    bool no_id = true;
+
+    cout << "申请列表：" << endl;
+    while (true)
+    {
         bzero(r, sizeof(r));
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            if (strcmp(r, "NULL") == 0)
+            {
+                cout << "无申请" << endl;
+                break;
+            }
+            else if (strcmp(r, "END") == 0)
+            {
+                break;
+            }
+            else
+            {
+                no_id = false;
+                cout << r << endl;
+                Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
+            }
+        }
     }
+
+    while (!no_id)
+    {
+        cout << " 请输入你要操作的ID(取消q)\n> ";
+        cin >> in;
+
+        Net::Write(clie_fd, in.c_str(), in.length());
+
+        while (true)
+        {
+            bzero(r, sizeof(r));
+            if (read(clie_fd, r, sizeof(r)) > 0)
+            {
+                cout << "R " << r << endl;
+                break;
+            }
+        }
+
+        if (strcmp(r, "exit") == 0)
+        {
+            break;
+        }
+        else if (strcmp(r, "NULL") == 0)
+        {
+            id_in = false;
+            cout << "无该成员" << endl;
+        }
+        else if (strcmp(r, "success") == 0)
+        {
+        }
+
+        if (id_in)
+        {
+
+            cout << " ( y/n/q )" << endl;
+            cin >> in;
+
+            Net::Write(clie_fd, in.c_str(), in.length());
+
+            while (true)
+            {
+                bzero(r, sizeof(r));
+                if (read(clie_fd, r, sizeof(r)) > 0)
+                {
+                    break;
+                }
+            }
+
+            if (strcmp(r, "agree") == 0)
+            {
+                cout << "已同意" << endl;
+            }
+            else if (strcmp(r, "refuse") == 0)
+            {
+                cout << "已拒绝" << endl;
+            }
+            else if (strcmp(r, "quit") == 0)
+            {
+                cout << "已取消操作" << endl;
+            }
+            else
+            {
+                cout << "无此操作" << endl;
+            }
+        }
+    }
+
+    return;
 }
 
 void Client::manage_menu(int clie_fd, string ID)
@@ -147,11 +258,14 @@ void Client::manage_menu(int clie_fd, string ID)
 
     while (true)
     {
+        bzero(r, sizeof(r));
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
+            cout << "R: " << r << endl;
             break;
         }
     }
+
     if (strcmp(r, "master") == 0)
     {
         cout << "群：" << in << "\t" << r << endl;
@@ -176,6 +290,7 @@ void Client::manage_menu(int clie_fd, string ID)
 
             if (in == MAN_ADDGROUP)
             {
+                man_addgroup(clie_fd);
             }
             else if (in == MAN_VIEW)
             {
@@ -208,8 +323,7 @@ void Client::manage_menu(int clie_fd, string ID)
     }
     else
     {
-        cout << "错误" << endl;
-        Net::Write(clie_fd, EXIT, strlen(EXIT));
+        cout << "你不是该群成员" << endl;
     }
 
     return;

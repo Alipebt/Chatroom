@@ -84,6 +84,7 @@ public:
     void add_group(int clie_fd);               //申请入群
     void quit_group(int clie_fd);              //退出群
     void view_group(int clie_fd);              //查看群
+    void man_addgroup(int clie_fd);            //入群请求
 
     static void thread_send(int clie_fd);                //发送线程
     static void thread_recv(int clie_fd);                //接收线程

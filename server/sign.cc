@@ -13,8 +13,10 @@ bool Server::sign_in(int clie_fd)
     bool is_success = false;
 
     string ID, pass;
+    string gets;
     Reader rd;
     Value Jsinfo, JsinfoDB;
+    Value getv;
 
     char info[BUFSIZ];
 
@@ -33,37 +35,22 @@ bool Server::sign_in(int clie_fd)
         ID = Jsinfo["ID"].asString();
         pass = Jsinfo["pass"].asString();
 
-        //遍历ID
-        leveldb::Iterator *it = IPdb->NewIterator(leveldb::ReadOptions());
-        for (it->SeekToFirst(); it->Valid(); it->Next())
+        leveldb::Status s = IPdb->Get(leveldb::ReadOptions(), ID, &gets);
+        if (s.ok())
         {
-            if (ID == it->key().ToString() && rd.parse(it->value().ToString(), JsinfoDB))
+            cout << "gets: " << gets << endl;
+            rd.parse(gets, getv);
+            if (pass == getv["pass"].asString())
             {
-                if (rd.parse(it->value().ToString(), JsinfoDB))
-                {
-                    if (pass == JsinfoDB["pass"].asString())
-                    {
-                        //登录成功
 
-                        Net::Write(clie_fd, "success", 7);
-                        fd_ID[clie_fd] = ID;
-                        is_success = true;
-                    }
-                }
-                //(测试用)
-
-                string outpass;
-                leveldb::Status status = IPdb->Get(leveldb::ReadOptions(), ID, &outpass);
-                check_status(status);
-                cout << "[数据库] " << ID << " : " << outpass << endl;
+                Net::Write(clie_fd, "success", 7);
+                fd_ID[clie_fd] = ID;
+                is_success = true;
             }
         }
-
-        // ID密码不匹配
-        if (!is_success)
+        else
         {
             Net::Write(clie_fd, "fail", 4);
-
             is_success = false;
         }
     }

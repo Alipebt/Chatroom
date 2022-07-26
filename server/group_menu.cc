@@ -49,30 +49,74 @@ void Server::add_group(int clie_fd)
 {
     cout << "开始加群" << endl;
     char r[BUFSIZ];
+    string opt = "NULL";
 
     Value getv;
     string get;
+    string send;
+    string member;
+    FastWriter w;
     Reader rd;
+
+    string ID = fd_ID[clie_fd];
 
     while (true)
     {
+        bzero(r, sizeof(r));
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }
     }
+    cout << "R " << r << endl;
 
     leveldb::Status s = Gdb->Get(leveldb::ReadOptions(), r, &get);
-    if (s.ok())
+    rd.parse(get, getv);
+    cout << "============1 " << ID << endl;
+    for (int i = 0; i < (int)getv["member"].size(); i++)
+    {
+        cout << "============2" << endl;
+        member = getv["member"][i].asString();
+
+        if (ID == member)
+        {
+            cout << "============3" << endl;
+            opt = "member";
+            Net::Write(clie_fd, opt.c_str(), opt.length());
+            break;
+        }
+    }
+    if (opt != "member")
+    {
+        cout << "============4" << endl;
+        for (int i = 0; i < (int)getv["application"].size(); i++)
+        {
+            cout << "============5" << endl;
+            member = getv["application"][i].asString();
+
+            if (ID == member)
+            {
+                cout << "============6" << endl;
+                opt = "application";
+                Net::Write(clie_fd, opt.c_str(), opt.length());
+                break;
+            }
+        }
+    }
+
+    if (s.ok() && opt == "NULL")
     {
         Net::Write(clie_fd, "success", 7);
         rd.parse(get, getv);
         getv["application"].append(fd_ID[clie_fd]);
+        send = w.write(getv);
+        leveldb::Status s2 = Gdb->Put(leveldb::WriteOptions(), r, send);
     }
-    else
+    else if (opt != "member" && opt != "application")
     {
         Net::Write(clie_fd, "fail", 4);
     }
+
     cout << "结束加群" << endl;
     return;
 }
@@ -164,7 +208,7 @@ void Server::view_group(int clie_fd)
     leveldb::Iterator *it = Gdb->NewIterator(leveldb::ReadOptions());
     for (it->SeekToFirst(); it->Valid(); it->Next())
     {
-        cout << "==========1" << endl;
+
         getgID = it->key().ToString();
         leveldb::Status s = Gdb->Get(leveldb::ReadOptions(), getgID, &get);
         rd.parse(get, getv);
@@ -172,16 +216,16 @@ void Server::view_group(int clie_fd)
 
         for (int i = 0; i < (int)member.size(); i++)
         {
-            cout << "==========5" << endl;
+
             if (member[i] == fd_ID[clie_fd])
             {
-                cout << "==========2" << endl;
+
                 Net::Write(clie_fd, getgID.c_str(), getgID.length());
                 in_group = true;
-                break;
 
                 while (true)
                 {
+                    bzero(r, sizeof(r));
                     if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
                     {
                         break;
@@ -189,21 +233,163 @@ void Server::view_group(int clie_fd)
                 }
             }
         }
-        cout << "==========6" << endl;
     }
 
     if (!in_group)
     {
-        cout << "==========3" << endl;
+
         Net::Write(clie_fd, "NULL", 4);
     }
     else
     {
-        cout << "==========4" << endl;
+
         Net::Write(clie_fd, "END", 3);
     }
 
     cout << "退出查看群" << endl;
+    return;
+}
+
+void Server::man_addgroup(int clie_fd, string gID)
+{
+    FastWriter w;
+    string gets;
+    string send;
+    string member;
+    Value getv;
+    Value deletev;
+    Reader rd;
+
+    bool id_in = false;
+    bool have_id = true;
+
+    char r[BUFSIZ];
+    char r2[BUFSIZ];
+    leveldb::Status s = Gdb->Get(leveldb::ReadOptions(), gID, &gets);
+    rd.parse(gets, getv);
+
+    for (int i = 1; i < (int)getv["application"].size(); i++)
+    {
+        send = getv["application"][i].asString();
+        Net::Write(clie_fd, send.c_str(), send.length());
+        while (true)
+        {
+            bzero(r, sizeof(r));
+            if (read(clie_fd, r, sizeof(r)) > 0)
+            {
+                break;
+            }
+        }
+    }
+
+    if (getv["application"].size() <= 1)
+    {
+        have_id = false;
+        Net::Write(clie_fd, "NULL", 4);
+    }
+    else
+    {
+        Net::Write(clie_fd, "END", 3);
+    }
+
+    while (have_id)
+    {
+        //接收成员ID
+        while (true)
+        {
+            bzero(r, sizeof(r));
+            if (read(clie_fd, r, sizeof(r)) > 0)
+            {
+                cout << "R " << r << endl;
+                break;
+            }
+        }
+        cout << "size: " << (int)getv["application"].size() << endl;
+        for (int i = 1; i < (int)getv["application"].size(); i++)
+        {
+            member = getv["application"][i].asString();
+            cout << "member: " << member << endl;
+            if (strcmp(r, member.c_str()) == 0)
+            {
+                id_in = true;
+                break;
+            }
+        }
+
+        if (strcmp(r, "q") == 0)
+        {
+            Net::Write(clie_fd, "exit", 4);
+            break;
+        }
+        else if (!id_in)
+        {
+            Net::Write(clie_fd, "NULL", 4);
+        }
+        else
+        {
+            Net::Write(clie_fd, "success", 7);
+        }
+
+        //接收操作
+        if (id_in)
+        {
+            while (true)
+            {
+                bzero(r2, sizeof(r2));
+                if (read(clie_fd, r2, sizeof(r2)) > 0)
+                {
+                    break;
+                }
+            }
+
+            if (strcmp(r2, "y") == 0)
+            {
+                Net::Write(clie_fd, "agree", 5);
+                for (int i = 0; i < (int)getv["application"].size(); i++)
+                {
+                    member = getv["application"][i].asString();
+                    if (strcmp(r, member.c_str()) == 0)
+                    {
+                        getv["application"].removeIndex(i, &deletev);
+                        getv["member"].append(r);
+
+                        send = w.write(getv);
+                        cout << "sendy:" << send << endl;
+                        leveldb::Status s2 = Gdb->Put(leveldb::WriteOptions(), gID, send);
+
+                        break;
+                    }
+                }
+            }
+            else if (strcmp(r2, "n") == 0)
+            {
+                Net::Write(clie_fd, "refuse", 6);
+                for (int i = 0; i < (int)getv["application"].size(); i++)
+                {
+                    member = getv["application"][i].asString();
+                    if (strcmp(r, member.c_str()) == 0)
+                    {
+                        getv["application"].removeIndex(i, &deletev);
+
+                        send = w.write(getv);
+                        cout << "sendn:" << send << endl;
+                        leveldb::Status s2 = Gdb->Put(leveldb::WriteOptions(), gID, send);
+
+                        break;
+                    }
+                }
+            }
+            else if (strcmp(r2, "q") == 0)
+            {
+                Net::Write(clie_fd, "quit", 4);
+            }
+            else
+            {
+                Net::Write(clie_fd, "fail", 4);
+            }
+        }
+    }
+
     return;
 }
 
@@ -216,31 +402,41 @@ void Server::manage_menu(int clie_fd)
     Reader rd;
 
     string judge = "fail";
+    string ID;
 
     char r[BUFSIZ];
     while (true)
     {
+        bzero(r, sizeof(r));
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
+            cout << "R: " << r << endl;
             break;
         }
     }
+    ID = r;
 
     leveldb::Status s = Gdb->Get(leveldb::ReadOptions(), r, &gets);
     if (s.ok())
     {
+
         rd.parse(gets, getv);
         if (getv["master"] == fd_ID[clie_fd])
         {
+
             judge = "master";
+
             Net::Write(clie_fd, judge.c_str(), judge.length());
         }
         else
         {
+
             for (int i = 0; i < (int)getv["manager"].size(); i++)
             {
+
                 if (getv["manager"][i] == fd_ID[clie_fd])
                 {
+
                     judge = "manager";
                     Net::Write(clie_fd, judge.c_str(), judge.length());
                     break;
@@ -249,10 +445,13 @@ void Server::manage_menu(int clie_fd)
 
             if (judge != "manager")
             {
+
                 for (int i = 0; i < (int)getv["member"].size(); i++)
                 {
+
                     if (getv["member"][i] == fd_ID[clie_fd])
                     {
+
                         judge = "member";
                         Net::Write(clie_fd, judge.c_str(), judge.length());
                         break;
@@ -263,14 +462,16 @@ void Server::manage_menu(int clie_fd)
 
         if (judge == "fail")
         {
+
             Net::Write(clie_fd, judge.c_str(), judge.length());
         }
     }
     else
     {
+
         Net::Write(clie_fd, judge.c_str(), judge.length());
     }
-    cout << "结束判断职位" << endl;
+    cout << "结束判断职位" << judge << endl;
 
     //进入管理
     cout << "进入管理" << endl;
@@ -290,6 +491,7 @@ void Server::manage_menu(int clie_fd)
 
             if (strcmp(r, MAN_ADDGROUP) == 0)
             {
+                man_addgroup(clie_fd, ID);
             }
             else if (strcmp(r, MAN_VIEW) == 0)
             {
@@ -359,6 +561,7 @@ void Server::group_menu(int clie_fd)
         }
         else if (strcmp(r, MAN_GROUP) == 0)
         {
+            manage_menu(clie_fd);
         }
         else if (strcmp(r, EXIT) == 0)
         {

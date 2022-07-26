@@ -83,6 +83,7 @@ public:
     static void quit_group(int clie_fd);                 //退出群
     static void view_group(int clie_fd);                 //查看群
     static void manage_menu(int clie_fd);                //管理群
+    static void man_addgroup(int clie_fd, string gID);   //入群申请管理
 
     static void thread_work(int clie_fd);                  //服务器线程工作
     static void thread_recv(int clie_fd, string recverID); //接收消息至数据库
