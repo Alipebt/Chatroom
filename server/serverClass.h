@@ -88,7 +88,7 @@ public:
     static void man_addmanager(int clie_fd, string gID); //设置管理员
     static void man_delmanager(int clie_fd, string gID); //取消管理员
     static void man_delmember(int clie_fd, string gID);  //踢出成员
-    static void man_delgroup(int clie_fd, string gID);   //解散群
+    static bool man_delgroup(int clie_fd, string gID);   //解散群
 
     static void thread_work(int clie_fd);                  //服务器线程工作
     static void thread_recv(int clie_fd, string recverID); //接收消息至数据库

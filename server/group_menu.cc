@@ -634,9 +634,10 @@ void Server::man_delmember(int clie_fd, string gID)
     return;
 }
 
-void Server::man_delgroup(int clie_fd, string gID)
+bool Server::man_delgroup(int clie_fd, string gID)
 {
     char r[BUFSIZ];
+    bool success = false;
 
     while (true)
     {
@@ -650,6 +651,7 @@ void Server::man_delgroup(int clie_fd, string gID)
     if (strcmp(r, "y") == 0)
     {
         leveldb::Status s = Gdb->Delete(leveldb::WriteOptions(), gID);
+        success = true;
         Net::Write(clie_fd, "success", 7);
     }
     else if (strcmp(r, "n") == 0)
@@ -660,6 +662,8 @@ void Server::man_delgroup(int clie_fd, string gID)
     {
         Net::Write(clie_fd, "fail", 4);
     }
+
+    return success;
 }
 
 void Server::manage_menu(int clie_fd)
@@ -780,7 +784,11 @@ void Server::manage_menu(int clie_fd)
             }
             else if (strcmp(r, MAN_DELGROUP) == 0)
             {
-                man_delgroup(clie_fd, gID);
+                bool del = man_delgroup(clie_fd, gID);
+                if (del)
+                {
+                    break;
+                }
             }
             else if (strcmp(r, EXIT) == 0)
             {

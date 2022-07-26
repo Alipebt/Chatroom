@@ -388,10 +388,12 @@ void Client::man_delmember(int clie_fd)
     return;
 }
 
-void Client::man_delgroup(int clie_fd)
+bool Client::man_delgroup(int clie_fd)
 {
     string in;
     char r[BUFSIZ];
+    bool success = false;
+
     cout << " 确认要解散该群？(y/n)\n>";
     cin >> in;
     Net::Write(clie_fd, in.c_str(), in.length());
@@ -407,6 +409,7 @@ void Client::man_delgroup(int clie_fd)
 
     if (strcmp(r, "success") == 0)
     {
+        success = true;
         cout << "该群已解散" << endl;
     }
     else if (strcmp(r, "fail") == 0)
@@ -418,7 +421,7 @@ void Client::man_delgroup(int clie_fd)
         cout << "已取消操作" << endl;
     }
 
-    return;
+    return success;
 }
 
 void Client::manage_menu(int clie_fd, string ID)
@@ -484,7 +487,11 @@ void Client::manage_menu(int clie_fd, string ID)
             }
             else if (in == MAN_DELGROUP)
             {
-                man_delgroup(clie_fd);
+                bool del = man_delgroup(clie_fd);
+                if (del)
+                {
+                    break;
+                }
             }
             else if (in == EXIT)
             {

@@ -89,7 +89,7 @@ public:
     void man_addmanager(int clie_fd);          //添加管理员
     void man_delmanager(int clie_fd);          //取消管理员
     void man_delmember(int clie_fd);           //踢出成员
-    void man_delgroup(int clie_fd);            //解散群
+    bool man_delgroup(int clie_fd);            //解散群
 
     static void thread_send(int clie_fd);                //发送线程
     static void thread_recv(int clie_fd);                //接收线程
