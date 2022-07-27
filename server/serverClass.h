@@ -93,6 +93,10 @@ public:
     static void man_delmember(int clie_fd, string gID);  //踢出成员
     static bool man_delgroup(int clie_fd, string gID);   //解散群
 
+    static void match_with_pub(int clie_fd);
+    static void thread_send_pub(int clie_fd, string gID);
+    static void thread_recv_pub(int clie_fd, string gID);
+
     static void thread_work(int clie_fd);                  //服务器线程工作
     static void thread_recv(int clie_fd, string recverID); //接收消息至数据库
     static void thread_send(int clie_fd, string recverID); //发送数据库消息

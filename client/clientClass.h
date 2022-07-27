@@ -94,6 +94,10 @@ public:
     void man_delmember(int clie_fd);           //踢出成员
     bool man_delgroup(int clie_fd);            //解散群
 
+    void publicChat(int clie_fd, string ID); //群聊
+    static void thread_send_pub(int clie_fd);
+    static void thread_recv_pub(int clie_fd, string ID);
+
     static void thread_send(int clie_fd);                //发送线程
     static void thread_recv(int clie_fd, string ID);     //接收线程
     static void thread_friends(int clie_fd, string opt); //好友管理线程

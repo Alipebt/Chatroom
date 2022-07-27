@@ -596,6 +596,7 @@ void Client::group_menu(int clie_fd, string ID)
 
         if (in == JOIN_GROUP)
         {
+            publicChat(clie_fd, ID);
         }
         else if (in == ADD_GROUP)
         {

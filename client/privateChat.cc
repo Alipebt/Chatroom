@@ -34,32 +34,29 @@ void Client::thread_recv(int clie_fd, string ID)
         int ret = read(clie_fd, r, sizeof(r));
         if (ret <= 0)
         {
-            Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
+
             cout << "客户端接收异常" << endl;
             break;
         }
 
         rd.parse(r, recv);
 
-        if (recv["massage"].asString() == ROOM_EXIT /*|| recv["massage"].asString() == EXIT*/)
+        if (recv["massage"].asString() == ROOM_EXIT)
         {
-            Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
+
             cout << "客户端已收到关闭请求" << endl;
             break;
         }
 
-        if (recv["massage"].asString() != ACCEPT)
+        if (recv["sender"].asString() != ID)
         {
-            if (recv["sender"].asString() != ID)
-            {
-                cout << LIGHT_BLUE << "               [" << recv["sender"].asString() << "]:" << recv["massage"].asString() << NONE << endl;
-            }
-            else
-            {
-                cout << recv["massage"].asString() << endl;
-            }
-            Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
+            cout << LIGHT_BLUE << "               [" << recv["sender"].asString() << "]:" << recv["massage"].asString() << NONE << endl;
         }
+        else
+        {
+            cout << recv["massage"].asString() << endl;
+        }
+
         bzero(r, sizeof(r));
     }
     cout << "客户端接收线程关闭" << endl;

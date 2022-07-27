@@ -872,6 +872,7 @@ void Server::group_menu(int clie_fd)
 
         if (strcmp(r, JOIN_GROUP) == 0)
         {
+            match_with_pub(clie_fd);
         }
         else if (strcmp(r, ADD_GROUP) == 0)
         {

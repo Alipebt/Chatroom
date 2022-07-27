@@ -20,6 +20,7 @@ cc_binary(
     srcs = ["client.cc",
         "friends_menu.cc",
         "privateChat.cc",
-        "group_menu.cc",],
+        "group_menu.cc",
+        "publicChat.cc"],
     deps = ["net_wrap","clientClass"],
 )

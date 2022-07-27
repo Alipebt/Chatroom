@@ -110,15 +110,6 @@ void Client::sign_in_up(int clie_fd)
             }
             pass2 = getpass(" 请再次输入你的密码\n>");
 
-            // cout << " 请输入你的用户名\n>";
-            // cin >> name;
-            // if (name.length() > 20 || name.length() < 3)
-            // {
-            //     cout << "name长度应在3~20" << endl;
-            //     Net::Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
-            //     continue;
-            // }
-
             if (pass1 == pass2)
             {
                 Value info;
