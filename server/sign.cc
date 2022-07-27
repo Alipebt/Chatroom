@@ -76,6 +76,7 @@ void Server::sign_up(int clie_fd)
         if ((read(clie_fd, info, sizeof(info))) > 0)
         {
             cout << " [客户端]" << clie_fd << ":" << info << endl;
+
             break;
         }
     }

@@ -109,39 +109,36 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
     string oldmassage;
     Value all_massage;
 
+    string gets;
+    Value getv, getv2;
+
     while (true)
     {
         sleep(0.05);
-        leveldb::Iterator *it = Mdb->NewIterator(leveldb::ReadOptions());
 
-        for (it->SeekToFirst(); it->Valid(); it->Next())
-        {
+        leveldb::Status s = Mdb->Get(leveldb::ReadOptions(), recverID, &gets);
+        rd.parse(gets, getv);
 
-            if (recverID == it->key().ToString())
-            {
-                rd.parse(it->value().ToString(), recv_from_db);
-                break;
-            }
-        }
-
-        if (is_first_open && i >= (int)recv_from_db.size())
+        if (is_first_open && i >= (int)getv.size())
         {
             is_first_open = false;
         }
 
-        for (; i < (int)recv_from_db.size(); i++)
+        for (; i < (int)getv.size(); i++)
         {
             sleep(0.05);
 
-            member = recv_from_db[i];
+            member = getv[i];
 
             if (member["sender"].asString() == senderID || member["sender"].asString() == fd_ID[clie_fd])
             {
 
                 if (member["massage"].asString() != ROOM_EXIT)
                 {
+
                     if (!is_first_open && member["sender"].asString() == fd_ID[clie_fd])
                     {
+
                         continue;
                     }
                 }
@@ -237,6 +234,7 @@ void Server::match_with(int clie_fd)
 
         leveldb::Status statuc3 = IPdb->Get(leveldb::ReadOptions(), senderID, &gets);
         rd.parse(gets, getv);
+
         for (int i = 0; i < (int)getv["ignore"].size(); i++)
         {
             members = getv["ignore"][i].asString();

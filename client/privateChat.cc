@@ -21,7 +21,7 @@ void Client::thread_send(int clie_fd)
     cout << "客户端发送线程关闭" << endl;
     return;
 }
-void Client::thread_recv(int clie_fd)
+void Client::thread_recv(int clie_fd, string ID)
 {
     cout << "客户端接收线程开启" << endl;
     Reader rd;
@@ -50,7 +50,14 @@ void Client::thread_recv(int clie_fd)
 
         if (recv["massage"].asString() != ACCEPT)
         {
-            cout << LIGHT_BLUE << "[" << recv["sender"].asString() << "]:" << recv["massage"].asString() << NONE << endl;
+            if (recv["sender"].asString() != ID)
+            {
+                cout << LIGHT_BLUE << "               [" << recv["sender"].asString() << "]:" << recv["massage"].asString() << NONE << endl;
+            }
+            else
+            {
+                cout << recv["massage"].asString() << endl;
+            }
             Net::Write(clie_fd, ACCEPT, strlen(ACCEPT));
         }
         bzero(r, sizeof(r));
@@ -84,7 +91,7 @@ void Client::privateChat(int clie_fd, string ID)
             {
                 cout << "已与" << in << "连接:" << endl;
                 thread send(thread_send, clie_fd);
-                thread recv(thread_recv, clie_fd);
+                thread recv(thread_recv, clie_fd, ID);
 
                 send.join();
                 recv.join();
