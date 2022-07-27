@@ -16,6 +16,7 @@ void Client::thread_send(int clie_fd)
         {
             break;
         }
+
         bzero(s, sizeof(s));
     }
     cout << "客户端发送线程关闭" << endl;

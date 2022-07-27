@@ -34,6 +34,8 @@
 #define ACCEPT "_ACCEPT_" //收到
 
 #define ROOM_EXIT "_exit" //退出
+#define SEND_FILE "_sf"   //发文件
+#define RECV_FILE "_rf"   //收文件
 
 #define NONE "\033[m"
 #define RED "\033[0;32;31m"
@@ -93,6 +95,9 @@ public:
     void man_delmanager(int clie_fd);          //取消管理员
     void man_delmember(int clie_fd);           //踢出成员
     bool man_delgroup(int clie_fd);            //解散群
+
+    static void send_file(int clie_fd);
+    static void recv_file(int clie_fd);
 
     void publicChat(int clie_fd, string ID); //群聊
     static void thread_send_pub(int clie_fd);

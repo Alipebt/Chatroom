@@ -15,6 +15,8 @@
 #include <thread>
 #include <algorithm>
 #include "json/json.h"
+#include <sys/sendfile.h>
+#include <sys/stat.h>
 
 #include <vector>
 

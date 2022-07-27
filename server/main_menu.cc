@@ -61,6 +61,14 @@ void Server::main_menu(int clie_fd)
 
                 break;
             }
+            else if (strcmp(r, "4") == 0)
+            {
+                recv_file(clie_fd);
+            }
+            else if (strcmp(r, "5") == 0)
+            {
+                send_file(clie_fd);
+            }
             else
             {
                 cout << "错误else" << endl;

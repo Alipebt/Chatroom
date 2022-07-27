@@ -22,7 +22,8 @@ cc_binary(
         "sign.cc",
         "server.cc",
         "group_menu.cc",
-        "publicRoom.cc"],
+        "publicRoom.cc",
+        "file.cc"],
     deps = ["net_wrap","serverClass"],
     linkopts =["-lleveldb"],
 )

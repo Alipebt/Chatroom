@@ -14,9 +14,10 @@ void Client::thread_send_pub(int clie_fd)
         {
             break;
         }
+
+        cout << "结束发送线程" << endl;
+        return;
     }
-    cout << "结束发送线程" << endl;
-    return;
 }
 
 void Client::thread_recv_pub(int clie_fd, string ID)

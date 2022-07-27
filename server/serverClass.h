@@ -38,6 +38,8 @@
 #define ACCEPT "_ACCEPT_" //收到
 
 #define ROOM_EXIT "_exit" //退出
+#define SEND_FILE "_sf"   //发文件
+#define RECV_FILE "_rf"   //收文件
 
 using namespace std;
 
@@ -96,6 +98,9 @@ public:
     static void match_with_pub(int clie_fd);
     static void thread_send_pub(int clie_fd, string gID);
     static void thread_recv_pub(int clie_fd, string gID);
+
+    static void send_file(int clie_fd);
+    static void recv_file(int clie_fd);
 
     static void thread_work(int clie_fd);                  //服务器线程工作
     static void thread_recv(int clie_fd, string recverID); //接收消息至数据库

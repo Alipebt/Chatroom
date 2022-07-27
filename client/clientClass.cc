@@ -173,6 +173,8 @@ void Client::main_menu(int clie_fd, string ID)
         cout << "|    1:私聊        |" << endl;
         cout << "|    2:群菜单      |" << endl;
         cout << "|    3:好友管理    |" << endl;
+        cout << "|    4.发送文件    |" << endl;
+        cout << "|    5.接收文件    |" << endl;
         cout << "|    0:注销        |" << endl;
         cout << "|                  |" << endl;
         cout << "+------------------+" << endl;
@@ -191,6 +193,14 @@ void Client::main_menu(int clie_fd, string ID)
         else if (in == FRIENDS_MENU)
         {
             friends_menu(clie_fd, ID);
+        }
+        else if (in == "4")
+        {
+            send_file(clie_fd);
+        }
+        else if (in == "5")
+        {
+            recv_file(clie_fd);
         }
         else if (in == SIGN_OUT)
         {

@@ -70,23 +70,23 @@ void Server::thread_send_pub(int clie_fd, string gID)
         {
             sleep(0.05);
             member = getv[i];
-            // cout << "0000000000002" << endl;
+
             if (member["massage"].asString() != ROOM_EXIT)
             {
-                // cout << "0000000000003" << endl;
+
                 if (!is_first_open && member["sender"].asString() == fd_ID[clie_fd])
                 {
-                    // cout << "0000000000004" << endl;
+
                     continue;
                 }
             }
-            // cout << "0000000000005" << endl;
+
             send = w.write(member);
             Net::Write(clie_fd, send.c_str(), send.length());
 
             if (member["massage"].asString() == ROOM_EXIT && member["sender"].asString() == fd_ID[clie_fd])
             {
-                // cout << "0000000000006" << endl;
+
                 getv.removeIndex(i, &delv);
                 send = w.write(getv);
 
@@ -94,7 +94,7 @@ void Server::thread_send_pub(int clie_fd, string gID)
                 cout << "SEND:  " << send << endl;
 
                 i--;
-                // pthread_mutex_unlock(&fd_mutex[clie_fd]);
+
                 cout << "结束发送线程" << endl;
                 is_first_open = true;
                 return;
