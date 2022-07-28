@@ -220,6 +220,8 @@ void Client::run()
     struct sockaddr_in serv_addr;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(server_port);
+    // serv_addr.sin_addr.s_addr = htons(INADDR_ANY);
+    serv_addr.sin_addr.s_addr = inet_addr(server_ip.c_str());
 
     clie_fd = Net::Socket(AF_INET, SOCK_STREAM, 0);
 

@@ -117,7 +117,7 @@ void Client::recv_file(int clie_fd)
         {
 
             sum += ret;
-            // cout << sum << endl;
+            cout << sum << endl;
             write(fd, rf, ret);
             if (sum >= fw.size)
             {
@@ -156,7 +156,6 @@ void Client::file_menu(int clie_fd, string opt)
         bzero(r, sizeof(r));
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
-            cout << "R  " << r << endl;
             break;
         }
     }

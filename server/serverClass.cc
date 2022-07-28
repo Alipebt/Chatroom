@@ -123,7 +123,8 @@ void Server::run()
     bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(server_port);
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    // serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serv_addr.sin_addr.s_addr = inet_addr(server_ip.c_str());
 
     socklen_t clie_addr_len;
     clie_addr_len = sizeof(clie_addr);
