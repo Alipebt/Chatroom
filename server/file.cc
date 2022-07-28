@@ -196,9 +196,11 @@ void Server::file_menu(int clie_fd, string opt)
                     Net::Write(clie_fd, "success", 7);
                     if (opt == "send")
                     {
+                        send_file(clie_fd, gorps, IDs);
                     }
                     else if (opt == "recv")
                     {
+                        recv_file(clie_fd, gorp, IDs);
                     }
                 }
             }
