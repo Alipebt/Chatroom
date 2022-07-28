@@ -196,6 +196,7 @@ void Server::cout_friend(int clie_fd, string opt)
     {
 
         member = recv_from_db[i];
+        member["status"] = "";
         s = w.write(member);
 
         if (member["recver"] == fd_ID[clie_fd])
@@ -215,7 +216,22 @@ void Server::cout_friend(int clie_fd, string opt)
             }
             else if (member["opt"] == BE_FRIENDS && opt == BE_FRIENDS)
             {
+                cout << "---------" << member["sender"].asString() << endl;
+                for (int j = 0; j < fd_ID.size(); j++)
+                {
+                    if (fd_ID[j] == member["sender"].asString())
+                    { // j就是对方的 fd
+                        cout << "---------3" << endl;
+                        if (fd_in[j] == true)
+                        {
+                            cout << "---------4" << endl;
+                            member["status"] = "online";
+                            break;
+                        }
+                    }
+                }
 
+                s = w.write(member);
                 Net::Write(clie_fd, s.c_str(), s.length());
                 while (true)
                 {
@@ -520,5 +536,6 @@ void Server::friends_menu(int clie_fd)
             }
         }
     }
+
     return;
 }

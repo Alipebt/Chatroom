@@ -102,7 +102,7 @@ void Server::send_file(int clie_fd)
         long sum = 0;
         while (true)
         {
-            sleep(0.001);
+            sleep(0.002);
             if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
             {
                 sum += ret;

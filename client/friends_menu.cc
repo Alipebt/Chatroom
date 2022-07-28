@@ -55,7 +55,7 @@ void Client::thread_friends(int clie_fd, string opt)
                 else
                 {
                     rd.parse(r, recv);
-                    cout << "ID:" << recv["sender"].asString() << endl;
+                    cout << "ID:" << recv["sender"].asString() << "\t" << recv["status"].asString() << endl;
                 }
 
                 Net::Write(clie_fd, ACCEPT, sizeof(ACCEPT));
