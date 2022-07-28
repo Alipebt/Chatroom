@@ -26,6 +26,8 @@ void Server::add_friend(int clie_fd, char *re)
     string res = re;
     char r[BUFSIZ];
 
+    string path;
+
     strcpy(r, res.c_str());
 
     bool id_used = false;
@@ -125,6 +127,12 @@ void Server::add_friend(int clie_fd, char *re)
 
                                 leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
                             }
+                            //////////////////////////////////////////////////////////////////////
+                            path = PATHP + recver + "/" + sender + "/";
+                            mkdir(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+                            path = PATHP + sender + "/" + recver + "/";
+                            mkdir(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+                            ///////////////////////////////////////////////////////////////////////
                             Net::Write(clie_fd, "befriends", 9);
                         }
                         else if (member["opt"] == BE_FRIENDS)

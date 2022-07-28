@@ -3,6 +3,7 @@
 
 void Server::create_group(int clie_fd)
 {
+    string path;
     cout << "开始创建群" << endl;
     Value newgroup;
     Value group;
@@ -39,6 +40,9 @@ void Server::create_group(int clie_fd)
         Net::Write(clie_fd, "success", 7);
         leveldb::Status status2 = Gdb->Put(leveldb::WriteOptions(), ngID, r);
         check_status(status2);
+
+        path = PATHG + ngID + "/";
+        mkdir(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
     }
 
     cout << "结束创建群" << endl;

@@ -196,11 +196,13 @@ void Client::main_menu(int clie_fd, string ID)
         }
         else if (in == "4")
         {
-            send_file(clie_fd);
+            // send_file(clie_fd);
+            file_menu(clie_fd, "send");
         }
         else if (in == "5")
         {
-            recv_file(clie_fd);
+            // recv_file(clie_fd);
+            file_menu(clie_fd, "recv");
         }
         else if (in == SIGN_OUT)
         {

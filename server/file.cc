@@ -7,14 +7,15 @@ struct file_wrap
     char name[1024];
 };
 
-void Server::recv_file(int clie_fd)
+void Server::recv_file(int clie_fd, string gorp, string ID)
 {
 
     struct file_wrap fw;
 
     char r[BUFSIZ];
     char rf[BUFSIZ];
-    char path[BUFSIZ];
+    // char path[BUFSIZ];
+    string path;
 
     while (true)
     {
@@ -24,12 +25,24 @@ void Server::recv_file(int clie_fd)
             break;
         }
     }
+    if (strcmp(r, "fail") == 0)
+    {
+        return;
+    }
     memcpy(&fw, r, sizeof(fw));
     cout << fw.size << "=======" << fw.name << endl;
 
-    sprintf(path, "/tmp/serverdata/file/%s", fw.name); //
+    // sprintf(path, "/tmp/serverdata/file/%s", fw.name); //
+    if (gorp == "g")
+    {
+        path = PATHG + ID + "/" + fw.name;
+    }
+    else if (gorp == "p")
+    {
+        path = PATHP + ID + "/" + fd_ID[clie_fd] + "/" + fw.name;
+    }
 
-    int fd = open(path, O_WRONLY | O_CREAT | O_APPEND, 0666);
+    int fd = open(path.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0666);
     // FILE *fp = fopen(r, "wb"); //
 
     if (fd == NULL)
@@ -60,7 +73,7 @@ void Server::recv_file(int clie_fd)
 
     return;
 }
-void Server::send_file(int clie_fd)
+void Server::send_file(int clie_fd, string gorp, string ID)
 {
     struct file_wrap fw;
     struct stat statbuf;
@@ -79,13 +92,22 @@ void Server::send_file(int clie_fd)
             }
         }
         name = r;
-        path = "/tmp/serverdata/file/" + name;
+        if (gorp == "g")
+        {
+            path = PATHG + ID + "/" + name;
+        }
+        else if (gorp == "p")
+        {
+            path = PATHP + fd_ID[clie_fd] + "/" + ID + "/" + name;
+        }
 
         if (stat(path.c_str(), &statbuf) == -1)
         {
             cout << "无效的路径" << endl;
-            continue;
+            Net::Write(clie_fd, "fail", 4);
+            break;
         }
+
         fw.size = statbuf.st_size;
         filename = (char *)basename(path.c_str());
         strcpy(fw.name, filename);
@@ -123,4 +145,100 @@ void Server::send_file(int clie_fd)
     }
 
     return;
+}
+
+void Server::file_menu(int clie_fd, string opt)
+{
+    char gorp[BUFSIZ];
+    string gorps;
+    char ID[BUFSIZ];
+    string IDs;
+    string gets;
+    Value getv;
+    string member;
+    Reader rd;
+
+    bool success = false;
+
+    while (true)
+    {
+        bzero(gorp, sizeof(gorp));
+        if (read(clie_fd, gorp, sizeof(gorp)) > 0)
+        {
+            break;
+        }
+    }
+    cout << gorp << endl;
+    gorps = gorp;
+    while (true)
+    {
+        bzero(ID, sizeof(ID));
+        if (read(clie_fd, ID, sizeof(ID)) > 0)
+        {
+            break;
+        }
+    }
+    cout << ID << endl;
+    IDs = ID;
+
+    if (strcmp(gorp, "g") == 0)
+    {
+        leveldb::Status s = Gdb->Get(leveldb::ReadOptions(), ID, &gets);
+        rd.parse(gets, getv);
+        if (s.ok())
+        {
+            for (int i = 0; i < (int)getv["member"].size(); i++)
+            {
+                member = getv["member"][i].asString();
+                if (member == fd_ID[clie_fd])
+                {
+                    success = true;
+                    Net::Write(clie_fd, "success", 7);
+                    if (opt == "send")
+                    {
+                    }
+                    else if (opt == "recv")
+                    {
+                    }
+                }
+            }
+        }
+
+        if (!success)
+        {
+            Net::Write(clie_fd, "fail", 4);
+        }
+    }
+    else if (strcmp(gorp, "p") == 0)
+    {
+        leveldb::Status s = Fdb->Get(leveldb::ReadOptions(), fd_ID[clie_fd], &gets);
+        rd.parse(gets, getv);
+        for (int i = 0; i < (int)getv.size(); i++)
+        {
+            member = getv[i]["sender"].asString();
+            if (member == ID && getv[i]["opt"] == BE_FRIENDS)
+            {
+                success = true;
+                Net::Write(clie_fd, "success", 7);
+                if (opt == "send")
+                {
+                    send_file(clie_fd, gorps, IDs);
+                }
+                else if (opt == "recv")
+                {
+                    recv_file(clie_fd, gorp, IDs);
+                }
+            }
+        }
+
+        if (!success)
+        {
+            cout << "send   fail" << endl;
+            Net::Write(clie_fd, "fail", 4);
+        }
+    }
+    else
+    {
+        Net::Write(clie_fd, EXIT, sizeof(EXIT));
+    }
 }

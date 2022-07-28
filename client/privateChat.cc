@@ -5,14 +5,16 @@ void Client::thread_send(int clie_fd)
 {
     cout << "客户端发送线程开启" << endl;
     char s[BUFSIZ];
+    string del;
     while (true)
     {
-        cin >> s;
-        // write返回顺利写入字节，若==0或<0则可能对端关闭
+        // cin >> s;
+        cin.getline(s, BUFSIZ);
+        // write返回顺利写入字节，若<0则可能对端关闭
         //不用Write以防客户端报错退出
         int ret = write(clie_fd, s, strlen(s));
 
-        if (strcmp(s, ROOM_EXIT) == 0 || ret <= 0)
+        if (strcmp(s, ROOM_EXIT) == 0 || ret < 0)
         {
             break;
         }

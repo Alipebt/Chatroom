@@ -62,7 +62,7 @@ bool Server::sign_in(int clie_fd)
 
 void Server::sign_up(int clie_fd)
 {
-
+    string path;
     string ID, get;
     Reader rd;
     Value Jsinfo;
@@ -98,8 +98,11 @@ void Server::sign_up(int clie_fd)
             Net::Write(clie_fd, "success", 7);
             leveldb::Status status = IPdb->Put(leveldb::WriteOptions(), ID, info);
             check_status(status);
+            path = PATHP + ID + "/";
+            mkdir(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
         }
     }
+
     return;
 }
 

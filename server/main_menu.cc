@@ -63,15 +63,17 @@ void Server::main_menu(int clie_fd)
             }
             else if (strcmp(r, "4") == 0)
             {
-                recv_file(clie_fd);
+                // recv_file(clie_fd);
+                file_menu(clie_fd, "recv");
             }
             else if (strcmp(r, "5") == 0)
             {
-                send_file(clie_fd);
+                // send_file(clie_fd);
+                file_menu(clie_fd, "send");
             }
             else
             {
-                cout << "错误else" << endl;
+                cout << "else" << endl;
             }
 
             cout << "已返回主菜单" << endl;

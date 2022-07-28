@@ -98,6 +98,7 @@ public:
 
     static void send_file(int clie_fd);
     static void recv_file(int clie_fd);
+    static void file_menu(int clie_fd, string opt);
 
     void publicChat(int clie_fd, string ID); //群聊
     static void thread_send_pub(int clie_fd);
