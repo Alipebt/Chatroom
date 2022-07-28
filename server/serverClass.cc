@@ -145,6 +145,8 @@ void Server::run()
 
     Net::Epoll_ctl(ep_fd, EPOLL_CTL_ADD, link_fd, &tep);
 
+    cout << "服务器已运行" << endl;
+
     while (true)
     {
         int n = Net::Epoll_wait(ep_fd, ep, EPOLL_SIZE, 0);

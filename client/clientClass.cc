@@ -227,6 +227,8 @@ void Client::run()
 
     Net::Connect(clie_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 
+    cout << "客户端已运行" << endl;
+
     sign_in_up(clie_fd);
 
     return;
