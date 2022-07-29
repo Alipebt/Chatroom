@@ -35,7 +35,7 @@ void Server::thread_recv(int clie_fd, string recverID)
     while (true)
     {
         // pthread_mutex_lock(&fd_mutex[clie_fd]); //加锁
-
+        sleep(0.1);
         if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) != 0)
         {
             cout << "massage:" << r << endl;
