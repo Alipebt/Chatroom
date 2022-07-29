@@ -22,6 +22,9 @@ void Server::thread_recv(int clie_fd, string recverID)
 
     string outpass;
 
+    Value putv, member;
+    string puts, gets;
+
     leveldb::Status status_sender;
     leveldb::Status status_recver;
 
@@ -77,6 +80,19 @@ void Server::thread_recv(int clie_fd, string recverID)
             send_to_db = w.write(all_massage_recver);
             //发送到数据库
             Mdb->Put(leveldb::WriteOptions(), recverID, send_to_db);
+
+            // //写新消息
+            // if (newmassage)
+            // {
+            //     leveldb::Status s = NMdb->Get(leveldb::ReadOptions(), recverID, &gets);
+            //     rd.parse(gets, putv);
+            //     member["sender"] = fd_ID[clie_fd];
+            //     member["opt"] = "newpm";
+            //     putv.append(member);
+            //     puts = w.write(putv);
+            //     leveldb::Status s2 = NMdb->Put(leveldb::WriteOptions(), recverID, puts);
+            //     newmassage = false;
+            // }
         }
 
         // pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
@@ -111,8 +127,6 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
 
     string gets, getsi;
     Value getv, getv2, getvi;
-
-    bool ignore = false;
 
     //判断屏蔽
     leveldb::Status statuc3 = IPdb->Get(leveldb::ReadOptions(), recverID, &getsi);
@@ -229,7 +243,6 @@ void Server::match_with(int clie_fd)
     Value member;
 
     bool is_friend = false;
-    bool ignore = false;
 
     string recverID;
     string senderID;

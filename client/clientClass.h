@@ -80,6 +80,7 @@ public:
     void group_menu(int clie_fd, string ID);  //群聊菜单
     void manage_menu(int clie_fd, string ID); //管理群
 
+    static void remind(int clie_fd);
     void privateChat(int clie_fd, string ID);  //私聊
     void friends_menu(int clie_fd, string ID); //好友管理
     void ignore_friend(int clie_fd);           //屏蔽
@@ -99,6 +100,7 @@ public:
     static void send_file(int clie_fd);
     static void recv_file(int clie_fd);
     static void file_menu(int clie_fd, string opt);
+    static void cout_file(int clie_fd);
 
     void publicChat(int clie_fd, string ID); //群聊
     static void thread_send_pub(int clie_fd);

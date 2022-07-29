@@ -25,6 +25,7 @@ void Client::sign_in_up(int clie_fd)
 
     while (true)
     {
+        system("clear");
         cout << "+------------------+" << endl;
         cout << "|     ChatRoom     |" << endl;
         cout << "+------------------+" << endl;
@@ -38,8 +39,7 @@ void Client::sign_in_up(int clie_fd)
         cin >> in;
 
         Net::Write(clie_fd, in.c_str(), in.length());
-        cout << "发送" << in << endl;
-
+        system("clear");
         if (in == SIGN_IN)
         {
             Value info;
@@ -72,11 +72,12 @@ void Client::sign_in_up(int clie_fd)
 
                 if ((read(clie_fd, r, sizeof(r))) > 0)
                 {
-                    cout << " 收到服务器消息\n>" << r << endl;
+                    system("clear");
 
                     if (strcmp(r, "success") == 0)
                     {
                         cout << " [登录成功]" << endl;
+
                         main_menu(clie_fd, ID);
                     }
                     else if (strcmp(r, "fail") == 0)
@@ -129,7 +130,7 @@ void Client::sign_in_up(int clie_fd)
 
                     if ((read(clie_fd, r, sizeof(r))) > 0)
                     {
-                        cout << " 收到服务器消息\n>" << r << endl;
+                        system("clear");
                         if (strcmp(r, "fail") == 0)
                         {
                             cout << ">ID已被占用" << endl;
@@ -144,12 +145,14 @@ void Client::sign_in_up(int clie_fd)
             }
             else
             {
+                system("clear");
                 Net::Write(clie_fd, "fail", 4); //结束服务器调用sign_up函数
                 cout << "两次密码不一致" << endl;
             }
         }
         else if (in == EXIT)
         {
+            system("clear");
             cout << "程序已退出" << endl;
             exit(1);
         }
@@ -161,9 +164,10 @@ void Client::main_menu(int clie_fd, string ID)
 {
     string in;
     char r[BUFSIZ];
-
+    system("clear");
     while (true)
     {
+
         bzero(r, sizeof(r));
 
         cout << "+------------------+" << endl;
@@ -182,26 +186,32 @@ void Client::main_menu(int clie_fd, string ID)
         cin >> in;
 
         Net::Write(clie_fd, in.c_str(), in.length());
+        system("clear");
         if (in == PRIVATE)
         {
             privateChat(clie_fd, ID);
         }
         else if (in == GROUP)
         {
+
             group_menu(clie_fd, ID);
         }
         else if (in == FRIENDS_MENU)
         {
+
             friends_menu(clie_fd, ID);
         }
         else if (in == "4")
         {
+
             // send_file(clie_fd);
             file_menu(clie_fd, "send");
         }
         else if (in == "5")
         {
+
             // recv_file(clie_fd);
+            cout_file(clie_fd);
             file_menu(clie_fd, "recv");
         }
         else if (in == SIGN_OUT)
@@ -230,6 +240,30 @@ void Client::run()
     cout << "客户端已运行" << endl;
 
     sign_in_up(clie_fd);
+
+    return;
+}
+
+void Client::cout_file(int clie_fd)
+{
+    char r[BUFSIZ];
+    Value getv;
+    Reader rd;
+    while (true)
+    {
+
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            if (strcmp(r, "END") == 0)
+            {
+                break;
+            }
+            rd.parse(r, getv);
+            cout << "来自" << getv["sender"].asString() << "的文件：" << getv["fname"] << endl;
+
+            Net::Write(clie_fd, ACCEPT, sizeof(ACCEPT));
+        }
+    }
 
     return;
 }

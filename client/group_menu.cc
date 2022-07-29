@@ -30,8 +30,6 @@ void Client::create_group(int clie_fd, string ID)
         }
     }
 
-    cout << "R " << r << endl;
-
     if (strcmp(r, "success") == 0)
     {
         cout << "创建成功" << endl;
@@ -62,7 +60,6 @@ void Client::add_group(int clie_fd)
         bzero(r, sizeof(r));
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
-            cout << "R: " << r << endl;
             break;
         }
     }
@@ -190,7 +187,6 @@ void Client::man_addgroup(int clie_fd)
             bzero(r, sizeof(r));
             if (read(clie_fd, r, sizeof(r)) > 0)
             {
-                cout << "R " << r << endl;
                 break;
             }
         }
@@ -438,7 +434,6 @@ void Client::manage_menu(int clie_fd, string ID)
         bzero(r, sizeof(r));
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
-            cout << "R: " << r << endl;
             break;
         }
     }
@@ -464,7 +459,7 @@ void Client::manage_menu(int clie_fd, string ID)
 
             cin >> in;
             Net::Write(clie_fd, in.c_str(), in.length());
-
+            system("clear");
             if (in == MAN_ADDGROUP)
             {
                 man_addgroup(clie_fd);
@@ -577,6 +572,7 @@ void Client::group_menu(int clie_fd, string ID)
 
     while (true)
     {
+        system("clear");
         cout << "+------------------+" << endl;
         cout << "|     ChatRoom     |" << endl;
         cout << "+------------------+" << endl;
@@ -593,7 +589,7 @@ void Client::group_menu(int clie_fd, string ID)
 
         cin >> in;
         Net::Write(clie_fd, in.c_str(), in.length());
-
+        system("clear");
         if (in == JOIN_GROUP)
         {
             publicChat(clie_fd, ID);

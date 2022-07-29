@@ -21,6 +21,7 @@ leveldb::DB *Server::Mdb;
 leveldb::DB *Server::Fdb;
 leveldb::DB *Server::Gdb;
 leveldb::DB *Server::GMdb;
+leveldb::DB *Server::NMdb;
 
 //构造函数传入接口与ip
 Server::Server(int port, string ip) : server_port(port), server_ip(ip){};
@@ -110,6 +111,12 @@ void Server::run()
     if (!s5.ok())
     {
         cerr << s5.ToString() << endl;
+    }
+
+    leveldb::Status s6 = leveldb::DB::Open(opt, "/tmp/serverdata/newmassage", &NMdb);
+    if (!s6.ok())
+    {
+        cerr << s6.ToString() << endl;
     }
 
     //网络连接

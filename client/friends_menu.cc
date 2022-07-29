@@ -163,7 +163,7 @@ void Client::friends_menu(int clie_fd, string ID)
 
     while (true)
     {
-
+        system("clear");
         cout << "+------------------+" << endl;
         cout << "|     ChatRoom     |" << endl;
         cout << "+------------------+" << endl;
@@ -179,7 +179,7 @@ void Client::friends_menu(int clie_fd, string ID)
 
         cin >> in;
         Net::Write(clie_fd, in.c_str(), in.length());
-
+        system("clear");
         if (in == ADD_FRIEND)
         {
             cout << " 请输入对方ID\n>";

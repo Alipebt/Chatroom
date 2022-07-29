@@ -132,6 +132,8 @@ bool Server::sign_menu(int clie_fd)
                 fd_in[clie_fd] = Server::sign_in(clie_fd);
                 if (fd_in[clie_fd])
                 {
+                    // thread remind(Server::remind, clie_fd);
+                    // remind.detach();
                     main_menu(clie_fd);
                 }
             }
@@ -140,3 +142,29 @@ bool Server::sign_menu(int clie_fd)
     }
     return true;
 }
+
+// void Server::remind(int clie_fd)
+// {
+//     Value getv, member;
+//     string gets;
+//     string send;
+//     Reader rd;
+//     FastWriter w;
+
+//     int i = 0;
+
+//     while (true)
+//     {
+//         sleep(0.5);
+//         leveldb::Status s = NMdb->Get(leveldb::ReadOptions(), fd_ID[clie_fd], &gets);
+//         rd.parse(gets, getv);
+//         for (; i < (int)getv.size(); i++)
+//         {
+//             sleep(0.1);
+//             member = getv[i];
+//             send = w.write(member);
+//             cout << "已发送" << send << endl;
+//             Net::Write(clie_fd, send.c_str(), send.length());
+//         }
+//     }
+// }

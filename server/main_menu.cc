@@ -69,6 +69,7 @@ void Server::main_menu(int clie_fd)
             else if (strcmp(r, "5") == 0)
             {
                 // send_file(clie_fd);
+                cout_file(clie_fd);
                 file_menu(clie_fd, "send");
             }
             else
@@ -81,5 +82,37 @@ void Server::main_menu(int clie_fd)
         bzero(r, sizeof(r));
     }
     cout << "退出main_menu" << endl;
+    return;
+}
+
+void Server::cout_file(int clie_fd)
+{
+    string gets;
+    Value getv, member;
+    Reader rd;
+    FastWriter w;
+    string send;
+    char r[BUFSIZ];
+    leveldb::Status s = NMdb->Get(leveldb::ReadOptions(), fd_ID[clie_fd], &gets);
+    rd.parse(gets, getv);
+    for (int i = 0; i < (int)getv.size(); i++)
+    {
+
+        member = getv[i];
+        send = w.write(member);
+
+        Net::Write(clie_fd, send.c_str(), send.length());
+
+        while (true)
+        {
+            if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
+            {
+                break;
+            }
+        }
+    }
+
+    Net::Write(clie_fd, "END", sizeof("END"));
+
     return;
 }

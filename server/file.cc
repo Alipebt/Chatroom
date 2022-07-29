@@ -17,6 +17,11 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
     // char path[BUFSIZ];
     string path;
 
+    Value putv, member;
+    string puts, gets;
+    FastWriter w;
+    Reader rd;
+
     while (true)
     {
         bzero(r, sizeof(r));
@@ -71,6 +76,15 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
         }
     }
 
+    leveldb::Status s = NMdb->Get(leveldb::ReadOptions(), ID, &gets);
+    rd.parse(gets, putv);
+    member["sender"] = fd_ID[clie_fd];
+    member["opt"] = "newfm";
+    member["fname"] = fw.name;
+    putv.append(member);
+    puts = w.write(putv);
+    leveldb::Status s2 = NMdb->Put(leveldb::WriteOptions(), ID, puts);
+
     return;
 }
 void Server::send_file(int clie_fd, string gorp, string ID)
@@ -81,6 +95,7 @@ void Server::send_file(int clie_fd, string gorp, string ID)
     char *filename;
     string path, name;
     char sendbuf[BUFSIZ];
+
     while (true)
     {
         while (true)
@@ -124,7 +139,7 @@ void Server::send_file(int clie_fd, string gorp, string ID)
         long sum = 0;
         while (true)
         {
-            sleep(0.02);
+            sleep(0.1);
             if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
             {
                 sum += ret;

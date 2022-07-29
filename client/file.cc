@@ -111,13 +111,13 @@ void Client::recv_file(int clie_fd)
     long sum = 0;
     while (true)
     {
-        // sleep(0.05);
+        // sleep(0.2);
         bzero(rf, sizeof(rf));
         if ((ret = read(clie_fd, rf, sizeof(rf))) >= 0)
         {
 
             sum += ret;
-            // cout << sum << endl;
+            cout << sum << endl;
             write(fd, rf, ret);
             if (sum >= fw.size)
             {

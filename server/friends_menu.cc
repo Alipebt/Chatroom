@@ -225,7 +225,7 @@ void Server::cout_friend(int clie_fd, string opt)
             else if (member["opt"] == BE_FRIENDS && opt == BE_FRIENDS)
             {
                 cout << "---------" << member["sender"].asString() << endl;
-                for (int j = 0; j < fd_ID.size(); j++)
+                for (int j = 0; j < (int)fd_ID.size(); j++)
                 {
                     if (fd_ID[j] == member["sender"].asString())
                     { // j就是对方的 fd
@@ -298,7 +298,6 @@ void Server::mas_friend(int clie_fd)
     {
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
-            cout << "R: " << r << endl;
             if (strcmp(r, "q") == 0)
             {
                 break;
@@ -521,6 +520,7 @@ void Server::friends_menu(int clie_fd)
             }
             else if (strcmp(r, DEL_FRIEND) == 0)
             {
+                cout_friend(clie_fd, BE_FRIENDS);
                 del_friend(clie_fd);
             }
             else if (strcmp(r, VIEW_FRIENDS) == 0)
@@ -536,6 +536,7 @@ void Server::friends_menu(int clie_fd)
             }
             else if (strcmp(r, IGN_FRIEND) == 0)
             {
+                cout_friend(clie_fd, BE_FRIENDS);
                 ignore_friend(clie_fd);
             }
             else if (strcmp(r, EXIT) == 0)

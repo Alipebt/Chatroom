@@ -66,6 +66,7 @@ private:
     static leveldb::DB *Fdb;     // 好友请求
     static leveldb::DB *Gdb;     //群
     static leveldb::DB *GMdb;    //群消息
+    static leveldb::DB *NMdb;    //新消息
 
 public:
     Server(int port, string ip);
@@ -77,6 +78,7 @@ public:
     static void friends_menu(int clie_fd);
     static void group_menu(int clie_fd);
 
+    static void remind(int clie_fd);
     static bool sign_in(int clie_fd);                    //登录判断
     static void sign_up(int clie_fd);                    //注册判断
     static void match_with(int clie_fd);                 //连接判断
@@ -97,6 +99,7 @@ public:
     static void man_delmanager(int clie_fd, string gID); //取消管理员
     static void man_delmember(int clie_fd, string gID);  //踢出成员
     static bool man_delgroup(int clie_fd, string gID);   //解散群
+    static void cout_file(int clie_fd);
 
     static void match_with_pub(int clie_fd);
     static void thread_send_pub(int clie_fd, string gID);

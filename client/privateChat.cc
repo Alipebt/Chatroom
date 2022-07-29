@@ -86,6 +86,7 @@ void Client::privateChat(int clie_fd, string ID)
 
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
+            system("clear");
             if (strcmp(r, "success") == 0)
             {
                 cout << "已与" << in << "连接:" << endl;
