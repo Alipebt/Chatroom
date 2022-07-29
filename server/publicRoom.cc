@@ -86,6 +86,7 @@ void Server::thread_send_pub(int clie_fd, string gID)
 
             if (member["massage"].asString() == ROOM_EXIT && member["sender"].asString() == fd_ID[clie_fd])
             {
+                cout << "#############33" << endl;
 
                 getv.removeIndex(i, &delv);
                 send = w.write(getv);
@@ -115,6 +116,7 @@ void Server::thread_send_pub(int clie_fd, string gID)
         }
     }
     // pthread_mutex_unlock(&fd_mutex[clie_fd]);
+    cout << "$$$$$$$$$$$$$$444" << endl;
     cout << "结束发送线程" << endl;
     is_first_open = true;
     return;

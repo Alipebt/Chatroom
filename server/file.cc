@@ -124,7 +124,7 @@ void Server::send_file(int clie_fd, string gorp, string ID)
         long sum = 0;
         while (true)
         {
-            sleep(0.002);
+            sleep(0.02);
             if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
             {
                 sum += ret;

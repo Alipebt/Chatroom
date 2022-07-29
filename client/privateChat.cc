@@ -39,7 +39,6 @@ void Client::thread_recv(int clie_fd, string ID)
         {
 
             cout << "客户端接收异常" << endl;
-            break;
         }
 
         rd.parse(r, recv);
@@ -95,10 +94,6 @@ void Client::privateChat(int clie_fd, string ID)
 
                 send.join();
                 recv.join();
-            }
-            else if (strcmp(r, "ignore") == 0)
-            {
-                cout << "你已屏蔽该好友" << endl;
             }
             else if (strcmp(r, "NULL") == 0)
             {

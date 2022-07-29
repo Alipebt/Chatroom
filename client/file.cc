@@ -41,6 +41,7 @@ void Client::send_file(int clie_fd)
         long sum = 0;
         while (true)
         {
+            sleep(0.02);
             if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
             {
                 sum += ret;
@@ -76,8 +77,7 @@ void Client::recv_file(int clie_fd)
 
     cout << " 请输入要保存的文件名\n>";
     cin >> filename;
-    cout << " 请输入要保存的路径\n>";
-    cin >> recvpath;
+    getcwd(recvpath, BUFSIZ);
 
     Net::Write(clie_fd, filename.c_str(), filename.length());
 
@@ -98,7 +98,7 @@ void Client::recv_file(int clie_fd)
     memcpy(&fw, r, sizeof(fw));
     cout << fw.size << "=======" << fw.name << endl;
 
-    sprintf(path, "%s%s", recvpath, fw.name);
+    sprintf(path, "%s/%s", recvpath, fw.name);
 
     int fd = open(path, O_WRONLY | O_CREAT | O_APPEND, 0666);
     if (fd == NULL)
@@ -117,7 +117,7 @@ void Client::recv_file(int clie_fd)
         {
 
             sum += ret;
-            cout << sum << endl;
+            // cout << sum << endl;
             write(fd, rf, ret);
             if (sum >= fw.size)
             {
@@ -126,6 +126,7 @@ void Client::recv_file(int clie_fd)
             }
         }
     }
+    cout << path << endl;
 
     return;
 }
