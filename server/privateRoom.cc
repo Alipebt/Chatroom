@@ -109,8 +109,28 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
     string oldmassage;
     Value all_massage;
 
-    string gets;
-    Value getv, getv2;
+    string gets, getsi;
+    Value getv, getv2, memberi, getvi;
+
+    leveldb::Status statuc3 = IPdb->Get(leveldb::ReadOptions(), recverID, &getsi);
+    if (rd.parse(getsi, getvi))
+    {
+        cout << "========1" << endl;
+        for (int j = 0; j < (int)getvi["ignore"].size(); j++)
+        {
+
+            memberi = getvi["ignore"][j].asString();
+            cout << "========1" << endl;
+            if (memberi == senderID)
+            {
+                cout << "========3" << endl;
+                cout << memberi << senderID << endl;
+                ignore = true;
+                break;
+            }
+            cout << "========2" << endl;
+        }
+    }
 
     while (true)
     {
@@ -141,6 +161,12 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
 
                         continue;
                     }
+                }
+
+                if (memberi == member["sender"].asString())
+                {
+                    cout << "ignore" << endl;
+                    continue;
                 }
                 send = w.write(member);
 
@@ -211,9 +237,9 @@ void Server::match_with(int clie_fd)
 
     string buf;
 
-    string gets;
-    string members;
-    Value getv;
+    // string gets;
+    // string members;
+    // Value getv;
 
     char r[BUFSIZ];
 
@@ -231,19 +257,6 @@ void Server::match_with(int clie_fd)
     {
         recverID = match["recver"].asString();
         senderID = match["sender"].asString();
-
-        leveldb::Status statuc3 = IPdb->Get(leveldb::ReadOptions(), senderID, &gets);
-        rd.parse(gets, getv);
-
-        for (int i = 0; i < (int)getv["ignore"].size(); i++)
-        {
-            members = getv["ignore"][i].asString();
-            if (members == recverID)
-            {
-                ignore = true;
-                break;
-            }
-        }
 
         leveldb::Status status1 = IPdb->Get(leveldb::ReadOptions(), recverID, &buf);
         if (status1.ok())
@@ -270,19 +283,13 @@ void Server::match_with(int clie_fd)
                 {
 
                     cout << clie_fd << "与" << recverID << "匹配成功" << endl;
-                    if (ignore)
-                    {
-                        Net::Write(clie_fd, "ignore", 7);
-                    }
-                    else
-                    {
-                        Net::Write(clie_fd, "success", 7);
-                        thread send(thread_send, clie_fd, recverID);
-                        thread recv(thread_recv, clie_fd, recverID);
 
-                        send.join();
-                        recv.join();
-                    }
+                    Net::Write(clie_fd, "success", 7);
+                    thread send(thread_send, clie_fd, recverID);
+                    thread recv(thread_recv, clie_fd, recverID);
+
+                    send.join();
+                    recv.join();
 
                     cout << "已退出连接" << endl;
                 }

@@ -62,6 +62,7 @@ void Client::sign_in_up(int clie_fd)
 
             info["ID"] = ID;
             info["pass"] = pass1;
+
             FastWriter w;
             s = w.write(info);
 
@@ -115,6 +116,7 @@ void Client::sign_in_up(int clie_fd)
                 Value info;
                 info["ID"] = ID;
                 info["pass"] = pass1;
+                info["ignore"].append("");
                 // info["name"] = name;
 
                 //有格式序列化
