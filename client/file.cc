@@ -37,15 +37,16 @@ void Client::send_file(int clie_fd)
         // cout << "文件:" << fw.name << "开始发送" << endl;
         // sendfile(clie_fd, fp, 0, statbuf.st_size);
         // cout << "文件:" << fw.name << "发送成功" << endl;
-        long ret;
+        long ret, retw;
         long sum = 0;
         while (true)
         {
             if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
             {
-                sum += ret;
+
+                retw = write(clie_fd, sendbuf, ret);
+                sum += retw;
                 cout << sum << endl;
-                write(clie_fd, sendbuf, ret);
 
                 if (ret < BUFSIZ)
                 {
