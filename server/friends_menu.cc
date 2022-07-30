@@ -118,6 +118,19 @@ void Server::add_friend(int clie_fd, char *re)
                                             leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
                                         }
                                     }
+
+                                    if (!(int)recv_from_db2.size())
+                                    {
+                                        member2["opt"] = BE_FRIENDS;
+                                        member2["sender"] = sender;
+                                        member2["recver"] = recver;
+
+                                        recv_from_db2.append(member2);
+                                        s = w.write(recv_from_db2);
+                                        cout << "S3 :" << s << endl;
+
+                                        leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
+                                    }
                                 }
                                 else
                                 {
@@ -199,14 +212,16 @@ void Server::add_friend(int clie_fd, char *re)
                         check_status(status);
                     }
                 }
-                else
+                else if (!success)
                 {
+                    cout << "发送了失败1" << endl;
                     Net::Write(clie_fd, "fail", 4);
                 }
             }
             else
             {
                 //无此用户
+                cout << "发送了失败2" << endl;
                 Net::Write(clie_fd, "fail", 4);
             }
         }
@@ -346,6 +361,8 @@ void Server::mas_friend(int clie_fd)
         }
         bzero(r, sizeof(r));
     }
+
+    return;
 }
 
 void Server::del_friend(int clie_fd)

@@ -67,7 +67,10 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
             // cout << sum << endl;
 
             ret2 = write(fd, rf, ret);
-            sum2 += ret2;
+            if (ret2 > 0)
+            {
+                sum2 += ret2;
+            }
             cout << sum2 << endl;
 
             if (sum2 >= fw.size)
@@ -96,7 +99,7 @@ void Server::send_file(int clie_fd, string gorp, string ID)
     char r[BUFSIZ];
     char *filename;
     string path, name;
-    char sendbuf[BUFSIZ];
+    char sendbuf[BUFSIZ]; // bufsiz
     while (true)
     {
         while (true)
@@ -136,27 +139,53 @@ void Server::send_file(int clie_fd, string gorp, string ID)
         // cout << "文件:" << fw.name << "开始发送" << statbuf.st_size << endl;
         // sendfile(clie_fd, fp, 0, statbuf.st_size);
         // cout << "文件:" << fw.name << "发送成功" << endl;
+        // long ret, retw;
+        // long sum = 0;
+        // while (true)
+        // {
+        //     if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
+        //     {
+
+        //         retw = write(clie_fd, sendbuf, ret);
+        //         sum += retw;
+        //         cout << sum << endl;
+
+        //         if (sum >= fw.size)
+        //         {
+        //             cout << "BREAK" << endl;
+        //             break;
+        //         }
+        //         bzero(sendbuf, BUFSIZ);
+        //     }
+        // }
         long ret, retw;
         long sum = 0;
         while (true)
         {
-            sleep(0.002);
+            sleep(0.02);
             if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
             {
 
                 retw = write(clie_fd, sendbuf, ret);
-                sum += retw;
+                if (retw > 0)
+                {
+                    sum += retw;
+                }
                 cout << sum << endl;
+                if (ret > retw)
+                {
+                    cout << "重设偏移" << endl;
+                    lseek(fp, sum, SEEK_SET);
+                }
 
                 if (sum >= fw.size)
                 {
                     cout << "BREAK" << endl;
                     break;
                 }
-                bzero(sendbuf, BUFSIZ);
+                bzero(sendbuf, 1024);
             }
         }
-
         Net::Close(fp);
         break;
     }

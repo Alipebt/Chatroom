@@ -238,6 +238,7 @@ void Client::friends_menu(int clie_fd, string ID)
                     Net::Write(clie_fd, in.c_str(), in.length());
                     break;
                 }
+
                 friends["recver"] = in;
                 cout << " ( y/n/q )" << endl;
                 cin >> in;
@@ -262,16 +263,20 @@ void Client::friends_menu(int clie_fd, string ID)
 
                 s = w.write(friends);
                 Net::Write(clie_fd, s.c_str(), s.length());
-
-                if (read(clie_fd, r, sizeof(r)) > 0)
+                while (true)
                 {
-                    if (strcmp(r, "befriends") == 0)
+                    if (read(clie_fd, r, sizeof(r)) > 0)
                     {
-                        cout << "你与" << in << "已是好友" << endl;
-                    }
-                    else if (strcmp(r, "fail") == 0)
-                    {
-                        cout << "无此请求" << endl;
+                        if (strcmp(r, "befriends") == 0)
+                        {
+                            cout << "你与" << in << "已是好友" << endl;
+                        }
+                        else if (strcmp(r, "fail") == 0)
+                        {
+                            cout << "无此请求" << endl;
+                        }
+                        cout << "xRx" << r << endl;
+                        break;
                     }
                 }
             }

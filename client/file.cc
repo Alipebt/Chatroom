@@ -37,6 +37,25 @@ void Client::send_file(int clie_fd)
         // cout << "文件:" << fw.name << "开始发送" << endl;
         // sendfile(clie_fd, fp, 0, statbuf.st_size);
         // cout << "文件:" << fw.name << "发送成功" << endl;
+        // long ret, retw;
+        // long sum = 0;
+        // while (true)
+        // {
+        //     if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
+        //     {
+
+        //         retw = write(clie_fd, sendbuf, ret);
+        //         sum += retw;
+        //         cout << sum << endl;
+
+        //         if (sum >= fw.size)
+        //         {
+        //             cout << "BREAK" << endl;
+        //             break;
+        //         }
+        //         bzero(sendbuf, BUFSIZ);
+        //     }
+        // }
         long ret, retw;
         long sum = 0;
         while (true)
@@ -45,8 +64,17 @@ void Client::send_file(int clie_fd)
             {
 
                 retw = write(clie_fd, sendbuf, ret);
-                sum += retw;
-                cout << sum << endl;
+                if (retw > 0)
+                {
+                    sum += retw;
+                }
+                // cout << sum << endl;
+
+                if (ret > retw)
+                {
+                    cout << "重设偏移" << endl;
+                    lseek(fp, sum, SEEK_SET);
+                }
 
                 if (sum >= fw.size)
                 {
@@ -69,7 +97,7 @@ void Client::recv_file(int clie_fd)
     struct file_wrap fw;
 
     char r[BUFSIZ];
-    char rf[BUFSIZ];
+    char rf[BUFSIZ]; // bufsiz
     char path[BUFSIZ];
 
     string filename;
@@ -111,17 +139,25 @@ void Client::recv_file(int clie_fd)
 
     long ret, ret2;
     long sum = 0;
+    long sum2 = 0;
     while (true)
     {
         // sleep(0.05);
         bzero(rf, sizeof(rf));
-        if ((ret = read(clie_fd, rf, sizeof(rf))) >= 0)
+        if ((ret = read(clie_fd, rf, sizeof(rf))) > 0)
         {
-
+            if (ret > 0)
+            {
+                sum += ret;
+            }
             ret2 = write(fd, rf, ret);
-            sum += ret2;
-            cout << sum << endl;
-            if (sum >= fw.size)
+            if (ret2 > 0)
+            {
+                sum2 += ret2;
+            }
+
+            cout << sum2 << "  " << sum << endl;
+            if (sum2 >= fw.size)
             {
                 cout << "BREAK" << endl;
                 break;

@@ -131,6 +131,15 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
         }
     }
 
+    // //历史消息
+    // leveldb::Status s = Mdb->Get(leveldb::ReadOptions(), recverID, &gets);
+    // cout << gets << endl;
+    // Net::Write(clie_fd, gets.c_str(), gets.length());
+    // rd.parse(gets, getv);
+    // i = (int)getv.size();
+
+    //私聊消息
+
     while (true)
     {
         sleep(0.05);
@@ -146,7 +155,11 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
         for (; i < (int)getv.size(); i++)
         {
             sleep(0.05);
-
+            // if (is_first_open)
+            // {
+            //     is_first_open = false;
+            //     continue;
+            // }
             member = getv[i];
 
             if (member["sender"].asString() == senderID || member["sender"].asString() == fd_ID[clie_fd])
@@ -168,7 +181,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
                     continue;
                 }
                 send = w.write(member);
-
+                cout << "xSENDx" << send << endl;
                 Net::Write(clie_fd, send.c_str(), send.length());
 
                 if (member["massage"].asString() == ROOM_EXIT && member["sender"].asString() == fd_ID[clie_fd])

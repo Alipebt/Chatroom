@@ -105,6 +105,10 @@ public:
     static void thread_send_pub(int clie_fd);
     static void thread_recv_pub(int clie_fd, string ID);
 
+    static ssize_t read_line(int sockfd, void *buf, size_t maxline);
+    static ssize_t read_peek(int sockfd, void *buf, size_t len);
+    static ssize_t readn(int fd, void *buf, size_t count);
+
     static void thread_send(int clie_fd);                //发送线程
     static void thread_recv(int clie_fd, string ID);     //接收线程
     static void thread_friends(int clie_fd, string opt); //好友管理线程

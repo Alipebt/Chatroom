@@ -230,8 +230,8 @@ void Client::run()
     Net::Connect(clie_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 
     int flag = fcntl(clie_fd, F_GETFL);
-    flag |= O_NONBLOCK;
-    // flag &= ~O_NONBLOCK;
+    // flag |= O_NONBLOCK;
+    flag &= ~O_NONBLOCK;
     fcntl(clie_fd, F_SETFL, flag); //,,flag
 
     sign_in_up(clie_fd);
