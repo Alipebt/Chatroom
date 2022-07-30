@@ -16,6 +16,10 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
     char rf[BUFSIZ];
     // char path[BUFSIZ];
     string path;
+    string gets, puts;
+    Value putv, member;
+    Reader rd;
+    FastWriter w;
 
     while (true)
     {
@@ -70,6 +74,15 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
             }
         }
     }
+
+    leveldb::Status s = NMdb->Get(leveldb::ReadOptions(), ID, &gets);
+    rd.parse(gets, putv);
+    member["sender"] = fd_ID[clie_fd];
+    member["opt"] = "newfm";
+    member["fname"] = fw.name;
+    putv.append(member);
+    puts = w.write(putv);
+    leveldb::Status s2 = NMdb->Put(leveldb::WriteOptions(), ID, puts);
 
     return;
 }
@@ -243,4 +256,36 @@ void Server::file_menu(int clie_fd, string opt)
     {
         Net::Write(clie_fd, EXIT, sizeof(EXIT));
     }
+}
+
+void Server::cout_file(int clie_fd)
+{
+    string gets;
+    Value getv, member;
+    Reader rd;
+    FastWriter w;
+    string send;
+    char r[BUFSIZ];
+    leveldb::Status s = NMdb->Get(leveldb::ReadOptions(), fd_ID[clie_fd], &gets);
+    rd.parse(gets, getv);
+    for (int i = 0; i < (int)getv.size(); i++)
+    {
+
+        member = getv[i];
+        send = w.write(member);
+
+        Net::Write(clie_fd, send.c_str(), send.length());
+
+        while (true)
+        {
+            if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
+            {
+                break;
+            }
+        }
+    }
+
+    Net::Write(clie_fd, "END", sizeof("END"));
+
+    return;
 }

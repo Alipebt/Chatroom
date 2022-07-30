@@ -209,6 +209,10 @@ void Client::friends_menu(int clie_fd, string ID)
 
                         cout << "无此用户" << endl;
                     }
+                    else if (strcmp(r, "doubleadd") == 0)
+                    {
+                        cout << "请勿重复申请" << endl;
+                    }
                     break;
                 }
             }

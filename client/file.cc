@@ -89,11 +89,11 @@ void Client::recv_file(int clie_fd)
             break;
         }
     }
-    // if (strcmp(r, "fail") == 0)
-    // {
-    //     cout << "无此文件" << endl;
-    //     return;
-    // }
+    if (strcmp(r, "fail") == 0)
+    {
+        cout << "无此文件" << endl;
+        return;
+    }
 
     memcpy(&fw, r, sizeof(fw));
     cout << fw.size << "=======" << fw.name << endl;
@@ -104,6 +104,7 @@ void Client::recv_file(int clie_fd)
     if (fd == NULL)
     {
         perror("无效的路径");
+
         return;
     }
 
@@ -126,6 +127,8 @@ void Client::recv_file(int clie_fd)
             }
         }
     }
+    cout << path << endl;
+    close(fd);
 
     return;
 }
@@ -179,6 +182,30 @@ void Client::file_menu(int clie_fd, string opt)
     else
     {
         cout << "取消操作" << endl;
+    }
+
+    return;
+}
+
+void Client::cout_file(int clie_fd)
+{
+    char r[BUFSIZ];
+    Value getv;
+    Reader rd;
+    while (true)
+    {
+
+        if (read(clie_fd, r, sizeof(r)) > 0)
+        {
+            if (strcmp(r, "END") == 0)
+            {
+                break;
+            }
+            rd.parse(r, getv);
+            cout << "来自" << getv["sender"].asString() << "的文件：" << getv["fname"] << endl;
+
+            Net::Write(clie_fd, ACCEPT, sizeof(ACCEPT));
+        }
     }
 
     return;

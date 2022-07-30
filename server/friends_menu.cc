@@ -32,6 +32,7 @@ void Server::add_friend(int clie_fd, char *re)
 
     bool id_used = false;
     bool mas = false;
+    bool success = false;
 
     if (strcmp(r, "NULL") == 0)
     {
@@ -73,106 +74,134 @@ void Server::add_friend(int clie_fd, char *re)
                 //发送者
                 leveldb::Status status3 = Fdb->Get(leveldb::ReadOptions(), sender, &recv_s);
 
-                rd.parse(recv_s, recv_from_db);
-
-                for (int i = 0; i < (int)recv_from_db.size(); i++)
+                if (rd.parse(recv_s, recv_from_db))
                 {
 
-                    member = recv_from_db[i];
-                    if (member["sender"] == recver)
+                    for (int i = 0; i < (int)recv_from_db.size(); i++)
                     {
 
-                        if (member["opt"] == ADD_FRIEND)
+                        member = recv_from_db[i];
+                        if (member["sender"] == recver)
                         {
 
-                            //对方也发了请求
-                            member["opt"] = BE_FRIENDS;
-                            recv_from_db.removeIndex(i, &deleteValue);
-
-                            recv_from_db.append(member);
-                            s = w.write(recv_from_db);
-                            cout << "S1: " << s << endl;
-
-                            leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), sender, s);
-
-                            //修改对方的好友
-                            leveldb::Status status2 = Fdb->Get(leveldb::ReadOptions(), recver, &sr);
-                            rd.parse(sr, recv_from_db2);
-                            cout << "sr: " << sr << "#" << (int)recv_from_db2.size() << endl;
-                            for (int j = 0; j < (int)recv_from_db2.size(); j++)
+                            if (member["opt"] == ADD_FRIEND)
                             {
-                                member2 = recv_from_db2[j];
-                                if (member2["sender"] == sender && member2["recver"] == recver)
+
+                                //对方也发了请求
+                                member["opt"] = BE_FRIENDS;
+                                recv_from_db.removeIndex(i, &deleteValue);
+
+                                recv_from_db.append(member);
+                                s = w.write(recv_from_db);
+                                cout << "S1: " << s << endl;
+
+                                leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), sender, s);
+
+                                //修改对方的好友
+                                leveldb::Status status2 = Fdb->Get(leveldb::ReadOptions(), recver, &sr);
+                                if (rd.parse(sr, recv_from_db2))
                                 {
-                                    //修改对方的好友列表
+                                    cout << "sr: " << sr << "#" << (int)recv_from_db2.size() << endl;
+                                    for (int j = 0; j < (int)recv_from_db2.size(); j++)
+                                    {
+                                        member2 = recv_from_db2[j];
+                                        if (member2["sender"] == sender && member2["recver"] == recver)
+                                        {
+                                            //修改对方的好友列表
+                                            member2["opt"] = BE_FRIENDS;
+                                            recv_from_db2.removeIndex(j, &deleteValue);
+
+                                            recv_from_db2.append(member2);
+                                            s = w.write(recv_from_db2);
+                                            cout << "S2: " << s << endl;
+
+                                            leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
+                                        }
+                                    }
+                                }
+                                else
+                                {
                                     member2["opt"] = BE_FRIENDS;
-                                    recv_from_db2.removeIndex(j, &deleteValue);
+                                    member2["sender"] = sender;
+                                    member2["recver"] = recver;
 
                                     recv_from_db2.append(member2);
                                     s = w.write(recv_from_db2);
-                                    cout << "S2: " << s << endl;
+                                    cout << "S3 :" << s << endl;
 
                                     leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
                                 }
+                                //////////////////////////////////////////////////////////////////////
+                                path = PATHP + recver + "/" + sender + "/";
+                                mkdir(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+                                path = PATHP + sender + "/" + recver + "/";
+                                mkdir(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+                                ///////////////////////////////////////////////////////////////////////
+                                success = true;
+                                Net::Write(clie_fd, "befriends", 9);
                             }
-                            if (!(int)recv_from_db2.size())
+                            else if (member["opt"] == BE_FRIENDS)
                             {
-                                member2["opt"] = BE_FRIENDS;
-                                member2["sender"] = sender;
-                                member2["recver"] = recver;
 
-                                recv_from_db2.append(member2);
-                                s = w.write(recv_from_db2);
-                                cout << "S3 :" << s << endl;
-
-                                leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
+                                //已经是好友
+                                success = true;
+                                Net::Write(clie_fd, "befriends", 9);
                             }
-                            //////////////////////////////////////////////////////////////////////
-                            path = PATHP + recver + "/" + sender + "/";
-                            mkdir(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
-                            path = PATHP + sender + "/" + recver + "/";
-                            mkdir(path.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
-                            ///////////////////////////////////////////////////////////////////////
-                            Net::Write(clie_fd, "befriends", 9);
                         }
-                        else if (member["opt"] == BE_FRIENDS)
-                        {
+                        //  if (!mas)
+                        // {
+                        //     //不是好友
 
-                            //已经是好友
-                            Net::Write(clie_fd, "befriends", 9);
-                        }
-                    }
-                    else if (!mas)
-                    {
-                        //不是好友
+                        //     leveldb::Status status2 = Fdb->Get(leveldb::ReadOptions(), recver, &sr);
+                        //     rd.parse(sr, recv_from_db2);
+                        //     rd.parse(r, member3);
 
-                        leveldb::Status status2 = Fdb->Get(leveldb::ReadOptions(), recver, &sr);
-                        rd.parse(sr, recv_from_db2);
-                        rd.parse(r, member3);
+                        //     recv_from_db2.append(member3);
+                        //     s = w.write(recv_from_db2);
+                        //     cout << "S4:  " << s << endl;
+                        //     leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
+                        //     check_status(status);
 
-                        recv_from_db2.append(member3);
-                        s = w.write(recv_from_db2);
-                        leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
-                        check_status(status);
+                        //     Net::Write(clie_fd, "success", 7);
+                        // }
+                        // else
+                        // {
 
-                        Net::Write(clie_fd, "success", 7);
-                    }
-                    else
-                    {
-
-                        Net::Write(clie_fd, "fail", 7);
+                        //     Net::Write(clie_fd, "fail", 7);
+                        // }
                     }
                 }
 
-                if (!(int)recv_from_db.size())
+                if (!mas && !success)
                 {
-
-                    Net::Write(clie_fd, "success", 7);
-                    rd.parse(r, member3);
-                    allv.append(member3);
-                    s = w.write(allv);
-                    leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
-                    check_status(status);
+                    bool doubleadd = false;
+                    leveldb::Status status4 = Fdb->Get(leveldb::ReadOptions(), recver, &recv_s);
+                    rd.parse(recv_s, allv);
+                    for (int i = 0; i < (int)allv.size(); i++)
+                    {
+                        member = allv[i];
+                        if (member["sender"].asString() == fd_ID[clie_fd] && member["opt"].asString() == ADD_FRIEND)
+                        {
+                            cout << "重复" << endl;
+                            Net::Write(clie_fd, "doubleadd", 6);
+                            doubleadd = true;
+                        }
+                    }
+                    if (!doubleadd)
+                    {
+                        cout << "成功" << endl;
+                        Net::Write(clie_fd, "success", 7);
+                        rd.parse(r, member3);
+                        allv.append(member3);
+                        s = w.write(allv);
+                        cout << "S5:  " << s << endl;
+                        leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
+                        check_status(status);
+                    }
+                }
+                else
+                {
+                    Net::Write(clie_fd, "fail", 4);
                 }
             }
             else

@@ -21,6 +21,7 @@ leveldb::DB *Server::Mdb;
 leveldb::DB *Server::Fdb;
 leveldb::DB *Server::Gdb;
 leveldb::DB *Server::GMdb;
+leveldb::DB *Server::NMdb;
 
 //构造函数传入接口与ip
 Server::Server(int port, string ip) : server_port(port), server_ip(ip){};
@@ -111,6 +112,11 @@ void Server::run()
     {
         cerr << s5.ToString() << endl;
     }
+    leveldb::Status s6 = leveldb::DB::Open(opt, "/tmp/serverdata/newmassage", &NMdb);
+    if (!s6.ok())
+    {
+        cerr << s6.ToString() << endl;
+    }
 
     //网络连接
 
@@ -123,7 +129,7 @@ void Server::run()
     bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(server_port);
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    serv_addr.sin_addr.s_addr = inet_addr(server_ip.c_str());
 
     socklen_t clie_addr_len;
     clie_addr_len = sizeof(clie_addr);

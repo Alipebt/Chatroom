@@ -69,6 +69,7 @@ void Server::main_menu(int clie_fd)
             else if (strcmp(r, "5") == 0)
             {
                 // send_file(clie_fd);
+                cout_file(clie_fd);
                 file_menu(clie_fd, "send");
             }
             else

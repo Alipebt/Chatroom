@@ -34,33 +34,29 @@ void Client::thread_recv(int clie_fd, string ID)
     while (true)
     {
         //同write
-        int ret = read(clie_fd, r, sizeof(r));
-        if (ret <= 0)
+        read(clie_fd, r, sizeof(r));
+
+        if (rd.parse(r, recv))
         {
 
-            cout << "客户端接收异常" << endl;
-            break;
+            if (recv["massage"].asString() == ROOM_EXIT)
+            {
+
+                cout << "客户端已收到关闭请求" << endl;
+                break;
+            }
+
+            if (recv["sender"].asString() != ID)
+            {
+                cout << LIGHT_BLUE << "               [" << recv["sender"].asString() << "]:" << recv["massage"].asString() << NONE << endl;
+            }
+            else
+            {
+                cout << recv["massage"].asString() << endl;
+            }
+
+            bzero(r, sizeof(r));
         }
-
-        rd.parse(r, recv);
-
-        if (recv["massage"].asString() == ROOM_EXIT)
-        {
-
-            cout << "客户端已收到关闭请求" << endl;
-            break;
-        }
-
-        if (recv["sender"].asString() != ID)
-        {
-            cout << LIGHT_BLUE << "               [" << recv["sender"].asString() << "]:" << recv["massage"].asString() << NONE << endl;
-        }
-        else
-        {
-            cout << recv["massage"].asString() << endl;
-        }
-
-        bzero(r, sizeof(r));
     }
     cout << "客户端接收线程关闭" << endl;
     return;
@@ -84,9 +80,10 @@ void Client::privateChat(int clie_fd, string ID)
     Net::Write(clie_fd, s.c_str(), s.length());
     while (true)
     {
-
+        bzero(r, sizeof(r));
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
+            cout << "R" << r << endl;
             if (strcmp(r, "success") == 0)
             {
                 cout << "已与" << in << "连接:" << endl;
@@ -114,6 +111,5 @@ void Client::privateChat(int clie_fd, string ID)
             }
             break;
         }
-        bzero(r, sizeof(r));
     }
 }

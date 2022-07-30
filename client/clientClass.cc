@@ -202,6 +202,7 @@ void Client::main_menu(int clie_fd, string ID)
         else if (in == "5")
         {
             // recv_file(clie_fd);
+            cout_file(clie_fd);
             file_menu(clie_fd, "recv");
         }
         else if (in == SIGN_OUT)
@@ -220,10 +221,16 @@ void Client::run()
     struct sockaddr_in serv_addr;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(server_port);
+    serv_addr.sin_addr.s_addr = inet_addr(server_ip.c_str());
 
     clie_fd = Net::Socket(AF_INET, SOCK_STREAM, 0);
 
     Net::Connect(clie_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+
+    int flag = fcntl(clie_fd, F_GETFL);
+    flag |= O_NONBLOCK;
+    // flag &= ~O_NONBLOCK;
+    fcntl(clie_fd, F_SETFL, flag); //,,flag
 
     sign_in_up(clie_fd);
 

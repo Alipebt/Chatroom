@@ -66,6 +66,7 @@ private:
     static leveldb::DB *Fdb;     // 好友请求
     static leveldb::DB *Gdb;     //群
     static leveldb::DB *GMdb;    //群消息
+    static leveldb::DB *NMdb;
 
 public:
     Server(int port, string ip);
@@ -105,6 +106,7 @@ public:
     static void send_file(int clie_fd, string gorp, string ID);
     static void recv_file(int clie_fd, string gorp, string ID);
     static void file_menu(int clie_fd, string opt);
+    static void cout_file(int clie_fd);
 
     static void thread_work(int clie_fd);                  //服务器线程工作
     static void thread_recv(int clie_fd, string recverID); //接收消息至数据库
