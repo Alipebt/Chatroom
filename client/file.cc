@@ -48,7 +48,7 @@ void Client::send_file(int clie_fd)
                 sum += retw;
                 cout << sum << endl;
 
-                if (ret < BUFSIZ)
+                if (sum >= fw.size)
                 {
                     cout << "BREAK" << endl;
                     break;
@@ -109,7 +109,7 @@ void Client::recv_file(int clie_fd)
         return;
     }
 
-    long ret;
+    long ret, ret2;
     long sum = 0;
     while (true)
     {
@@ -118,9 +118,9 @@ void Client::recv_file(int clie_fd)
         if ((ret = read(clie_fd, rf, sizeof(rf))) >= 0)
         {
 
-            sum += ret;
-            // cout << sum << endl;
-            write(fd, rf, ret);
+            ret2 = write(fd, rf, ret);
+            sum += ret2;
+            cout << sum << endl;
             if (sum >= fw.size)
             {
                 cout << "BREAK" << endl;

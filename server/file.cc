@@ -55,19 +55,22 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
         exit(1);
     }
 
-    long ret;
+    long ret, ret2;
     long sum = 0;
+    long sum2 = 0;
     while (true)
     {
         bzero(rf, sizeof(rf));
-        if ((ret = read(clie_fd, rf, sizeof(rf))) > 0)
+        if ((ret = read(clie_fd, rf, sizeof(rf))) >= 0)
         {
-            sum += ret;
-            cout << sum << endl;
+            // sum += ret;
+            // cout << sum << endl;
 
-            write(fd, rf, ret);
+            ret2 = write(fd, rf, ret);
+            sum2 += ret2;
+            cout << sum2 << endl;
 
-            if (sum >= fw.size /*< BUFSIZ*/)
+            if (sum2 >= fw.size)
             {
                 cout << "BREAK" << endl;
                 break;
@@ -145,7 +148,7 @@ void Server::send_file(int clie_fd, string gorp, string ID)
                 sum += retw;
                 cout << sum << endl;
 
-                if (ret < BUFSIZ)
+                if (sum >= fw.size)
                 {
                     cout << "BREAK" << endl;
                     break;

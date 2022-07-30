@@ -115,20 +115,19 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
     leveldb::Status statuc3 = IPdb->Get(leveldb::ReadOptions(), recverID, &getsi);
     if (rd.parse(getsi, getvi))
     {
-        cout << "========1" << endl;
+
         for (int j = 0; j < (int)getvi["ignore"].size(); j++)
         {
 
             memberi = getvi["ignore"][j].asString();
-            cout << "========1" << endl;
+
             if (memberi == senderID)
             {
-                cout << "========3" << endl;
+
                 cout << memberi << senderID << endl;
                 ignore = true;
                 break;
             }
-            cout << "========2" << endl;
         }
     }
 
