@@ -162,7 +162,7 @@ void Server::send_file(int clie_fd, string gorp, string ID)
         long sum = 0;
         while (true)
         {
-            sleep(0.02);
+            sleep(0.05);
             if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
             {
 
@@ -183,10 +183,13 @@ void Server::send_file(int clie_fd, string gorp, string ID)
                     cout << "BREAK" << endl;
                     break;
                 }
-                bzero(sendbuf, 1024);
+                bzero(sendbuf, BUFSIZ);
             }
         }
+        sleep(1);
+        // Net::Write(clie_fd, EOF, sizeof(EOF));
         Net::Close(fp);
+        Net::Close(clie_fd);
         break;
     }
 

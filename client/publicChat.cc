@@ -28,7 +28,7 @@ void Client::thread_recv_pub(int clie_fd, string ID)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (read_line(clie_fd, r, sizeof(r)) > 0)
         {
             rd.parse(r, recv);
             if (recv["massage"].asString() == ROOM_EXIT && recv["sender"].asString() == ID)

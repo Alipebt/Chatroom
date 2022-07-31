@@ -156,7 +156,7 @@ void Client::recv_file(int clie_fd)
                 sum2 += ret2;
             }
 
-            cout << sum2 << "  " << sum << endl;
+            cout << ret << "  " << ret2 << endl;
             if (sum2 >= fw.size)
             {
                 cout << "BREAK" << endl;
