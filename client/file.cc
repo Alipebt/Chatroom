@@ -56,10 +56,12 @@ void Client::send_file(int clie_fd)
         //         bzero(sendbuf, BUFSIZ);
         //     }
         // }
+        sleep(1);
         long ret, retw;
         long sum = 0;
         while (true)
         {
+            sleep(0.05);
             if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
             {
 
@@ -85,6 +87,7 @@ void Client::send_file(int clie_fd)
             }
         }
 
+        sleep(1);
         Net::Close(fp);
         break;
     }
@@ -143,7 +146,7 @@ void Client::recv_file(int clie_fd)
     while (true)
     {
         // sleep(0.05);
-        bzero(rf, sizeof(rf));
+
         if ((ret = read(clie_fd, rf, sizeof(rf))) > 0)
         {
             if (ret > 0)
@@ -156,15 +159,18 @@ void Client::recv_file(int clie_fd)
                 sum2 += ret2;
             }
 
-            cout << ret << "  " << ret2 << endl;
+            cout << sum2 << endl;
             if (sum2 >= fw.size)
             {
                 cout << "BREAK" << endl;
                 break;
             }
+            bzero(rf, sizeof(rf));
         }
     }
+    sleep(1);
     cout << path << endl;
+    bzero(rf, sizeof(rf));
     close(fd);
 
     return;
@@ -226,6 +232,7 @@ void Client::file_menu(int clie_fd, string opt)
 
 void Client::cout_file(int clie_fd)
 {
+
     char r[BUFSIZ];
     Value getv;
     Reader rd;

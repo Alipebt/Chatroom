@@ -158,6 +158,7 @@ void Server::send_file(int clie_fd, string gorp, string ID)
         //         bzero(sendbuf, BUFSIZ);
         //     }
         // }
+        sleep(1);
         long ret, retw;
         long sum = 0;
         while (true)
@@ -186,10 +187,11 @@ void Server::send_file(int clie_fd, string gorp, string ID)
                 bzero(sendbuf, BUFSIZ);
             }
         }
+
         sleep(1);
         // Net::Write(clie_fd, EOF, sizeof(EOF));
         Net::Close(fp);
-        Net::Close(clie_fd);
+
         break;
     }
 
@@ -296,6 +298,7 @@ void Server::file_menu(int clie_fd, string opt)
 
 void Server::cout_file(int clie_fd)
 {
+    cout << "进入发文件" << endl;
     string gets;
     Value getv, member;
     Reader rd;
@@ -309,6 +312,7 @@ void Server::cout_file(int clie_fd)
 
         member = getv[i];
         send = w.write(member);
+        cout << "发送文件信息" << send << endl;
 
         Net::Write(clie_fd, send.c_str(), send.length());
 
@@ -316,11 +320,12 @@ void Server::cout_file(int clie_fd)
         {
             if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
             {
+                cout << "受到" << r << endl;
                 break;
             }
         }
     }
-
+    cout << "结束" << endl;
     Net::Write(clie_fd, "END", sizeof("END"));
 
     return;

@@ -39,7 +39,7 @@ void Server::main_menu(int clie_fd)
 
         if (read(clie_fd, r, sizeof(r)) > 0)
         {
-
+            cout << r << endl;
             if (strcmp(r, PRIVATE) == 0)
             {
                 match_with(clie_fd);
