@@ -49,13 +49,19 @@ using namespace std;
 class Server
 {
 private:
-    int server_port;                //服务器端口号
-    int link_fd;                    //与客户端建立连接的套接字描述符
-    string server_ip;               //服务器ip
+    int server_port;  //服务器端口号
+    int link_fd;      //与客户端建立连接的套接字描述符
+    string server_ip; //服务器ip
+
+    static int imas;
+
     static vector<bool> fd_arr;     //保存所有套接字描述符的连接状态
     static vector<bool> fd_pthread; //套接字描述符的线程
     static vector<string> fd_ID;    //保存套接字对应的ID
     static vector<bool> fd_in;      //保存套接字描述符登录状态
+    static vector<bool> fd_new;
+
+    static vector<int> fd_bor;
 
     static vector<pthread_mutex_t> fd_mutex; //锁
     static pthread_mutex_t mutex;
@@ -111,6 +117,8 @@ public:
     static void thread_work(int clie_fd);                  //服务器线程工作
     static void thread_recv(int clie_fd, string recverID); //接收消息至数据库
     static void thread_send(int clie_fd, string recverID); //发送数据库消息
+
+    static void thread_worknm(int new_fd, int idfd);
 
     static void check_status(leveldb::Status status);
 };

@@ -70,6 +70,9 @@ void Client::thread_recv(int clie_fd, string ID)
 
     //私聊消息
 
+    cout << endl
+         << "#history#" << endl;
+
     while (true)
     {
         //同write
@@ -216,7 +219,7 @@ ssize_t Client::read_line(int sockfd, void *buf, size_t maxline)
         {
             if (pbuf[i] == '\n') //如果有换行符
             {
-                cout << "读到换行" << endl;
+                // cout << "读到换行" << endl;
                 ret = readn(sockfd, pbuf, i + 1); //读取一行
                 if (ret != i + 1)                 //一定会读到i+1个字符，否则是读取出错
                 {

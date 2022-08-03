@@ -23,7 +23,7 @@ cc_binary(
         "server.cc",
         "group_menu.cc",
         "publicRoom.cc",
-        "file.cc"],
+        "file.cc","newmas.cc"],
     deps = ["net_wrap","serverClass"],
     linkopts =["-lleveldb"],
 )

@@ -10,7 +10,11 @@
 vector<bool> Server::fd_arr(1000, false); //初始化vector
 vector<bool> Server::fd_pthread(1000, false);
 vector<bool> Server::fd_in(1000, false);
+vector<bool> Server::fd_new(1000, false);
 vector<string> Server::fd_ID(1000, "0");
+vector<int> Server::fd_bor(1000, 0);
+
+int Server::imas = 0;
 
 pthread_mutex_t Server::mutex;
 vector<pthread_mutex_t> Server::fd_mutex(1000, mutex);
@@ -150,6 +154,8 @@ void Server::run()
 
     Net::Epoll_ctl(ep_fd, EPOLL_CTL_ADD, link_fd, &tep);
 
+    int newmas = 1;
+
     while (true)
     {
         int n = Net::Epoll_wait(ep_fd, ep, EPOLL_SIZE, 0);
@@ -161,6 +167,7 @@ void Server::run()
             }
             if (ep[i].data.fd == link_fd)
             {
+
                 clie_fd = Net::Accept(link_fd, (struct sockaddr *)&clie_addr, &clie_addr_len);
 
                 int flag = fcntl(clie_fd, F_GETFL);
@@ -172,8 +179,15 @@ void Server::run()
 
                 cout << "----" << clie_fd << "已连接----" << endl;
                 fd_arr[clie_fd] = true;
+
+                if (newmas % 2 == 0)
+                {
+                    fd_new[clie_fd] = true;
+                }
+                newmas++;
+                cout << "$" << clie_fd << fd_new[clie_fd] << endl;
             }
-            else if (!fd_pthread[ep[i].data.fd] && fd_arr[clie_fd])
+            else if (!fd_pthread[ep[i].data.fd] && fd_arr[clie_fd] && !fd_new[ep[i].data.fd])
             {
                 int sockfd = ep[i].data.fd;
 
@@ -181,8 +195,34 @@ void Server::run()
                 cout << "为" << sockfd << "创建线程" << endl;
                 fd_pthread[sockfd] = true;
 
+                if (fd_new[ep[i + 1].data.fd] && fd_arr[ep[i].data.fd])
+                {
+                    int sockfdnew = ep[i + 1].data.fd;
+                    fd_bor[sockfd] = sockfdnew; // bor
+
+                    thread chile_tnm(Server::thread_worknm, sockfdnew, sockfd);
+
+                    cout << "为" << sockfdnew << "创建新消息" << endl;
+                    fd_pthread[sockfdnew] = true;
+
+                    chile_tnm.detach();
+                }
+
                 chile_t.detach();
             }
+            // else if (fd_new[ep[i].data.fd] && !fd_pthread[ep[i].data.fd])
+            // {
+            //     int sockfd = clie_fd;
+
+            //     thread chile_tnm(Server::thread_worknm, sockfd, borthread);
+
+            //     borthread = 0;
+
+            //     cout << "为" << sockfd << "创建新消息" << endl;
+            //     fd_pthread[sockfd] = true;
+
+            //     chile_tnm.detach();
+            // }
         }
     }
     Net::Close(link_fd);

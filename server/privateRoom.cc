@@ -77,6 +77,18 @@ void Server::thread_recv(int clie_fd, string recverID)
             send_to_db = w.write(all_massage_recver);
             //发送到数据库
             Mdb->Put(leveldb::WriteOptions(), recverID, send_to_db);
+
+            // xinxiaoxi
+            string gets;
+            Value putv, member;
+            string puts;
+            leveldb::Status s = NMdb->Get(leveldb::ReadOptions(), recverID, &gets);
+            rd.parse(gets, putv);
+            member["sender"] = fd_ID[clie_fd];
+            member["opt"] = "newmas";
+            putv.append(member);
+            puts = w.write(putv);
+            leveldb::Status s2 = NMdb->Put(leveldb::WriteOptions(), recverID, puts);
         }
 
         // pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
@@ -112,6 +124,9 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
     string gets, getsi;
     Value getv, getv2, memberi, getvi;
 
+    string newgets, newsend;
+    Value newgetv;
+
     leveldb::Status statuc3 = IPdb->Get(leveldb::ReadOptions(), recverID, &getsi);
     if (rd.parse(getsi, getvi))
     {
@@ -143,6 +158,24 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
     while (true)
     {
         sleep(0.05);
+        // // shanchuxinxiaoxi
+        // leveldb::Status sss = NMdb->Get(leveldb::ReadOptions(), recverID, &newgets);
+        // rd.parse(newgets, newgetv);
+        // for (int i = 0; i < (int)newgetv.size(); i++)
+        // {
+        //     if (newgetv[i]["sender"] == senderID)
+        //     {
+        //         newgetv.removeIndex(i, &deleteValue);
+        //         newsend = w.write(newgetv);
+
+        //         imas--;
+
+        //         // pthread_mutex_lock(&fd_mutex[clie_fd]); //加锁
+        //         NMdb->Put(leveldb::WriteOptions(), recverID, newsend);
+        //         i--;
+        //     }
+        // }
+        // ////////////////
 
         leveldb::Status s = Mdb->Get(leveldb::ReadOptions(), recverID, &gets);
         rd.parse(gets, getv);

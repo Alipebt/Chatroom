@@ -78,6 +78,9 @@ void Client::sign_in_up(int clie_fd)
                     if (strcmp(r, "success") == 0)
                     {
                         cout << " [登录成功]" << endl;
+                        thread mas(thread_newmas, new_fd, ID);
+                        mas.detach();
+
                         main_menu(clie_fd, ID);
                     }
                     else if (strcmp(r, "fail") == 0)
@@ -177,7 +180,7 @@ void Client::main_menu(int clie_fd, string ID)
         cout << "|    3:好友管理    |" << endl;
         cout << "|    4.发送文件    |" << endl;
         cout << "|    5.接收文件    |" << endl;
-        cout << "|    0:注销        |" << endl;
+        cout << "|    0:退出系统    |" << endl;
         cout << "|                  |" << endl;
         cout << "+------------------+" << endl;
 
@@ -209,7 +212,8 @@ void Client::main_menu(int clie_fd, string ID)
         }
         else if (in == SIGN_OUT)
         {
-
+            exit(1);
+            Net::Close(clie_fd);
             break;
         }
     }
@@ -228,6 +232,10 @@ void Client::run()
     clie_fd = Net::Socket(AF_INET, SOCK_STREAM, 0);
 
     Net::Connect(clie_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+
+    /////*********
+    new_fd = Net::Socket(AF_INET, SOCK_STREAM, 0);
+    Net::Connect(new_fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 
     int flag = fcntl(clie_fd, F_GETFL);
     // flag |= O_NONBLOCK;

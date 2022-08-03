@@ -22,6 +22,6 @@ cc_binary(
         "privateChat.cc",
         "group_menu.cc",
         "publicChat.cc",
-        "file.cc"],
+        "file.cc","newmas.cc"],
     deps = ["net_wrap","clientClass"],
 )

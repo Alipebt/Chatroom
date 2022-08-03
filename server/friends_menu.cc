@@ -210,6 +210,8 @@ void Server::add_friend(int clie_fd, char *re)
                         cout << "S5:  " << s << endl;
                         leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
                         check_status(status);
+
+                        success = true;
                     }
                 }
                 else if (!success)
@@ -225,6 +227,20 @@ void Server::add_friend(int clie_fd, char *re)
                 Net::Write(clie_fd, "fail", 4);
             }
         }
+    }
+
+    if (success)
+    {
+        string gets, puts;
+        Value putv;
+
+        leveldb::Status s = NMdb->Get(leveldb::ReadOptions(), recver, &gets);
+        rd.parse(gets, putv);
+        member["sender"] = fd_ID[clie_fd];
+        member["opt"] = "friend";
+        putv.append(member);
+        puts = w.write(putv);
+        leveldb::Status s2 = NMdb->Put(leveldb::WriteOptions(), recver, puts);
     }
     return;
 }

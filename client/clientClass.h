@@ -70,6 +70,9 @@ private:
     int server_port;  //服务器端口
     string server_ip; //服务器ip
     int clie_fd;      //与服务器建立连接的套接字描述符
+    int new_fd;
+
+    int imas = 0;
 
 public:
     Client(int port, string ip);
@@ -112,6 +115,8 @@ public:
     static void thread_send(int clie_fd);                //发送线程
     static void thread_recv(int clie_fd, string ID);     //接收线程
     static void thread_friends(int clie_fd, string opt); //好友管理线程
+
+    static void thread_newmas(int clie_fd, string ID);
 };
 
 #endif

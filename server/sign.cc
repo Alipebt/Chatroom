@@ -121,6 +121,7 @@ bool Server::sign_menu(int clie_fd)
             {
                 cout << "----" << clie_fd << "已退出----" << endl;
                 Net::Close(clie_fd);
+                Net::Close(fd_bor[clie_fd]);
                 break;
             }
             else if (strcmp(r, SIGN_UP) == 0)
@@ -134,6 +135,8 @@ bool Server::sign_menu(int clie_fd)
                 {
                     main_menu(clie_fd);
                 }
+                Net::Close(clie_fd);
+                Net::Close(fd_bor[clie_fd]);
             }
             bzero(r, sizeof(r));
         }
