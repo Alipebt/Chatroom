@@ -241,6 +241,15 @@ void Server::add_friend(int clie_fd, char *re)
         putv.append(member);
         puts = w.write(putv);
         leveldb::Status s2 = NMdb->Put(leveldb::WriteOptions(), recver, puts);
+
+        //////*2
+        // leveldb::Status snew = NMdb->Get(leveldb::ReadOptions(), recver, &gets);
+        // rd.parse(gets, putv);
+        // member["sender"] = fd_ID[clie_fd];
+        // member["opt"] = "friend";
+        // putv.append(member);
+        // puts = w.write(putv);
+        // leveldb::Status s2new = NMdb->Put(leveldb::WriteOptions(), recver, puts);
     }
     return;
 }
@@ -276,7 +285,7 @@ void Server::cout_friend(int clie_fd, string opt)
                 while (true)
                 {
                     bzero(r, sizeof(r));
-                    if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
+                    if (Net::Read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
                     {
                         break;
                     }
@@ -304,7 +313,7 @@ void Server::cout_friend(int clie_fd, string opt)
                 while (true)
                 {
                     bzero(r, sizeof(r));
-                    if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
+                    if (Net::Read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
                     {
                         break;
                     }
@@ -317,7 +326,7 @@ void Server::cout_friend(int clie_fd, string opt)
             Net::Write(clie_fd, "NULL", 4);
             while (true)
             {
-                if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
+                if (Net::Read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
                 {
                     break;
                 }
@@ -330,7 +339,7 @@ void Server::cout_friend(int clie_fd, string opt)
         Net::Write(clie_fd, "NULL", 4);
         while (true)
         {
-            if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
+            if (Net::Read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
             {
                 break;
             }
@@ -356,7 +365,7 @@ void Server::mas_friend(int clie_fd)
 
     while (true)
     {
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             cout << "R: " << r << endl;
             if (strcmp(r, "q") == 0)
@@ -394,7 +403,7 @@ void Server::del_friend(int clie_fd)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }
@@ -466,7 +475,7 @@ void Server::ignore_friend(int clie_fd)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }
@@ -477,7 +486,7 @@ void Server::ignore_friend(int clie_fd)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }
@@ -573,7 +582,7 @@ void Server::friends_menu(int clie_fd)
     {
 
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r) > 0))
+        if (Net::Read(clie_fd, r, sizeof(r) > 0))
         {
             if (strcmp(r, ADD_FRIEND) == 0)
             {

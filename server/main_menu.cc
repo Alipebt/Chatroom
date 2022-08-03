@@ -36,8 +36,8 @@ void Server::main_menu(int clie_fd)
 
     while (fd_in[clie_fd])
     {
-
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        bzero(r, sizeof(r));
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             cout << r << endl;
             if (strcmp(r, PRIVATE) == 0)
@@ -79,7 +79,6 @@ void Server::main_menu(int clie_fd)
 
             cout << "已返回主菜单" << endl;
         }
-        bzero(r, sizeof(r));
     }
     cout << "退出main_menu" << endl;
     return;

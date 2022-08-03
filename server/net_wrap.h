@@ -17,6 +17,7 @@
 #include "json/json.h"
 #include <sys/sendfile.h>
 #include <sys/stat.h>
+#include <netinet/tcp.h>
 
 #include <vector>
 

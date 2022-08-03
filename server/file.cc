@@ -24,7 +24,7 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }
@@ -61,7 +61,7 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
     while (true)
     {
         bzero(rf, sizeof(rf));
-        if ((ret = read(clie_fd, rf, sizeof(rf))) >= 0)
+        if ((ret = Net::Read(clie_fd, rf, sizeof(rf))) > 0)
         {
             // sum += ret;
             // cout << sum << endl;
@@ -105,7 +105,7 @@ void Server::send_file(int clie_fd, string gorp, string ID)
         while (true)
         {
             bzero(r, sizeof(r));
-            if (read(clie_fd, r, sizeof(r)) > 0)
+            if (Net::Read(clie_fd, r, sizeof(r)) > 0)
             {
                 break;
             }
@@ -164,7 +164,7 @@ void Server::send_file(int clie_fd, string gorp, string ID)
         while (true)
         {
             sleep(0.05);
-            if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
+            if ((ret = Net::Read(fp, sendbuf, BUFSIZ)) > 0)
             {
 
                 retw = write(clie_fd, sendbuf, ret);
@@ -214,7 +214,7 @@ void Server::file_menu(int clie_fd, string opt)
     while (true)
     {
         bzero(gorp, sizeof(gorp));
-        if (read(clie_fd, gorp, sizeof(gorp)) > 0)
+        if (Net::Read(clie_fd, gorp, sizeof(gorp)) > 0)
         {
             break;
         }
@@ -224,7 +224,7 @@ void Server::file_menu(int clie_fd, string opt)
     while (true)
     {
         bzero(ID, sizeof(ID));
-        if (read(clie_fd, ID, sizeof(ID)) > 0)
+        if (Net::Read(clie_fd, ID, sizeof(ID)) > 0)
         {
             break;
         }
@@ -318,7 +318,7 @@ void Server::cout_file(int clie_fd)
 
         while (true)
         {
-            if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
+            if (Net::Read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
             {
                 cout << "受到" << r << endl;
                 break;

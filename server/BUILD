@@ -3,7 +3,7 @@ package(default_visibility = ["//visibility:public"])
 cc_library(
     name = "net_wrap",
     srcs = ["net_wrap.cc"],
-    hdrs = ["net_wrap.h"],
+    hdrs = ["net_wrap.h","serverClass.h"],
     linkopts =["-lpthread","-ljsoncpp"],
 )
 

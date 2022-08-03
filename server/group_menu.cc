@@ -19,7 +19,7 @@ void Server::create_group(int clie_fd)
     while (true)
     {
         bzero(r, sizeof(r));
-        if ((read(clie_fd, r, sizeof(r))) > 0)
+        if ((Net::Read(clie_fd, r, sizeof(r))) > 0)
         {
             break;
         }
@@ -67,7 +67,7 @@ void Server::add_group(int clie_fd)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }
@@ -144,7 +144,7 @@ void Server::quit_group(int clie_fd)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             cout << "R" << r << endl;
             break;
@@ -246,7 +246,7 @@ void Server::view_group(int clie_fd)
                 while (true)
                 {
                     bzero(r, sizeof(r));
-                    if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
+                    if (Net::Read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
                     {
                         break;
                     }
@@ -295,7 +295,7 @@ void Server::man_addgroup(int clie_fd, string gID)
         while (true)
         {
             bzero(r, sizeof(r));
-            if (read(clie_fd, r, sizeof(r)) > 0)
+            if (Net::Read(clie_fd, r, sizeof(r)) > 0)
             {
                 break;
             }
@@ -318,7 +318,7 @@ void Server::man_addgroup(int clie_fd, string gID)
         while (true)
         {
             bzero(r, sizeof(r));
-            if (read(clie_fd, r, sizeof(r)) > 0)
+            if (Net::Read(clie_fd, r, sizeof(r)) > 0)
             {
                 cout << "R " << r << endl;
                 break;
@@ -356,7 +356,7 @@ void Server::man_addgroup(int clie_fd, string gID)
             while (true)
             {
                 bzero(r2, sizeof(r2));
-                if (read(clie_fd, r2, sizeof(r2)) > 0)
+                if (Net::Read(clie_fd, r2, sizeof(r2)) > 0)
                 {
                     break;
                 }
@@ -430,7 +430,7 @@ void Server::man_view(int clie_fd, string gID)
         while (true)
         {
             bzero(r, sizeof(r));
-            if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
+            if (Net::Read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) == 0)
             {
                 break;
             }
@@ -458,7 +458,7 @@ void Server::man_addmanager(int clie_fd, string gID)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }
@@ -530,7 +530,7 @@ void Server::man_delmanager(int clie_fd, string gID)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }
@@ -587,7 +587,7 @@ void Server::man_delmember(int clie_fd, string gID)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }
@@ -646,7 +646,7 @@ bool Server::man_delgroup(int clie_fd, string gID)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }
@@ -685,7 +685,7 @@ void Server::manage_menu(int clie_fd)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             cout << "R: " << r << endl;
             break;
@@ -760,7 +760,7 @@ void Server::manage_menu(int clie_fd)
             while (true)
             {
                 bzero(r, sizeof(r));
-                if (read(clie_fd, r, sizeof(r)) > 0)
+                if (Net::Read(clie_fd, r, sizeof(r)) > 0)
                 {
                     break;
                 }
@@ -807,7 +807,7 @@ void Server::manage_menu(int clie_fd)
             while (true)
             {
                 bzero(r, sizeof(r));
-                if (read(clie_fd, r, sizeof(r)) > 0)
+                if (Net::Read(clie_fd, r, sizeof(r)) > 0)
                 {
                     break;
                 }
@@ -838,7 +838,7 @@ void Server::manage_menu(int clie_fd)
             while (true)
             {
                 bzero(r, sizeof(r));
-                if (read(clie_fd, r, sizeof(r)) > 0)
+                if (Net::Read(clie_fd, r, sizeof(r)) > 0)
                 {
                     break;
                 }
@@ -868,7 +868,7 @@ void Server::group_menu(int clie_fd)
         while (true)
         {
             bzero(r, sizeof(r));
-            if ((read(clie_fd, r, sizeof(r))) > 0)
+            if ((Net::Read(clie_fd, r, sizeof(r))) > 0)
             {
                 break;
             }

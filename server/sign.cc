@@ -113,7 +113,7 @@ bool Server::sign_menu(int clie_fd)
     //登录
     while (fd_in[clie_fd] == false)
     {
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             cout << "sign循环" << endl;
 
@@ -135,8 +135,8 @@ bool Server::sign_menu(int clie_fd)
                 {
                     main_menu(clie_fd);
                 }
-                Net::Close(clie_fd);
-                Net::Close(fd_bor[clie_fd]);
+                // Net::Close(clie_fd);
+                // Net::Close(fd_bor[clie_fd]);
             }
             bzero(r, sizeof(r));
         }

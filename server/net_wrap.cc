@@ -1,4 +1,5 @@
 #include "net_wrap.h"
+#include "serverClass.h"
 
 /***********************************************************************
 
@@ -71,10 +72,18 @@ ssize_t Net::Read(int fd, void *buf, size_t count)
 {
     int n;
     n = read(fd, buf, count);
-    if (n < 0)
+    if (n == 0)
     {
-        perr_exit("read失败");
+        // perr_exit("read失败");
+        close(fd);
+        close(Server::fd_bor[fd]);
+        cout << "关闭" << endl;
     }
+    // else if (n == 0)
+    // {
+    //     Net::Close(fd);
+    //     Net::Close(Server::fd_bor[fd]);
+    // }
     return n;
 }
 
@@ -84,7 +93,20 @@ ssize_t Net::Write(int fd, const void *buf, size_t count)
     n = write(fd, buf, count);
     if (n < 0)
     {
+        // int mainfd;
         perr_exit("write失败");
+        // for (int i = 0; i < Server::fd_bor.size(); i++)
+        // {
+        //     if (Server::fd_bor[i] == fd)
+        //     {
+        //         mainfd = i;
+        //     }
+        // }
+        // close(fd); // newfm
+        // close(mainfd);
+        // cout << "关闭" << endl;
+        // close(fd);
+        // close(Server::fd_bor[fd]);
     }
     return n;
 }

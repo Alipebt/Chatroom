@@ -33,7 +33,7 @@ void Server::thread_recv(int clie_fd, string recverID)
     {
         // pthread_mutex_lock(&fd_mutex[clie_fd]); //加锁
 
-        if (read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) != 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0 && strcmp(r, ACCEPT) != 0)
         {
             cout << "massage:" << r << endl;
             match_massage["massage"] = r;
@@ -291,7 +291,7 @@ void Server::match_with(int clie_fd)
     while (true)
     {
         bzero(r, sizeof(r));
-        if ((read(clie_fd, r, sizeof(r))) > 0)
+        if ((Net::Read(clie_fd, r, sizeof(r))) > 0)
         {
             cout << " [客户端]" << clie_fd << ":" << r << endl;
             break;

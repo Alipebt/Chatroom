@@ -15,7 +15,7 @@ void Server::thread_recv_pub(int clie_fd, string gID)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             cout << "R:  " << r << endl;
             sendv["massage"] = r;
@@ -134,7 +134,7 @@ void Server::match_with_pub(int clie_fd)
     while (true)
     {
         bzero(r, sizeof(r));
-        if (read(clie_fd, r, sizeof(r)) > 0)
+        if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
             break;
         }

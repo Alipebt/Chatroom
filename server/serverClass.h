@@ -48,6 +48,9 @@ using namespace std;
 
 class Server
 {
+public:
+    static vector<int> fd_bor;
+
 private:
     int server_port;  //服务器端口号
     int link_fd;      //与客户端建立连接的套接字描述符
@@ -60,8 +63,6 @@ private:
     static vector<string> fd_ID;    //保存套接字对应的ID
     static vector<bool> fd_in;      //保存套接字描述符登录状态
     static vector<bool> fd_new;
-
-    static vector<int> fd_bor;
 
     static vector<pthread_mutex_t> fd_mutex; //锁
     static pthread_mutex_t mutex;

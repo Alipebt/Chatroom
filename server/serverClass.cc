@@ -170,6 +170,31 @@ void Server::run()
 
                 clie_fd = Net::Accept(link_fd, (struct sockaddr *)&clie_addr, &clie_addr_len);
 
+                int keep_alive = 1;
+                int keep_idle = 3;
+                int keep_interval = 1;
+                int keep_count = 10;
+                if (setsockopt(clie_fd, SOL_SOCKET, SO_KEEPALIVE, &keep_alive, sizeof(keep_alive)))
+                {
+                    perror("Error setsockopt(SO_KEEPALIVE) failed");
+                    exit(1);
+                }
+                if (setsockopt(clie_fd, IPPROTO_TCP, TCP_KEEPIDLE, &keep_idle, sizeof(keep_idle)))
+                {
+                    perror("Error setsockopt(TCP_KEEPIDLE) failed");
+                    exit(1);
+                }
+                if (setsockopt(clie_fd, SOL_TCP, TCP_KEEPINTVL, (void *)&keep_interval, sizeof(keep_interval)))
+                {
+                    perror("Error setsockopt(TCP_KEEPINTVL) failed");
+                    exit(1);
+                }
+                if (setsockopt(clie_fd, SOL_TCP, TCP_KEEPCNT, (void *)&keep_count, sizeof(keep_count)))
+                {
+                    perror("Error setsockopt(TCP_KEEPCNT) failed");
+                    exit(1);
+                }
+
                 int flag = fcntl(clie_fd, F_GETFL);
                 flag |= O_NONBLOCK;
                 fcntl(clie_fd, F_SETFL, flag);
