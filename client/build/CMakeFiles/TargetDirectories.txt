@@ -1,0 +1,3 @@
+/home/alipebt/myfiles/Git/Chatroom-cmake/client/build/CMakeFiles/client.dir
+/home/alipebt/myfiles/Git/Chatroom-cmake/client/build/CMakeFiles/edit_cache.dir
+/home/alipebt/myfiles/Git/Chatroom-cmake/client/build/CMakeFiles/rebuild_cache.dir
