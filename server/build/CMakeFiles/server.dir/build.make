@@ -139,10 +139,24 @@ CMakeFiles/server.dir/src/net_wrap.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/server.dir/src/net_wrap.cc.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/alipebt/myfiles/Git/Chatroom-cmake/server/src/net_wrap.cc -o CMakeFiles/server.dir/src/net_wrap.cc.s
 
+CMakeFiles/server.dir/src/newmas.cc.o: CMakeFiles/server.dir/flags.make
+CMakeFiles/server.dir/src/newmas.cc.o: ../src/newmas.cc
+CMakeFiles/server.dir/src/newmas.cc.o: CMakeFiles/server.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/server.dir/src/newmas.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/server.dir/src/newmas.cc.o -MF CMakeFiles/server.dir/src/newmas.cc.o.d -o CMakeFiles/server.dir/src/newmas.cc.o -c /home/alipebt/myfiles/Git/Chatroom-cmake/server/src/newmas.cc
+
+CMakeFiles/server.dir/src/newmas.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/server.dir/src/newmas.cc.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/alipebt/myfiles/Git/Chatroom-cmake/server/src/newmas.cc > CMakeFiles/server.dir/src/newmas.cc.i
+
+CMakeFiles/server.dir/src/newmas.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/server.dir/src/newmas.cc.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/alipebt/myfiles/Git/Chatroom-cmake/server/src/newmas.cc -o CMakeFiles/server.dir/src/newmas.cc.s
+
 CMakeFiles/server.dir/src/privateRoom.cc.o: CMakeFiles/server.dir/flags.make
 CMakeFiles/server.dir/src/privateRoom.cc.o: ../src/privateRoom.cc
 CMakeFiles/server.dir/src/privateRoom.cc.o: CMakeFiles/server.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/server.dir/src/privateRoom.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/server.dir/src/privateRoom.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/server.dir/src/privateRoom.cc.o -MF CMakeFiles/server.dir/src/privateRoom.cc.o.d -o CMakeFiles/server.dir/src/privateRoom.cc.o -c /home/alipebt/myfiles/Git/Chatroom-cmake/server/src/privateRoom.cc
 
 CMakeFiles/server.dir/src/privateRoom.cc.i: cmake_force
@@ -156,7 +170,7 @@ CMakeFiles/server.dir/src/privateRoom.cc.s: cmake_force
 CMakeFiles/server.dir/src/publicRoom.cc.o: CMakeFiles/server.dir/flags.make
 CMakeFiles/server.dir/src/publicRoom.cc.o: ../src/publicRoom.cc
 CMakeFiles/server.dir/src/publicRoom.cc.o: CMakeFiles/server.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/server.dir/src/publicRoom.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/server.dir/src/publicRoom.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/server.dir/src/publicRoom.cc.o -MF CMakeFiles/server.dir/src/publicRoom.cc.o.d -o CMakeFiles/server.dir/src/publicRoom.cc.o -c /home/alipebt/myfiles/Git/Chatroom-cmake/server/src/publicRoom.cc
 
 CMakeFiles/server.dir/src/publicRoom.cc.i: cmake_force
@@ -170,7 +184,7 @@ CMakeFiles/server.dir/src/publicRoom.cc.s: cmake_force
 CMakeFiles/server.dir/src/server.cc.o: CMakeFiles/server.dir/flags.make
 CMakeFiles/server.dir/src/server.cc.o: ../src/server.cc
 CMakeFiles/server.dir/src/server.cc.o: CMakeFiles/server.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/server.dir/src/server.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/server.dir/src/server.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/server.dir/src/server.cc.o -MF CMakeFiles/server.dir/src/server.cc.o.d -o CMakeFiles/server.dir/src/server.cc.o -c /home/alipebt/myfiles/Git/Chatroom-cmake/server/src/server.cc
 
 CMakeFiles/server.dir/src/server.cc.i: cmake_force
@@ -184,7 +198,7 @@ CMakeFiles/server.dir/src/server.cc.s: cmake_force
 CMakeFiles/server.dir/src/serverClass.cc.o: CMakeFiles/server.dir/flags.make
 CMakeFiles/server.dir/src/serverClass.cc.o: ../src/serverClass.cc
 CMakeFiles/server.dir/src/serverClass.cc.o: CMakeFiles/server.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/server.dir/src/serverClass.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/server.dir/src/serverClass.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/server.dir/src/serverClass.cc.o -MF CMakeFiles/server.dir/src/serverClass.cc.o.d -o CMakeFiles/server.dir/src/serverClass.cc.o -c /home/alipebt/myfiles/Git/Chatroom-cmake/server/src/serverClass.cc
 
 CMakeFiles/server.dir/src/serverClass.cc.i: cmake_force
@@ -198,7 +212,7 @@ CMakeFiles/server.dir/src/serverClass.cc.s: cmake_force
 CMakeFiles/server.dir/src/sign.cc.o: CMakeFiles/server.dir/flags.make
 CMakeFiles/server.dir/src/sign.cc.o: ../src/sign.cc
 CMakeFiles/server.dir/src/sign.cc.o: CMakeFiles/server.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/server.dir/src/sign.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/server.dir/src/sign.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/server.dir/src/sign.cc.o -MF CMakeFiles/server.dir/src/sign.cc.o.d -o CMakeFiles/server.dir/src/sign.cc.o -c /home/alipebt/myfiles/Git/Chatroom-cmake/server/src/sign.cc
 
 CMakeFiles/server.dir/src/sign.cc.i: cmake_force
@@ -216,6 +230,7 @@ server_OBJECTS = \
 "CMakeFiles/server.dir/src/group_menu.cc.o" \
 "CMakeFiles/server.dir/src/main_menu.cc.o" \
 "CMakeFiles/server.dir/src/net_wrap.cc.o" \
+"CMakeFiles/server.dir/src/newmas.cc.o" \
 "CMakeFiles/server.dir/src/privateRoom.cc.o" \
 "CMakeFiles/server.dir/src/publicRoom.cc.o" \
 "CMakeFiles/server.dir/src/server.cc.o" \
@@ -230,6 +245,7 @@ server_EXTERNAL_OBJECTS =
 ../bin/server: CMakeFiles/server.dir/src/group_menu.cc.o
 ../bin/server: CMakeFiles/server.dir/src/main_menu.cc.o
 ../bin/server: CMakeFiles/server.dir/src/net_wrap.cc.o
+../bin/server: CMakeFiles/server.dir/src/newmas.cc.o
 ../bin/server: CMakeFiles/server.dir/src/privateRoom.cc.o
 ../bin/server: CMakeFiles/server.dir/src/publicRoom.cc.o
 ../bin/server: CMakeFiles/server.dir/src/server.cc.o
@@ -237,7 +253,7 @@ server_EXTERNAL_OBJECTS =
 ../bin/server: CMakeFiles/server.dir/src/sign.cc.o
 ../bin/server: CMakeFiles/server.dir/build.make
 ../bin/server: CMakeFiles/server.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable ../bin/server"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Linking CXX executable ../bin/server"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/server.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

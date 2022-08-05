@@ -13,6 +13,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/client.dir/src/group_menu.cc.o.d"
   "CMakeFiles/client.dir/src/net_wrap.cc.o"
   "CMakeFiles/client.dir/src/net_wrap.cc.o.d"
+  "CMakeFiles/client.dir/src/newmas.cc.o"
+  "CMakeFiles/client.dir/src/newmas.cc.o.d"
   "CMakeFiles/client.dir/src/privateChat.cc.o"
   "CMakeFiles/client.dir/src/privateChat.cc.o.d"
   "CMakeFiles/client.dir/src/publicChat.cc.o"

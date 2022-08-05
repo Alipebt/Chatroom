@@ -249,6 +249,30 @@ src/net_wrap.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/net_wrap.cc.s
 .PHONY : src/net_wrap.cc.s
 
+src/newmas.o: src/newmas.cc.o
+.PHONY : src/newmas.o
+
+# target to build an object file
+src/newmas.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/newmas.cc.o
+.PHONY : src/newmas.cc.o
+
+src/newmas.i: src/newmas.cc.i
+.PHONY : src/newmas.i
+
+# target to preprocess a source file
+src/newmas.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/newmas.cc.i
+.PHONY : src/newmas.cc.i
+
+src/newmas.s: src/newmas.cc.s
+.PHONY : src/newmas.s
+
+# target to generate assembly for a file
+src/newmas.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/newmas.cc.s
+.PHONY : src/newmas.cc.s
+
 src/privateRoom.o: src/privateRoom.cc.o
 .PHONY : src/privateRoom.o
 
@@ -393,6 +417,9 @@ help:
 	@echo "... src/net_wrap.o"
 	@echo "... src/net_wrap.i"
 	@echo "... src/net_wrap.s"
+	@echo "... src/newmas.o"
+	@echo "... src/newmas.i"
+	@echo "... src/newmas.s"
 	@echo "... src/privateRoom.o"
 	@echo "... src/privateRoom.i"
 	@echo "... src/privateRoom.s"

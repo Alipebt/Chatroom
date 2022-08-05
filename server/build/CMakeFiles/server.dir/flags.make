@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/alipebt/myfiles/Git/Chatroom-cmake/server/include
 
-CXX_FLAGS = 
+CXX_FLAGS =  -O0 -Wall -g2 -ggdb
 

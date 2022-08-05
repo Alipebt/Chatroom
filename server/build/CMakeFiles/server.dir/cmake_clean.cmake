@@ -11,6 +11,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/server.dir/src/main_menu.cc.o.d"
   "CMakeFiles/server.dir/src/net_wrap.cc.o"
   "CMakeFiles/server.dir/src/net_wrap.cc.o.d"
+  "CMakeFiles/server.dir/src/newmas.cc.o"
+  "CMakeFiles/server.dir/src/newmas.cc.o.d"
   "CMakeFiles/server.dir/src/privateRoom.cc.o"
   "CMakeFiles/server.dir/src/privateRoom.cc.o.d"
   "CMakeFiles/server.dir/src/publicRoom.cc.o"

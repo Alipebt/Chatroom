@@ -13,6 +13,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/alipebt/myfiles/Git/Chatroom-cmake/server/src/group_menu.cc" "CMakeFiles/server.dir/src/group_menu.cc.o" "gcc" "CMakeFiles/server.dir/src/group_menu.cc.o.d"
   "/home/alipebt/myfiles/Git/Chatroom-cmake/server/src/main_menu.cc" "CMakeFiles/server.dir/src/main_menu.cc.o" "gcc" "CMakeFiles/server.dir/src/main_menu.cc.o.d"
   "/home/alipebt/myfiles/Git/Chatroom-cmake/server/src/net_wrap.cc" "CMakeFiles/server.dir/src/net_wrap.cc.o" "gcc" "CMakeFiles/server.dir/src/net_wrap.cc.o.d"
+  "/home/alipebt/myfiles/Git/Chatroom-cmake/server/src/newmas.cc" "CMakeFiles/server.dir/src/newmas.cc.o" "gcc" "CMakeFiles/server.dir/src/newmas.cc.o.d"
   "/home/alipebt/myfiles/Git/Chatroom-cmake/server/src/privateRoom.cc" "CMakeFiles/server.dir/src/privateRoom.cc.o" "gcc" "CMakeFiles/server.dir/src/privateRoom.cc.o.d"
   "/home/alipebt/myfiles/Git/Chatroom-cmake/server/src/publicRoom.cc" "CMakeFiles/server.dir/src/publicRoom.cc.o" "gcc" "CMakeFiles/server.dir/src/publicRoom.cc.o.d"
   "/home/alipebt/myfiles/Git/Chatroom-cmake/server/src/server.cc" "CMakeFiles/server.dir/src/server.cc.o" "gcc" "CMakeFiles/server.dir/src/server.cc.o.d"

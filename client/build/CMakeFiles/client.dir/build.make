@@ -153,10 +153,24 @@ CMakeFiles/client.dir/src/net_wrap.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/client.dir/src/net_wrap.cc.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/alipebt/myfiles/Git/Chatroom-cmake/client/src/net_wrap.cc -o CMakeFiles/client.dir/src/net_wrap.cc.s
 
+CMakeFiles/client.dir/src/newmas.cc.o: CMakeFiles/client.dir/flags.make
+CMakeFiles/client.dir/src/newmas.cc.o: ../src/newmas.cc
+CMakeFiles/client.dir/src/newmas.cc.o: CMakeFiles/client.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/client.dir/src/newmas.cc.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/client.dir/src/newmas.cc.o -MF CMakeFiles/client.dir/src/newmas.cc.o.d -o CMakeFiles/client.dir/src/newmas.cc.o -c /home/alipebt/myfiles/Git/Chatroom-cmake/client/src/newmas.cc
+
+CMakeFiles/client.dir/src/newmas.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/client.dir/src/newmas.cc.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/alipebt/myfiles/Git/Chatroom-cmake/client/src/newmas.cc > CMakeFiles/client.dir/src/newmas.cc.i
+
+CMakeFiles/client.dir/src/newmas.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/client.dir/src/newmas.cc.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/alipebt/myfiles/Git/Chatroom-cmake/client/src/newmas.cc -o CMakeFiles/client.dir/src/newmas.cc.s
+
 CMakeFiles/client.dir/src/privateChat.cc.o: CMakeFiles/client.dir/flags.make
 CMakeFiles/client.dir/src/privateChat.cc.o: ../src/privateChat.cc
 CMakeFiles/client.dir/src/privateChat.cc.o: CMakeFiles/client.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/client.dir/src/privateChat.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/client.dir/src/privateChat.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/client.dir/src/privateChat.cc.o -MF CMakeFiles/client.dir/src/privateChat.cc.o.d -o CMakeFiles/client.dir/src/privateChat.cc.o -c /home/alipebt/myfiles/Git/Chatroom-cmake/client/src/privateChat.cc
 
 CMakeFiles/client.dir/src/privateChat.cc.i: cmake_force
@@ -170,7 +184,7 @@ CMakeFiles/client.dir/src/privateChat.cc.s: cmake_force
 CMakeFiles/client.dir/src/publicChat.cc.o: CMakeFiles/client.dir/flags.make
 CMakeFiles/client.dir/src/publicChat.cc.o: ../src/publicChat.cc
 CMakeFiles/client.dir/src/publicChat.cc.o: CMakeFiles/client.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/client.dir/src/publicChat.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/client.dir/src/publicChat.cc.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/client.dir/src/publicChat.cc.o -MF CMakeFiles/client.dir/src/publicChat.cc.o.d -o CMakeFiles/client.dir/src/publicChat.cc.o -c /home/alipebt/myfiles/Git/Chatroom-cmake/client/src/publicChat.cc
 
 CMakeFiles/client.dir/src/publicChat.cc.i: cmake_force
@@ -189,6 +203,7 @@ client_OBJECTS = \
 "CMakeFiles/client.dir/src/friends_menu.cc.o" \
 "CMakeFiles/client.dir/src/group_menu.cc.o" \
 "CMakeFiles/client.dir/src/net_wrap.cc.o" \
+"CMakeFiles/client.dir/src/newmas.cc.o" \
 "CMakeFiles/client.dir/src/privateChat.cc.o" \
 "CMakeFiles/client.dir/src/publicChat.cc.o"
 
@@ -201,11 +216,12 @@ client_EXTERNAL_OBJECTS =
 ../bin/client: CMakeFiles/client.dir/src/friends_menu.cc.o
 ../bin/client: CMakeFiles/client.dir/src/group_menu.cc.o
 ../bin/client: CMakeFiles/client.dir/src/net_wrap.cc.o
+../bin/client: CMakeFiles/client.dir/src/newmas.cc.o
 ../bin/client: CMakeFiles/client.dir/src/privateChat.cc.o
 ../bin/client: CMakeFiles/client.dir/src/publicChat.cc.o
 ../bin/client: CMakeFiles/client.dir/build.make
 ../bin/client: CMakeFiles/client.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable ../bin/client"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/alipebt/myfiles/Git/Chatroom-cmake/client/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable ../bin/client"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/client.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

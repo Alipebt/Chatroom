@@ -14,6 +14,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/alipebt/myfiles/Git/Chatroom-cmake/client/src/friends_menu.cc" "CMakeFiles/client.dir/src/friends_menu.cc.o" "gcc" "CMakeFiles/client.dir/src/friends_menu.cc.o.d"
   "/home/alipebt/myfiles/Git/Chatroom-cmake/client/src/group_menu.cc" "CMakeFiles/client.dir/src/group_menu.cc.o" "gcc" "CMakeFiles/client.dir/src/group_menu.cc.o.d"
   "/home/alipebt/myfiles/Git/Chatroom-cmake/client/src/net_wrap.cc" "CMakeFiles/client.dir/src/net_wrap.cc.o" "gcc" "CMakeFiles/client.dir/src/net_wrap.cc.o.d"
+  "/home/alipebt/myfiles/Git/Chatroom-cmake/client/src/newmas.cc" "CMakeFiles/client.dir/src/newmas.cc.o" "gcc" "CMakeFiles/client.dir/src/newmas.cc.o.d"
   "/home/alipebt/myfiles/Git/Chatroom-cmake/client/src/privateChat.cc" "CMakeFiles/client.dir/src/privateChat.cc.o" "gcc" "CMakeFiles/client.dir/src/privateChat.cc.o.d"
   "/home/alipebt/myfiles/Git/Chatroom-cmake/client/src/publicChat.cc" "CMakeFiles/client.dir/src/publicChat.cc.o" "gcc" "CMakeFiles/client.dir/src/publicChat.cc.o.d"
   )
