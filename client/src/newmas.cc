@@ -15,7 +15,7 @@ void Client::thread_newmas(int new_fd, string ID)
         {
             // cout << " " << endl;
             rd.parse(r, getv);
-            cout << "#" << getv["opt"].asString() << "#" << getv["sender"].asString();
+            cout << "#" << getv["opt"].asString() << "#" << getv["sender"].asString() << endl;
             // cout << " " << endl;
         }
     }

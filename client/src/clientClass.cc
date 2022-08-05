@@ -156,6 +156,7 @@ void Client::sign_in_up(int clie_fd)
         else if (in == EXIT)
         {
             cout << "程序已退出" << endl;
+            close(clie_fd);
             exit(1);
         }
         bzero(r, sizeof(r));
@@ -212,8 +213,8 @@ void Client::main_menu(int clie_fd, string ID)
         }
         else if (in == SIGN_OUT)
         {
-            exit(1);
-            Net::Close(clie_fd);
+            // exit(1);
+            // Net::Close(clie_fd);
             break;
         }
     }

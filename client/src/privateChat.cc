@@ -225,7 +225,14 @@ ssize_t Client::read_line(int sockfd, void *buf, size_t maxline)
                 {
                     exit(EXIT_FAILURE);
                 }
-                return ret + count;
+                if (count != 0)
+                {
+                    return ret + count;
+                }
+                else
+                {
+                    return ret;
+                }
             }
         }
         //如果窥探的数据中并没有换行符
