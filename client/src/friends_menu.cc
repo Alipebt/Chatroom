@@ -179,6 +179,7 @@ void Client::friends_menu(int clie_fd, string ID)
 
         cin >> in;
         Net::Write(clie_fd, in.c_str(), in.length());
+        system("clear");
 
         if (in == ADD_FRIEND)
         {

@@ -38,7 +38,8 @@ void Client::sign_in_up(int clie_fd)
         cin >> in;
 
         Net::Write(clie_fd, in.c_str(), in.length());
-        cout << "发送" << in << endl;
+
+        system("clear");
 
         if (in == SIGN_IN)
         {
@@ -161,6 +162,8 @@ void Client::sign_in_up(int clie_fd)
         }
         bzero(r, sizeof(r));
     }
+
+    return;
 }
 
 void Client::main_menu(int clie_fd, string ID)
@@ -188,6 +191,8 @@ void Client::main_menu(int clie_fd, string ID)
         cin >> in;
 
         Net::Write(clie_fd, in.c_str(), in.length());
+        system("clear");
+
         if (in == PRIVATE)
         {
             privateChat(clie_fd, ID);
