@@ -26,6 +26,7 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
         bzero(r, sizeof(r));
         if (Net::Read(clie_fd, r, sizeof(r)) > 0)
         {
+            cout << "正在获取文件信息" << endl;
             break;
         }
     }
@@ -71,7 +72,7 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
             {
                 sum2 += ret2;
             }
-            cout << sum2 << endl;
+            // cout << sum2 << endl;
 
             if (sum2 >= fw.size)
             {
