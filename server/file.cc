@@ -14,7 +14,6 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
 
     char r[BUFSIZ];
     char rf[BUFSIZ];
-    // char path[BUFSIZ];
     string path;
     string gets, puts;
     Value putv, member;
@@ -37,7 +36,6 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
     memcpy(&fw, r, sizeof(fw));
     cout << fw.size << "=======" << fw.name << endl;
 
-    // sprintf(path, "/tmp/serverdata/file/%s", fw.name); //
     if (gorp == "g")
     {
         path = PATHG + ID + "/" + fw.name;
@@ -48,7 +46,6 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
     }
 
     int fd = open(path.c_str(), O_WRONLY | O_CREAT | O_APPEND, 0666);
-    // FILE *fp = fopen(r, "wb"); //
 
     if (fd == NULL)
     {
@@ -64,15 +61,13 @@ void Server::recv_file(int clie_fd, string gorp, string ID)
         bzero(rf, sizeof(rf));
         if ((ret = Net::Read(clie_fd, rf, sizeof(rf))) > 0)
         {
-            // sum += ret;
-            // cout << sum << endl;
 
             ret2 = write(fd, rf, ret);
             if (ret2 > 0)
             {
                 sum2 += ret2;
             }
-            // cout << sum2 << endl;
+            cout << sum2 << endl;
 
             if (sum2 >= fw.size)
             {
@@ -134,32 +129,8 @@ void Server::send_file(int clie_fd, string gorp, string ID)
 
         Net::Write(clie_fd, &fw, sizeof(fw));
 
-        // int fp = open(path.c_str(), O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR);
         int fp = open(path.c_str(), O_RDONLY);
 
-        // cout << "文件:" << fw.name << "开始发送" << statbuf.st_size << endl;
-        // sendfile(clie_fd, fp, 0, statbuf.st_size);
-        // cout << "文件:" << fw.name << "发送成功" << endl;
-        // long ret, retw;
-        // long sum = 0;
-        // while (true)
-        // {
-        //     if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
-        //     {
-
-        //         retw = write(clie_fd, sendbuf, ret);
-        //         sum += retw;
-        //         cout << sum << endl;
-
-        //         if (sum >= fw.size)
-        //         {
-        //             cout << "BREAK" << endl;
-        //             break;
-        //         }
-        //         bzero(sendbuf, BUFSIZ);
-        //     }
-        // }
-        // sleep(1);
         long ret, retw;
         long sum = 0;
         while (true)
@@ -188,8 +159,6 @@ void Server::send_file(int clie_fd, string gorp, string ID)
             }
         }
 
-        // sleep(1);
-        // Net::Write(clie_fd, EOF, sizeof(EOF));
         Net::Close(fp);
 
         break;

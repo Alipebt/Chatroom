@@ -36,38 +36,6 @@ void Client::thread_recv(int clie_fd, string ID)
 
     bool first = true;
 
-    // //历史消息
-    // while (first)
-    // {
-    //     if (read(clie_fd, r, sizeof(r)) > 0)
-    //     {
-    //         cout << "xRx" << r << endl;
-    //         if (rd.parse(r, getv) && getv.size() != 1)
-    //         {
-    //             cout << "!!!!!" << endl;
-    //             if (getv["massage"].asString() == "_exit")
-    //             {
-    //                 cout << "客户端接收线程关闭" << endl;
-    //                 return;
-    //             }
-    //             for (int i = 0; i < (int)getv.size(); i++)
-    //             {
-    //                 member = getv[i];
-    //                 if (member["sender"].asString() != ID)
-    //                 {
-    //                     cout << LIGHT_BLUE << "               [" << member["sender"].asString() << "]:" << member["massage"].asString() << NONE << endl;
-    //                 }
-    //                 else
-    //                 {
-    //                     cout << ":" << member["massage"].asString() << endl;
-    //                 }
-    //             }
-    //         }
-    //         first = false;
-    //         break;
-    //     }
-    // }
-
     //私聊消息
 
     cout << endl

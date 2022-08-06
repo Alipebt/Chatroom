@@ -13,10 +13,8 @@ void Client::thread_newmas(int new_fd, string ID)
         bzero(r, sizeof(r));
         if (read_line(new_fd, r, sizeof(r)) > 0)
         {
-            // cout << " " << endl;
             rd.parse(r, getv);
             cout << "#" << getv["opt"].asString() << "#" << getv["sender"].asString() << endl;
-            // cout << " " << endl;
         }
     }
 }

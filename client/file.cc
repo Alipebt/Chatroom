@@ -31,32 +31,8 @@ void Client::send_file(int clie_fd)
 
         Net::Write(clie_fd, &fw, sizeof(fw));
 
-        // int fp = open(path.c_str(), O_CREAT | O_RDONLY, S_IRUSR | S_IWUSR);
         int fp = open(path.c_str(), O_RDONLY);
 
-        // cout << "文件:" << fw.name << "开始发送" << endl;
-        // sendfile(clie_fd, fp, 0, statbuf.st_size);
-        // cout << "文件:" << fw.name << "发送成功" << endl;
-        // long ret, retw;
-        // long sum = 0;
-        // while (true)
-        // {
-        //     if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
-        //     {
-
-        //         retw = write(clie_fd, sendbuf, ret);
-        //         sum += retw;
-        //         cout << sum << endl;
-
-        //         if (sum >= fw.size)
-        //         {
-        //             cout << "BREAK" << endl;
-        //             break;
-        //         }
-        //         bzero(sendbuf, BUFSIZ);
-        //     }
-        // }
-        // sleep(1);
         long ret, retw;
         long sum = 0;
         while (true)
@@ -69,7 +45,7 @@ void Client::send_file(int clie_fd)
                 {
                     sum += retw;
                 }
-                // cout << sum << endl;
+                cout << sum << endl;
 
                 if (ret > retw)
                 {
@@ -86,7 +62,6 @@ void Client::send_file(int clie_fd)
             }
         }
 
-        // sleep(1);
         Net::Close(fp);
         break;
     }
@@ -144,7 +119,6 @@ void Client::recv_file(int clie_fd)
     long sum2 = 0;
     while (true)
     {
-        // sleep(0.05);
 
         if ((ret = read(clie_fd, rf, sizeof(rf))) > 0)
         {
@@ -167,7 +141,6 @@ void Client::recv_file(int clie_fd)
             bzero(rf, sizeof(rf));
         }
     }
-    // sleep(1);
     cout << path << endl;
     bzero(rf, sizeof(rf));
     close(fd);

@@ -59,7 +59,6 @@ void Server::thread_recv(int clie_fd, string recverID)
 
             if (strcmp(r, ROOM_EXIT) == 0)
             {
-                // pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
                 break;
             }
 
@@ -90,8 +89,6 @@ void Server::thread_recv(int clie_fd, string recverID)
             puts = w.write(putv);
             leveldb::Status s2 = NMdb->Put(leveldb::WriteOptions(), recverID, puts);
         }
-
-        // pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
 
         bzero(r, sizeof(r));
     }
