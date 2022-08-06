@@ -161,27 +161,6 @@ void Server::add_friend(int clie_fd, char *re)
                                 Net::Write(clie_fd, "befriends", 9);
                             }
                         }
-                        //  if (!mas)
-                        // {
-                        //     //不是好友
-
-                        //     leveldb::Status status2 = Fdb->Get(leveldb::ReadOptions(), recver, &sr);
-                        //     rd.parse(sr, recv_from_db2);
-                        //     rd.parse(r, member3);
-
-                        //     recv_from_db2.append(member3);
-                        //     s = w.write(recv_from_db2);
-                        //     cout << "S4:  " << s << endl;
-                        //     leveldb::Status status = Fdb->Put(leveldb::WriteOptions(), recver, s);
-                        //     check_status(status);
-
-                        //     Net::Write(clie_fd, "success", 7);
-                        // }
-                        // else
-                        // {
-
-                        //     Net::Write(clie_fd, "fail", 7);
-                        // }
                     }
                 }
 
@@ -241,15 +220,6 @@ void Server::add_friend(int clie_fd, char *re)
         putv.append(member);
         puts = w.write(putv);
         leveldb::Status s2 = NMdb->Put(leveldb::WriteOptions(), recver, puts);
-
-        //////*2
-        // leveldb::Status snew = NMdb->Get(leveldb::ReadOptions(), recver, &gets);
-        // rd.parse(gets, putv);
-        // member["sender"] = fd_ID[clie_fd];
-        // member["opt"] = "friend";
-        // putv.append(member);
-        // puts = w.write(putv);
-        // leveldb::Status s2new = NMdb->Put(leveldb::WriteOptions(), recver, puts);
     }
     return;
 }

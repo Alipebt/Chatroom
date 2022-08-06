@@ -22,7 +22,6 @@ void Server::thread_worknm(int new_fd, int idfd)
         {
             ID = fd_ID[idfd];
 
-            sleep(0.5);
             // cout << ".";
             leveldb::Status s = NMdb->Get(leveldb::ReadOptions(), ID, &gets);
             rd.parse(gets, getv);

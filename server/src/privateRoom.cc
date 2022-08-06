@@ -59,7 +59,6 @@ void Server::thread_recv(int clie_fd, string recverID)
 
             if (strcmp(r, ROOM_EXIT) == 0)
             {
-                // pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
                 break;
             }
 
@@ -90,8 +89,6 @@ void Server::thread_recv(int clie_fd, string recverID)
             puts = w.write(putv);
             leveldb::Status s2 = NMdb->Put(leveldb::WriteOptions(), recverID, puts);
         }
-
-        // pthread_mutex_unlock(&fd_mutex[clie_fd]); //解锁
 
         bzero(r, sizeof(r));
     }
@@ -146,36 +143,10 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
         }
     }
 
-    // //历史消息
-    // leveldb::Status s = Mdb->Get(leveldb::ReadOptions(), recverID, &gets);
-    // cout << gets << endl;
-    // Net::Write(clie_fd, gets.c_str(), gets.length());
-    // rd.parse(gets, getv);
-    // i = (int)getv.size();
-
     //私聊消息
 
     while (true)
     {
-        sleep(0.05);
-        // // shanchuxinxiaoxi
-        // leveldb::Status sss = NMdb->Get(leveldb::ReadOptions(), recverID, &newgets);
-        // rd.parse(newgets, newgetv);
-        // for (int i = 0; i < (int)newgetv.size(); i++)
-        // {
-        //     if (newgetv[i]["sender"] == senderID)
-        //     {
-        //         newgetv.removeIndex(i, &deleteValue);
-        //         newsend = w.write(newgetv);
-
-        //         imas--;
-
-        //         // pthread_mutex_lock(&fd_mutex[clie_fd]); //加锁
-        //         NMdb->Put(leveldb::WriteOptions(), recverID, newsend);
-        //         i--;
-        //     }
-        // }
-        // ////////////////
 
         leveldb::Status s = Mdb->Get(leveldb::ReadOptions(), recverID, &gets);
         rd.parse(gets, getv);
@@ -187,12 +158,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
 
         for (; i < (int)getv.size(); i++)
         {
-            sleep(0.05);
-            // if (is_first_open)
-            // {
-            //     is_first_open = false;
-            //     continue;
-            // }
+
             member = getv[i];
 
             if (member["sender"].asString() == senderID || member["sender"].asString() == fd_ID[clie_fd])
@@ -256,10 +222,7 @@ void Server::thread_send(int clie_fd, string senderID) //注意：此时sender�
 
                 i--;
             }
-
-            sleep(0.1);
         }
-        sleep(0.1);
     }
     cout << "服务器发送线程关闭" << endl;
     is_first_open = true;
