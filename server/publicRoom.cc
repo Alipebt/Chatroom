@@ -52,8 +52,7 @@ void Server::thread_send_pub(int clie_fd, string gID)
 
     while (true)
     {
-        sleep(0.05);
-        // pthread_mutex_lock(&fd_mutex[clie_fd]);
+
         leveldb::Status s = GMdb->Get(leveldb::ReadOptions(), gID, &gets);
         rd.parse(gets, getv);
 
@@ -68,7 +67,7 @@ void Server::thread_send_pub(int clie_fd, string gID)
         }
         for (; i < (int)getv.size(); i++)
         {
-            sleep(0.05);
+
             member = getv[i];
 
             if (member["massage"].asString() != ROOM_EXIT)
@@ -99,13 +98,10 @@ void Server::thread_send_pub(int clie_fd, string gID)
                 is_first_open = true;
                 return;
             }
-
-            sleep(0.05);
         }
 
         if (getv.size() > 50) //数据库最多存50条消息
         {
-            // cout << "0000000000007" << endl;
             getv.removeIndex(0, &delv);
             send = w.write(getv);
 
@@ -114,7 +110,6 @@ void Server::thread_send_pub(int clie_fd, string gID)
             i--;
         }
     }
-    // pthread_mutex_unlock(&fd_mutex[clie_fd]);
     cout << "结束发送线程" << endl;
     is_first_open = true;
     return;

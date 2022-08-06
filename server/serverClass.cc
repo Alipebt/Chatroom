@@ -235,19 +235,6 @@ void Server::run()
 
                 chile_t.detach();
             }
-            // else if (fd_new[ep[i].data.fd] && !fd_pthread[ep[i].data.fd])
-            // {
-            //     int sockfd = clie_fd;
-
-            //     thread chile_tnm(Server::thread_worknm, sockfd, borthread);
-
-            //     borthread = 0;
-
-            //     cout << "为" << sockfd << "创建新消息" << endl;
-            //     fd_pthread[sockfd] = true;
-
-            //     chile_tnm.detach();
-            // }
         }
     }
     Net::Close(link_fd);

@@ -56,12 +56,11 @@ void Client::send_file(int clie_fd)
         //         bzero(sendbuf, BUFSIZ);
         //     }
         // }
-        sleep(1);
+        // sleep(1);
         long ret, retw;
         long sum = 0;
         while (true)
         {
-            sleep(0.05);
             if ((ret = read(fp, sendbuf, BUFSIZ)) > 0)
             {
 
@@ -87,7 +86,7 @@ void Client::send_file(int clie_fd)
             }
         }
 
-        sleep(1);
+        // sleep(1);
         Net::Close(fp);
         break;
     }
@@ -168,7 +167,7 @@ void Client::recv_file(int clie_fd)
             bzero(rf, sizeof(rf));
         }
     }
-    sleep(1);
+    // sleep(1);
     cout << path << endl;
     bzero(rf, sizeof(rf));
     close(fd);
