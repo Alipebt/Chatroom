@@ -3,6 +3,6 @@
 
 int main()
 {
-    Client client(SERV_PORT, "192.168.30.163");
+    Client client(SERV_PORT, "192.168.0.104");
     client.run();
 }
