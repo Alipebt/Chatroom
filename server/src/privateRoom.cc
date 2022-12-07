@@ -1,13 +1,12 @@
-`#include "serverClass.h"
+#include "serverClass.h"
 #include "net_wrap.h"
-    /**
-     *
-     *  登录后操作
-     *
-     */
+/**
+ *
+ *  登录后操作
+ *
+ */
 
-    void
-    Server::thread_recv(int clie_fd, string recverID)
+void Server::thread_recv(int clie_fd, string recverID)
 {
 
     cout << "服务器接收线程开启" << endl;

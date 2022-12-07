@@ -4,6 +4,6 @@
 
 int main()
 {
-    Server server(SERV_PORT, "192.168.0.104");
+    Server server(SERV_PORT, "192.168.30.161");
     server.run();
 }
